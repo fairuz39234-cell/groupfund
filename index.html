@@ -394,6 +394,83 @@ dialog[open].closing::backdrop{animation:fadeout .2s ease forwards}
 .who-role-value{display:inline-flex;align-items:center;border-radius:var(--r-pill);padding:2px 9px;background:var(--soft);color:var(--pri);font-size:11px;font-weight:700;white-space:nowrap}
 .who-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:9px}
 .who-actions .btn{min-width:0;min-height:38px;padding:5px 7px;line-height:1.2;text-align:center;justify-content:center;white-space:normal}
+/* Analytics dashboard layout inspired by the supplied reference */
+@media(min-width:721px){
+ .app{display:block}
+ #side{position:sticky;top:0;z-index:15;width:100%;height:auto;margin:0;padding:8px 22px;display:flex;flex-direction:row;align-items:center;gap:16px;border:0;border-bottom:1px solid var(--line);border-radius:0 0 16px 16px}
+ #side>.side-nav{order:1;flex:1;min-width:0;overflow:hidden}
+ #side>.who{order:2;width:250px;margin:0;padding:0}
+ #nav{display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:thin}
+ #nav button{flex:0 0 auto;width:auto;padding:8px 10px;white-space:nowrap}
+ .nav-hl{display:none}
+ .topbar{display:none}
+ .mc{max-width:1480px;padding:28px 36px 48px}
+}
+@media(min-width:721px) and (max-width:1100px){
+ #side{padding-left:12px;padding-right:12px;gap:10px}
+ #side>.who{width:220px}
+ #nav button{padding:7px 6px;font-size:12px}
+}
+.analytics-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:22px}
+.analytics-head h1{font-size:32px;letter-spacing:-.02em}
+.analytics-head p{margin:5px 0 0;color:var(--muted)}
+.analytics-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.analytics-period{display:flex;gap:4px;padding:4px;border-radius:var(--r-pill);background:var(--head)}
+.analytics-period button{border:0;border-radius:var(--r-pill);padding:7px 15px;background:transparent;color:var(--muted);font-weight:600}
+.analytics-period button.on{background:var(--pri);color:var(--pri-t);box-shadow:var(--sh)}
+.analytics-total{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;min-height:190px;margin-bottom:16px;padding:24px 28px;overflow:hidden;border-radius:20px;background:linear-gradient(115deg,#075f54,#087f6e 48%,#43bfae);color:#fff;box-shadow:var(--sh)}
+.analytics-total-copy{position:relative;z-index:1;display:grid;gap:3px}
+.analytics-total-copy>span:first-child{font-size:15px;opacity:.9}
+.analytics-total-copy strong{font-size:clamp(34px,5vw,54px);line-height:1.1;letter-spacing:-.03em}
+.analytics-total-copy b{margin-top:8px;font-size:13px;font-weight:500;opacity:.88}
+.analytics-spark{position:absolute;right:4%;bottom:22px;display:flex;align-items:flex-end;gap:13px;width:53%;height:54%;opacity:.48}
+.analytics-spark i{flex:1;min-width:3px;max-width:10px;border-radius:999px 999px 0 0;background:linear-gradient(to top,rgba(255,255,255,.3),#fff)}
+.analytics-trend-icon{position:absolute;right:22px;top:18px;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18);font-size:25px}
+.analytics-kpis{display:grid;grid-template-columns:1fr 1.35fr;gap:16px;margin-bottom:18px}
+.analytics-kpi{min-height:142px;display:flex;justify-content:space-between;align-items:flex-start;padding:18px 22px;border-radius:18px;color:#fff;box-shadow:var(--sh)}
+.analytics-kpi>div{display:grid;gap:3px}.analytics-kpi strong{font-size:clamp(28px,4vw,42px);line-height:1.15}
+.analytics-kpi small{font-size:12px;opacity:.9}
+.income-kpi{background:linear-gradient(120deg,#3977cc,#7da6ee)}
+.expense-kpi{background:linear-gradient(120deg,#d85e67,#ee777e)}
+.kpi-symbol{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);font-size:24px;line-height:1}
+.cashflow-panel{padding:20px 24px;margin-bottom:18px}
+.cashflow-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.cashflow-head h2{font-size:18px;margin:0 0 8px}
+.cashflow-net{display:block;font-size:clamp(32px,4.6vw,50px);line-height:1.12;letter-spacing:-.025em}
+.cashflow-net.negative{color:#9d1c2d}.cashflow-net.positive{color:var(--ok)}
+.cashflow-actions{display:flex;justify-content:flex-end}
+.analytics-period.small{padding:3px}
+.analytics-period.small button{padding:5px 12px;font-size:13px}
+.cash-chart{height:190px;margin-top:18px}
+.cash-chart svg{width:100%;height:158px;overflow:visible}
+.cash-chart line{stroke:var(--line);stroke-width:.45}
+.cash-chart polyline{fill:none;stroke:#b53b68;stroke-width:1.4;vector-effect:non-scaling-stroke}
+.cash-chart circle{fill:#b53b68;stroke:var(--panel);stroke-width:.45;vector-effect:non-scaling-stroke}
+.cash-months{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));font-size:12px;color:var(--muted)}
+.cash-months span{text-align:center}
+.cashflow-foot{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:12px;color:var(--muted)}
+.dashboard-lower{display:grid;grid-template-columns:1fr 1.25fr;gap:16px}
+@media(max-width:900px){
+ .analytics-head{display:grid}
+ .analytics-kpis,.dashboard-lower{grid-template-columns:1fr}
+}
+@media(max-width:720px){
+ .analytics-head h1{font-size:25px}
+ .analytics-controls{width:100%}
+ .analytics-controls .analytics-period{flex:1}
+ .analytics-period button{flex:1;padding:7px 8px}
+ .analytics-controls>.btn{width:100%}
+ .analytics-total{min-height:168px;padding:20px}
+ .analytics-spark{right:5%;width:45%;gap:7px}
+ .analytics-kpis{grid-template-columns:1fr}
+ .cashflow-panel{padding:16px 12px}
+ .cashflow-head{display:block}
+ .cashflow-actions{justify-content:flex-start;margin-top:12px}
+ .cash-chart{height:170px}
+ .cash-chart svg{height:138px}
+ .cashflow-foot{display:grid}
+ .dashboard-lower{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -583,6 +660,7 @@ const money=n=>'฿ '+(n/100).toLocaleString('th-TH',{minimumFractionDigits:2,ma
 const dt=d=>new Date(d+'T00:00:00').toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
 const today=new Date().toISOString().slice(0,10),ym=today.slice(0,7),BY='ผู้ดูแลการเงิน';
 let animate=true,role='admin',me,af='all',cv='3d',lastDat=[],S3=null,curRoom=1,uid=100,page='dash',tt,qm='',gm='all',ql='',tl='all',pf='all';
+let dashPeriod='month',dashFlow='net';
 let G=[];
 const gn=i=>(G.find(g=>g.id==i)||{name:'—'}).name,M=[],L=[],R=[],PE=[],AU=[],JR=[];
 const groupRole=gid=>(PE.find(p=>p.code==me&&p.g==gid&&p.status=='active')||{}).role;
@@ -608,16 +686,54 @@ const stat=(k,v,n)=>`<div class="stat"><div class="sk">${k}</div><div class="sv"
 const byDate=a=>a.slice().sort((x,y)=>y.date.localeCompare(x.date)||y.id-x.id);
 const ltr=(x,a)=>`<tr><td>${dt(x.date)}</td><td>${E(x.detail)}${x.rev?' <span class="badge neutral">กลับรายการแล้ว</span>':''}${x.rv?' <span class="badge neutral">รายการกลับบัญชี</span>':''}<span class="sub">${E(gn(x.g))} / ${x.by}</span></td><td>${LT[x.type]}</td><td class="num" style="color:var(--${x.type=='expense'?'bad':'ok'})">${x.type=='expense'?'−':'+'}${money(x.amt).slice(2)}</td>${a?`<td>${x.type!='open'&&!x.rev&&!x.rv&&!x.ref?`<button class="btn btn-danger btn-sm" data-a="rv" data-i="${x.id}">กลับรายการ</button>`:''}</td>`:''}</tr>`;
 
+function dashRange(period=dashPeriod){
+ const now=new Date(today+'T12:00:00'),y=now.getFullYear(),m=now.getMonth();
+ let s,e,ps,pe;
+ if(period=='quarter'){const q=Math.floor(m/3)*3;s=new Date(y,q,1);e=now;ps=new Date(y,q-3,1);pe=new Date(y,q,0)}
+ else if(period=='year'){s=new Date(y,0,1);e=now;ps=new Date(y-1,0,1);pe=new Date(y-1,11,31)}
+ else{s=new Date(y,m,1);e=now;ps=new Date(y,m-1,1);pe=new Date(y,m,0)}
+ const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ return{start:iso(s),end:iso(e),previousStart:iso(ps),previousEnd:iso(pe),label:period=='quarter'?'ไตรมาสนี้':period=='year'?'ปีนี้':'เดือนนี้'};
+}
+function cashFlowSeries(mode=dashFlow){
+ const y=+today.slice(0,4),mo=+today.slice(5,7)-1;
+ return [...Array(7)].map((_,i)=>{
+  const d=new Date(y,mo-(6-i),1),key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+  const inc=sum('income',x=>x.date.startsWith(key)),exp=sum('expense',x=>x.date.startsWith(key));
+  return{label:d.toLocaleDateString('th-TH',{month:'short'}),value:mode=='in'?inc:mode=='out'?exp:inc-exp};
+ });
+}
+function cashFlowChart(){
+ const data=cashFlowSeries(),max=Math.max(1,...data.map(x=>Math.abs(x.value))),n=data.length;
+ const pts=data.map((x,i)=>[5+i*90/(n-1),40-Math.max(-1,Math.min(1,x.value/max))*28]);
+ const poly=pts.map(p=>p.join(',')).join(' ');
+ return '<div class="cash-chart"><svg viewBox="0 0 100 80" preserveAspectRatio="none" role="img" aria-label="กราฟกระแสเงินสด">'+
+ '<line x1="4" y1="12" x2="96" y2="12"/><line x1="4" y1="40" x2="96" y2="40"/><line x1="4" y1="68" x2="96" y2="68"/>'+
+ '<polyline points="'+poly+'"/>'+pts.map((p,i)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.35"><title>'+E(data[i].label)+' '+money(data[i].value)+'</title></circle>').join('')+
+ '</svg><div class="cash-months">'+data.map(x=>'<span>'+E(x.label)+'</span>').join('')+'</div></div>';
+}
+function exportDashCSV(){
+ const range=dashRange(),rows=A().filter(x=>x.date>=range.start&&x.date<=range.end);
+ const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+ const csv=['วันที่,กลุ่ม,ประเภท,รายละเอียด,จำนวนเงิน (บาท)',...rows.map(x=>[x.date,gn(x.g),LT[x.type]||x.type,x.detail,(x.amt/100).toFixed(2)].map(q).join(','))].join('\r\n');
+ const url=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');
+ a.href=url;a.download='groupfund-'+dashPeriod+'-'+today+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('ส่งออก CSV แล้ว');
+}
 function vDash(){
- const cur=x=>x.date.startsWith(ym),pc=M.filter(m=>m.s=='pending'),y=+today.slice(0,4),mo=+today.slice(5,7)-1;
- const dat=[...Array(6)].map((_,i)=>{const d=new Date(y,mo-(5-i),1),k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),f=x=>x.date.startsWith(k);return{l:d.toLocaleDateString('th-TH',{month:'short'}),i:sum('income',f),e:sum('expense',f)}});
- const mx=Math.max(1,...dat.flatMap(d=>[d.i,d.e]));lastDat=dat;
- return head('ภาพรวมเงินกองกลาง','สรุปฐานะการเงินของทุกกลุ่ม ณ วันที่ '+dt(today),'<button class="btn btn-primary" data-a="newg">เพิ่มกลุ่ม</button>')+
- `<div class="stats">${stat('ยอดเงินคงเหลือ',money(bal()),'จากรายการบัญชีที่ยืนยันแล้ว')}${stat('รายรับเดือนนี้',money(sum('income',cur)),'ไม่รวมยอดยกมา')}${stat('รายจ่ายเดือนนี้',money(sum('expense',cur)),'จากรายการบัญชีที่ยืนยันแล้ว')}${stat('รอตรวจสอบ',pc.length+' รายการ',money(pc.reduce((s,m)=>s+m.amt,0))+' ยังไม่นับเป็นรายรับ')}</div>
-<div class="grid2"><div class="panel"><div class="ph"><div><h2>รายรับและรายจ่ายรายเดือน</h2><p>ย้อนหลัง 6 เดือน</p></div><div class="seg c-seg" role="group" aria-label="รูปแบบกราฟ"><button data-a="cv" data-v="3d" class="${cv=='3d'?'on':''}">โมเดล 3 มิติ</button><button data-a="cv" data-v="2d" class="${cv=='2d'?'on':''}">กราฟ</button></div></div><div class="pb"><div class="chart"${cv=='3d'?' hidden':''}>${dat.map(d=>`<div class="cc"><div class="bp"><i class="bar" style="height:${d.i/mx*100}%" title="รายรับ ${money(d.i)}"></i><i class="bar e" style="height:${d.e/mx*100}%" title="รายจ่าย ${money(d.e)}"></i></div><small>${d.l}</small></div>`).join('')}</div><div class="c3" id="c3"${cv=='3d'?'':' hidden'}></div><div class="lg"><span><i></i>รายรับ</span><span><i class="e"></i>รายจ่าย</span></div></div></div>
-<div class="panel"><div class="ph"><div><h2>สถานะการเก็บเงิน</h2><p>จำนวนรายการที่ชำระแล้วในแต่ละกลุ่ม</p></div><button class="link" data-a="go" data-p="groups">ดูทั้งหมด</button></div><div class="pb">${G.map(g=>{const ms=M.filter(m=>m.g==g.id),n=ms.filter(m=>m.s=='paid').length,p=ms.length?Math.round(n/ms.length*100):0;return `<div class="pi"><div class="pl"><b>${E(g.name)}</b><span>${p}%</span></div><div class="track"><div class="fill" style="width:${p}%"></div></div><div class="pm"><span>${n} จาก ${ms.length} รายการ</span><span>${money(ms.filter(m=>m.s=='paid').reduce((s,m)=>s+m.amt,0))}</span></div></div>`}).join('')}</div></div></div>
-<div class="grid2">${lineChart()}${donut()}</div>
-<div class="panel tp"><div class="ph"><div><h2>รายการบัญชีล่าสุด</h2></div><button class="link" data-a="go" data-p="led">ดูทั้งหมด</button></div><div class="tw"><table><thead><tr><th>วันที่</th><th>รายละเอียด</th><th>ประเภท</th><th class="num">จำนวนเงิน</th></tr></thead><tbody>${byDate(L).slice(0,6).map(x=>ltr(x)).join('')}</tbody></table></div></div>`}
+ const range=dashRange(),inc=sum('income',x=>x.date>=range.start&&x.date<=range.end),exp=sum('expense',x=>x.date>=range.start&&x.date<=range.end);
+ const prevIn=sum('income',x=>x.date>=range.previousStart&&x.date<=range.previousEnd),prevOut=sum('expense',x=>x.date>=range.previousStart&&x.date<=range.previousEnd);
+ const count=A().filter(x=>x.type=='income'&&x.date>=range.start&&x.date<=range.end).length,net=inc-exp;
+ const pct=(v,p)=>p?((v-p)/p*100):null,formatPct=v=>v==null?'ยังไม่มีข้อมูลช่วงก่อน':(v>=0?'↑ +':'↓ ')+Math.abs(v).toFixed(1)+'% เทียบช่วงก่อน';
+ const periods=[['month','เดือน'],['quarter','ไตรมาส'],['year','ปี']];
+ const statusCount=M.filter(m=>m.s=='pending').length,statusSum=M.filter(m=>m.s=='pending').reduce((s,m)=>s+m.amt,0);
+ const months=cashFlowSeries('in'),max= Math.max(1,...months.map(x=>x.value));
+ return `<div class="analytics-head"><div><h1>วิเคราะห์การเงิน</h1><p>ติดตามรายรับ รายจ่าย และกระแสเงินสด · อัปเดต ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}</p></div><div class="analytics-controls"><div class="analytics-period" role="group" aria-label="ช่วงเวลา">${periods.map(([k,l])=>`<button data-a="dashperiod" data-v="${k}" class="${dashPeriod==k?'on':''}">${l}</button>`).join('')}</div><button class="btn btn-outline" data-a="dashexport">ส่งออก CSV</button></div></div>
+<div class="analytics-total"><div class="analytics-total-copy"><span>รายรับรวม</span><strong>${money(inc)}</strong><span>จาก ${count} รายการรายรับที่ยืนยันแล้ว</span><b>${formatPct(pct(inc,prevIn))}</b></div><div class="analytics-spark" aria-hidden="true">${months.map(x=>`<i style="height:${Math.max(7,x.value/max*100)}%"></i>`).join('')}</div><span class="analytics-trend-icon" aria-hidden="true">↗</span></div>
+<div class="analytics-kpis"><div class="analytics-kpi income-kpi"><div><span>รายรับ</span><strong>${money(inc)}</strong><small>${formatPct(pct(inc,prevIn))}</small></div><span class="kpi-symbol">＋</span></div><div class="analytics-kpi expense-kpi"><div><span>รายจ่าย</span><strong>${money(exp)}</strong><small>${formatPct(pct(exp,prevOut))}</small></div><span class="kpi-symbol">−</span></div></div>
+<div class="panel cashflow-panel"><div class="cashflow-head"><div><h2>กระแสเงินสด</h2><strong class="cashflow-net ${net<0?'negative':'positive'}">${money(net)}</strong><span class="sn">สุทธิ ${range.label}</span></div><div class="cashflow-actions"><div class="analytics-period small" role="group" aria-label="รูปแบบกระแสเงินสด">${[['in','เข้า'],['out','ออก'],['net','สุทธิ']].map(([k,l])=>`<button data-a="cashflow" data-v="${k}" class="${dashFlow==k?'on':''}">${l}</button>`).join('')}</div></div></div>${cashFlowChart()}<div class="cashflow-foot"><span>รายรับ ${money(inc)} · รายจ่าย ${money(exp)}</span><span>รอตรวจสอบ ${statusCount} รายการ · ${money(statusSum)}</span></div></div>
+<div class="dashboard-lower"><div class="panel"><div class="ph"><div><h2>สถานะการเก็บเงิน</h2><p>สัดส่วนรายการที่ชำระแล้วในแต่ละกลุ่ม</p></div><button class="link" data-a="go" data-p="groups">ดูทั้งหมด</button></div><div class="pb">${G.map(g=>{const ms=M.filter(m=>m.g==g.id),n=ms.filter(m=>m.s=='paid').length,p=ms.length?Math.round(n/ms.length*100):0;return `<div class="pi"><div class="pl"><b>${E(g.name)}</b><span>${p}%</span></div><div class="track"><div class="fill" style="width:${p}%"></div></div><div class="pm"><span>${n} จาก ${ms.length} รายการ</span><span>${money(ms.filter(m=>m.s=='paid').reduce((s,m)=>s+m.amt,0))}</span></div></div>`}).join('')}</div></div>
+<div class="panel"><div class="ph"><div><h2>รายการบัญชีล่าสุด</h2></div><button class="link" data-a="go" data-p="led">ดูทั้งหมด</button></div><div class="tw"><table><thead><tr><th>วันที่</th><th>รายละเอียด</th><th>ประเภท</th><th class="num">จำนวนเงิน</th></tr></thead><tbody>${byDate(L).slice(0,5).map(x=>ltr(x)).join('')}</tbody></table></div></div></div>`;
+}
 
 function vGroups(){return head('กลุ่มของฉัน','กลุ่มเงินกองกลางที่อยู่ในความดูแล','<button class="btn btn-primary" data-a="newg">เพิ่มกลุ่ม</button>')+`<div class="gcs">${G.map(g=>{const ms=M.filter(m=>m.g==g.id),n=ms.filter(m=>m.s=='paid').length,p=ms.filter(m=>m.s=='pending').length;return `<div class="gc"><h3>${E(g.name)}</h3><p>${E(g.desc)}</p><div class="ga">${money(bal(g.id))}</div><div class="sn">ยอดเงินคงเหลือ</div><div class="track" style="margin:14px 0 6px"><div class="fill" style="width:${ms.length?n/ms.length*100:0}%"></div></div><div class="pm"><span>ชำระแล้ว ${n} จาก ${ms.length} รายการ</span><span>รอตรวจสอบ ${p} รายการ</span></div><div class="acts" style="justify-content:space-between;align-items:center"><span class="sn">${JR.filter(x=>x.g==g.id).length?'คำขอเข้าร่วม '+JR.filter(x=>x.g==g.id).length+' รายการ':''}</span><button class="btn btn-outline btn-sm" data-a="room" data-i="${g.id}">จัดการห้อง</button></div></div>`}).join('')}</div>`}
 
@@ -829,6 +945,9 @@ function okM(m){if(!m.pid)return;SB.rpc('approve_payment',{pid:m.pid}).then(r=>{
 
 $('#v').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,i=b.dataset.i;
  if(role=='member'&&!['mysub','go','joincode','newg'].includes(a))return;if(a=='refreshjoin'){if(!canManageGroup(curRoom)){toast('เฉพาะเจ้าของหรือผู้ดูแลห้องเท่านั้น');return}b.disabled=true;SB.from('join_requests').select('id,group_id,user_id,created_at,profiles!join_requests_user_id_fkey(full_name)').eq('status','pending').order('created_at').then(r=>{if(r.error){toast('โหลดคำขอเข้าร่วมไม่ได้: '+aTh(r.error.message));return}JR.length=0;(r.data||[]).forEach(x=>JR.push({id:x.id,g:x.group_id,name:(x.profiles&&x.profiles.full_name)||'สมาชิก',ts:x.created_at,uid:x.user_id}));render();toast(JR.length?'อัปเดตคำขอแล้ว '+JR.length+' รายการ':'ไม่พบคำขอที่บัญชีนี้มีสิทธิ์ดู')}).catch(err=>toast('โหลดคำขอเข้าร่วมไม่ได้: '+aTh(err.message||err))).finally(()=>{b.disabled=false})}else if(a=='newg')newG();else if(a=='newm')newM();else if(a=='newl')newL();else if(a=='mysub')mySub(i);else if(a=='newreq')newReq();else if(a=='cv')setCv(b.dataset.v);
+ else if(a=='dashperiod'){dashPeriod=b.dataset.v;render()}
+ else if(a=='cashflow'){dashFlow=b.dataset.v;render()}
+ else if(a=='dashexport')exportDashCSV();
  else if(a=='room'){curRoom=i;page='room';animate=true;scrollTo(0,0);render()}
  else if(a=='newreqg'){if(!['owner','admin','treasurer'].includes(groupRole(i))){toast('เฉพาะผู้ดูแลหรือเหรัญญิกของห้องเท่านั้น');return}newReq(i)}
  else if(a=='copylink'||a=='copycode'){const g=G.find(x=>x.id==i),u=inviteLink(g);if(a=='copylink'&&!u){toast('กรุณาสร้างลิงก์เชิญก่อน');return}if(a=='copycode'&&!g.code){toast('ยังไม่มีรหัสเชิญ กรุณาสร้างรหัสก่อน');return}copyTxt(a=='copylink'?u:g.code,a=='copylink'?'คัดลอกลิงก์แล้ว':'คัดลอกรหัสเชิญแล้ว')}
