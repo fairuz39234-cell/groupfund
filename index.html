@@ -610,12 +610,7 @@ function deletePanel(gid){
  return `<div class="panel tp"><div class="ph"><div><h2>ลบกลุ่ม</h2><p>ลบได้เฉพาะกลุ่มที่ยังไม่มีประวัติการเงินที่อนุมัติแล้ว การลบย้อนกลับไม่ได้</p></div></div><div class="pb"><div class="acts"><button class="btn btn-danger" data-a="delgroup" data-i="${gid}">ลบกลุ่มนี้</button></div></div></div>`;
 }
 function vAppSettings(){
- const isAdmin=role=='admin',cards=[
-  {p:'profile',title:'โปรไฟล์ของฉัน',desc:'เปลี่ยนรูปโปรไฟล์และชื่อที่แสดงใน GroupFund',icon:'groups'},
-  ...(isAdmin?[{p:'groupSettings',title:'ตั้งค่ากลุ่ม',desc:'แก้ไขชื่อ รายละเอียด ประเภท และการจัดการกลุ่ม',icon:'settings'},{p:'roles',title:'สมาชิกและสิทธิ์',desc:'จัดการบทบาทและสถานะของสมาชิกในกลุ่ม',icon:'roles'}]:[])
- ];
- return head('ตั้งค่า','จัดการบัญชีผู้ใช้และการตั้งค่าที่เกี่ยวข้อง')+
- '<div class="settings-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px">'+cards.map(x=>`<button class="panel tp" data-a="go" data-p="${x.p}" style="text-align:left;cursor:pointer;width:100%;color:inherit"><div class="pb"><div style="display:flex;align-items:center;gap:12px"><span style="width:42px;height:42px;border-radius:12px;background:var(--mint);display:grid;place-items:center;color:var(--primary)"><span style="width:22px;height:22px">${ico(x.icon)}</span></span><div><b>${x.title}</b><p class="sub" style="margin:5px 0 0">${x.desc}</p></div></div><div style="display:flex;justify-content:flex-end;margin-top:18px;color:var(--primary);font-weight:600">จัดการ <span aria-hidden="true">→</span></div></div></button>`).join('')+'</div>';
+ return vProfile();
 }
 function vProfile(){
  const photo=AUSER&&AUSER.avatarUrl?`<img class="profile-photo" id="profilePreview" src="${E(AUSER.avatarUrl)}" alt="รูปโปรไฟล์">`:`<div class="profile-photo-empty" id="profilePreview">${E((AUSER&&AUSER.name||'ส').slice(0,1))}</div>`;
@@ -799,7 +794,7 @@ function countUp(el){const t=el.textContent,m=t.match(/[\d,]+(?:\.\d+)?/);if(!m)
 function render(){if(page=='room'&&(role=='member'||!G.some(g=>g.id==curRoom)))page='groups';if(!curNav().some(x=>x[0]==page)&&page!='room'&&page!='profile')page=curNav()[0][0];$('#who').innerHTML=whoHtml();const n=M.filter(m=>m.s=='pending').length,t=page=='room'?gn(curRoom):page=='profile'?'โปรไฟล์':curNav().find(x=>x[0]==page)[1];
  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.p==(page=='room'?'groups':page)));
  const pn=$('#pn');if(pn){pn.textContent=n;pn.hidden=!n}$('#crumb').textContent='ระบบบริหารเงินกองกลาง / '+t;$('#tt').textContent=t;
- $('#v').innerHTML={join:vJoin,profile:vProfile,platform:vPlatform,settings:vAppSettings,groupSettings:vSettings,roles:vRoles,dash:vDash,groups:vGroups,mem:vMem,pay:vPay,led:vLed,rep:vRep,mydues:vMy,myhist:vHist,req:vReq,audit:vAudit,room:vRoom}[page]();
+ $('#v').innerHTML={join:vJoin,profile:vProfile,platform:vPlatform,settings:vProfile,groupSettings:vSettings,roles:vRoles,dash:vDash,groups:vGroups,mem:vMem,pay:vPay,led:vLed,rep:vRep,mydues:vMy,myhist:vHist,req:vReq,audit:vAudit,room:vRoom}[page]();
  const f={mem:fillM,pay:fillP,led:fillL,audit:fillA}[page];if(f)f();$('#side').classList.remove('open');
  const V=$('#v');V.classList.toggle('anim',animate);
  if(animate){V.querySelectorAll('.welcome,.stat,.gc,.panel,.notice').forEach((el,i)=>el.style.setProperty('--i',Math.min(i,9)));V.querySelectorAll('.cc').forEach((c,i)=>c.style.setProperty('--d',i*70+'ms'));if(!RM())V.querySelectorAll('.sv,.ga').forEach(countUp)}
