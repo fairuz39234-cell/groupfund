@@ -1,5 +1,5 @@
-Warning: truncated output (original token count: 42493)
-Total output lines: 1339
+Warning: truncated output (original token count: 42724)
+Total output lines: 1349
 
 <!DOCTYPE html>
 <html lang="th">
@@ -716,6 +716,16 @@ dialog::backdrop{background:rgba(23,27,12,.48)}
  .analytics-controls{grid-template-columns:1fr}
  .analytics-controls>.btn{width:100%}
 }
+#side>.who{padding-top:18px}
+#side .who-identity{display:flex;flex-direction:column;align-items:stretch;gap:15px;padding:15px}
+#side .who-profile{align-items:center;gap:12px}
+#side .who-meta{display:grid;gap:5px;max-width:none}
+#side .who-meta b{line-height:1.45;white-space:normal;overflow-wrap:anywhere}
+#side .who-meta span{font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+#side .who-role{margin-top:0;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}
+#side .who-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
+#side .who-actions .btn{width:100%;min-width:0;min-height:42px;padding:8px 7px;line-height:1.3;text-align:center;white-space:normal;justify-content:center}
+@media(min-width:721px) and (max-width:1100px){#side .who-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}#side .who-actions .btn{padding-left:4px;padding-right:4px;font-size:10px}}
 </style>
 </head>
 <body>
@@ -903,19 +913,10 @@ if(SB){
 <script>
 const $=s=>document.querySelector(s),E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const money=n=>'฿ '+(n/100).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
-const dt=d=>new Date(d+'T00:00:00').toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
-const today=new Date().toISOString().slice(0,10),ym=today.slice(0,7),BY='ผู้ดูแลการเงิน';
-let animate=true,role='member',me,af='all',cv='3d',lastDat=[],S3=null,curRoom=1,uid=100,page='dash',tt,qm='',gm='all',ql='',tl='all',pf='all';
-let dashPeriod='month',dashFlow='net';
-let G=[];
-const gn=i=>(G.find(g=>g.id==i)||{name:'—'}).name,M=[],L=[],R=[],PE=[],AU=[],JR=[];
-const groupRole=gid=>(PE.find(p=>p.code==me&&p.g==gid&&p.status=='active')||{}).role;
-const canManageGroup=gid=>['owner','admin'].includes(groupRole(gid));
-const ROLE_LABEL={owner:'เจ้าของกลุ่ม',admin:'ผู้ดูแล',treasurer:'เหรัญญิก',member:'สมาชิก'};
-const LT={open:'ยอดยกมา',income:'รายรับ',expense:'รายจ่าย'},BD={paid:['ชำระแล้ว','paid'],pending:['รอตร…7493 tokens truncated…tentType:s.type});if(up.error){toast(aTh(up.error.message));return}
+const dt=d=>new Date(d+'T00:00:00').toLocaleDateString('th-TH',{da…7724 tokens truncated…entType:s.type});if(up.error){toast(aTh(up.error.message));return}
   const ins=await SB.from('payments').insert({group_id:m.g,collection_item_id:m.id,user_id:AUSER.id,amount:m.amt,payment_method:'transfer',transfer_date:d,slip_path:path,status:'pending'}).select('id').single();if(ins.error){await SB.storage.from('payment-slips').remove([path]);toast(aTh(ins.error.message));return}
   logA(m.name,'ส่งหลักฐานการชำระ',rq(m.r).title+' '+money(m.amt));const check=await SB.functions.invoke('verify-payment-slip',{body:{payment_id:ins.data.id}});await loadFin();render();const checkStatus=check.data&&check.data.status;toast(check.error?'ส่งหลักฐานแล้ว แต่ตรวจอัตโนมัติไม่ได้ ผู้ดูแลจะตรวจเอง':checkStatus=='verified'?'ผ่านตรวจเบื้องต้นแล้ว ผู้ดูแลยังต้องยืนยันยอดเงินจริงก่อนอนุมัติ':checkStatus=='mismatch'?'ยอดในสลิปไม่ตรงกับรายการ ผู้ดูแลจะตรวจสอบ':checkStatus=='duplicate'?'พบสลิปซ้ำ ผู้ดูแลจะตรวจสอบ':checkStatus=='manual_review'?'ส่งหลักฐานแล้ว ไฟล์นี้ต้องให้ผู้ดูแลตรวจเอง':checkStatus=='not_configured'?'ส่งหลักฐานแล้ว แต่ยังไม่ได้ตั้งค่าบริการตรวจอัตโนมัติ': 'ส่งหลักฐานแล้ว ผู้ดูแลจะตรวจเอง')})()})}
-const whoHtml=()=>AUSER?`<div class="who-identity"><div class="who-profile">${AUSER.avatarUrl?`<img class="who-avatar" src="${E(AUSER.avatarUrl)}" alt="รูปโปรไฟล์">`:`<div class="who-avatar">${E((AUSER.name||'ส').slice(0,1))}</div>`}<div class="who-meta"><b>${E(AUSER.name)}</b><span>${E(AUSER.email)}</span></div></div><div class="who-role"><span class="who-role-label">บทบาทสูงสุด</span><b class="who-role-value">${({admin:'ผู้ดูแล',treasurer:'เหรัญญิก',member:'สมาชิก'})[role]||'สมาชิก'}</b></div></div><div class="who-actions"><button class="btn btn-outline btn-sm" data-a="go" data-p="profile">แก้ไขโปรไฟล์</button><button class="btn btn-outline btn-sm" id="logout">ออกจากระบบ</button></div>`:'';
+const whoHtml=()=>AUSER?`<div class="who-identity"><div class="who-profile">${AUSER.avatarUrl?`<img class="who-avatar" src="${E(AUSER.avatarUrl)}" alt="รูปโปรไฟล์">`:`<div class="who-avatar">${E((AUSER.name||'ส').slice(0,1))}</div>`}<div class="who-meta"><b>${E(AUSER.name)}</b><span>${E(AUSER.email)}</span></div></div><div class="who-role"><span class="who-role-label">บทบาทสูงสุด</span><b class="who-role-value">${({admin:'ผู้ดูแล',treasurer:'เหรัญญิก',member:'สมาชิก'})[role]||'สมาชิก'}</b></div><div class="who-actions"><button class="btn btn-outline btn-sm" data-a="go" data-p="profile">แก้ไขโปรไฟล์</button><button class="btn btn-outline btn-sm" id="logout">ออกจากระบบ</button></div></div>`:'';
 const IC={join:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>',platform:'<path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',roles:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 11l2 2 4-4"/>',dash:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',groups:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',req:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/>',mem:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>',pay:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',led:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',rep:'<path d="M3 3v18h18"/><path d="M7 16V9"/><path d="M12 16V5"/><path d="M17 16v-4"/>',audit:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',mydues:'<path d="M3 7a2 2 0 0 1 2-2h13v4"/><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="16.5" cy="13.5" r="1"/>',myhist:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/>'};
 const ico=p=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[p]}</svg>`;
 let navFresh=true;
