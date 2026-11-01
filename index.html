@@ -1076,6 +1076,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('#side'))$('#side').c
 $('#today').textContent=dt(today);
 
 $('#who').onchange=e=>{if(e.target.id=='asm'){me=e.target.value;animate=true;render()}};
+$('#who').onclick=e=>{const b=e.target.closest('[data-a="go"][data-p="profile"]');if(!b)return;page='profile';animate=true;scrollTo(0,0);render()};
 function countUp(el){const t=el.textContent,m=t.match(/[\d,]+(?:\.\d+)?/);if(!m)return;const q=m[0],v=parseFloat(q.replace(/,/g,'')),d=(q.split('.')[1]||'').length,pre=t.slice(0,m.index),post=t.slice(m.index+q.length),t0=performance.now();
  const f=n=>pre+n.toLocaleString('th-TH',{minimumFractionDigits:d,maximumFractionDigits:d})+post;
  const step=now=>{const p=Math.min(1,(now-t0)/900),e=1-Math.pow(1-p,3);el.textContent=f(v*e);if(p<1)requestAnimationFrame(step)};el.textContent=f(0);requestAnimationFrame(step)}
