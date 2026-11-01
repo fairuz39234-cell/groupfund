@@ -599,7 +599,7 @@ function deletePanel(gid){
  return `<div class="panel tp"><div class="ph"><div><h2>ลบกลุ่ม</h2><p>ลบได้เฉพาะกลุ่มที่ยังไม่มีประวัติการเงินที่อนุมัติแล้ว การลบย้อนกลับไม่ได้</p></div></div><div class="pb"><div class="acts"><button class="btn btn-danger" data-a="delgroup" data-i="${gid}">ลบกลุ่มนี้</button></div></div></div>`;
 }
 function vJoin(){
- return head('เข้าร่วมกลุ่ม','กรอกรหัสเชิญที่ได้รับจากผู้ดูแลกลุ่ม')+`<div class="panel tp"><div class="pb"><div class="field"><label for="jc">รหัสเชิญ (8 ตัวอักษร)</label><input id="jc" maxlength="8" autocomplete="off"></div><div class="acts"><button class="btn btn-primary" data-a="joincode">ส่งคำขอเข้าร่วม</button></div></div></div>`;
+ return head('เข้าร่วมกลุ่ม','วางลิงก์เชิญหรือกรอกรหัสเชิญที่ได้รับจากผู้ดูแลกลุ่ม')+`<div class="panel tp"><div class="pb"><div class="field"><label for="jc">ลิงก์เชิญหรือรหัสเชิญ</label><input id="jc" maxlength="300" autocomplete="off" placeholder="วางลิงก์เชิญ หรือกรอกรหัส 8 ตัวอักษร"></div><div class="acts"><button class="btn btn-primary" data-a="joincode">ส่งคำขอเข้าร่วม</button></div></div></div>`;
 }
 function vSettingsBase(){
  const gid=rgid&&G.some(g=>g.id==rgid)?rgid:(G[0]&&G[0].id);rgid=gid;
@@ -702,8 +702,10 @@ $('#v').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.
  else if(a=='revcode'){const gid=i;SB.rpc('revoke_invite_code',{gid}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('ยกเลิกรหัสเชิญแล้ว');loadFin().then(render)}})}
  else if(a=='delgroup'){const gid=i;const g=G.find(x=>x.id==gid);
    conf('ลบกลุ่ม “'+E(g?g.name:'')+'”? การกระทำนี้ย้อนกลับไม่ได้','ลบกลุ่ม',()=>{SB.rpc('delete_group',{gid}).then(r=>{if(r.error)toast(aTh(r.error.message));else{rgid=null;toast('ลบกลุ่มแล้ว');loadGroups().then(render)}})})}
- else if(a=='joincode'){const code=($('#jc').value||'').trim();if(!code){toast('กรุณากรอกรหัสเชิญ');return}
-   SB.rpc('request_join_by_code',{input_code:code}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('ส่งคำขอแล้ว รอผู้ดูแลอนุมัติ');const f=$('#jc');if(f)f.value=''}})}
+ else if(a=='joincode'){const code=($('#jc').value||'').trim();if(!code){toast('กรุณากรอกรหัสเชิญหรือลิงก์เชิญ');return}
+   const match=code.match(/#join-([a-f0-9]{64})$/i),tok=match?match[1]:(/^[a-f0-9]{64}$/i.test(code)?code:null);
+   const call=tok?SB.rpc('request_join',{tok}):SB.rpc('request_join_by_code',{input_code:code});
+   call.then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('ส่งคำขอแล้ว รอผู้ดูแลอนุมัติ');const f=$('#jc');if(f)f.value=''}})}
  else if(a=='savegroup'){const gid=b.dataset.i;
    SB.rpc('update_group',{gid,new_name:$('#sg_n').value,new_desc:$('#sg_d').value,new_type:$('#sg_t').value}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('บันทึกการตั้งค่าแล้ว');loadGroups().then(render)}})}
  else if(a=='transfer'){const gid=b.dataset.i,uid2=$('#tr_u').value;const p=PE.find(x=>x.code==uid2&&x.g==gid);
