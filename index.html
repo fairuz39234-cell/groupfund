@@ -763,10 +763,10 @@ $('#v').addEventListener('change',async e=>{
   newPath=AUSER.id+'/'+Date.now()+'.'+ext;
   const up=await SB.storage.from('avatars').upload(newPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
   if(up.error)throw up.error;
-  const saved=await SB.from('profiles').update({avatar_url:newPath,updated_at:new Date().toISOString()}).eq('id',AUSER.id).select('id').maybeSingle();
-  if(saved.error||!saved.data)throw saved.error||new Error('ไม่พบข้อมูลโปรไฟล์ของบัญชีนี้');
   const signed=await SB.storage.from('avatars').createSignedUrl(newPath,3600);
   if(signed.error)throw signed.error;
+  const saved=await SB.from('profiles').update({avatar_url:newPath,updated_at:new Date().toISOString()}).eq('id',AUSER.id).select('id').maybeSingle();
+  if(saved.error||!saved.data)throw saved.error||new Error('ไม่พบข้อมูลโปรไฟล์ของบัญชีนี้');
   AUSER.avatarPath=newPath;AUSER.avatarUrl=signed.data.signedUrl;
   if(oldPath&&oldPath!=newPath)await SB.storage.from('avatars').remove([oldPath]);
   toast('เปลี่ยนรูปโปรไฟล์เรียบร้อยแล้ว');render();
