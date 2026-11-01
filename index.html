@@ -84,6 +84,7 @@ aside{
 .mark{width:36px;height:36px;border-radius:11px;background:var(--pri);color:var(--pri-t);display:grid;place-items:center;font-weight:700;font-size:18px}
 .bn{font-weight:700;font-size:18px;letter-spacing:.01em}
 .bs{font-size:12px;color:var(--muted);line-height:1.25}
+.brand-copy{display:grid;gap:1px}
 .cap{padding:0 22px;margin-bottom:6px;font-size:12px;color:var(--muted);font-weight:600}
 .nav{position:relative;padding:0 10px}
 .nav button{
@@ -286,6 +287,8 @@ dialog>form>p{margin:0 0 16px;color:var(--muted);font-size:14px}
 #auth{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;overflow:auto;background:radial-gradient(60% 50% at 10% 0%,var(--soft),transparent 70%),var(--bg)}
 #auth[hidden]{display:none}
 #auth .panel{width:100%;max-width:400px;box-shadow:var(--sh)}
+#auth .auth-brand{padding:18px 22px 4px;gap:10px}
+#auth .auth-brand .mark{width:42px;height:42px;border-radius:13px}
 #auth form{display:grid;gap:12px}
 #auth .btn{width:100%}
 #alinks{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:12px}
@@ -358,7 +361,7 @@ dialog[open].closing::backdrop{animation:fadeout .2s ease forwards}
     position:fixed;z-index:15;left:10px;right:10px;top:auto;bottom:calc(10px + env(safe-area-inset-bottom,0px));
     height:auto;margin:0;padding:6px;border-radius:22px;flex-direction:row;gap:0;
   }
-  .brand,.cap,.who,.menu,.nav-hl{display:none}
+  #side>.brand,.cap,.who,.menu,.nav-hl{display:none}
   .nav{display:flex;gap:2px;padding:0;overflow-x:auto;scrollbar-width:none;width:100%}
   .nav::-webkit-scrollbar{display:none}
   .nav button{flex:0 0 auto;flex-direction:column;gap:2px;width:auto;min-width:72px;padding:7px 8px;margin:0;font-size:11px;text-align:center;white-space:nowrap}
@@ -496,6 +499,7 @@ tbody tr:hover{background:linear-gradient(100deg,var(--soft),var(--head))}
 
 /* Keep desktop navigation and profile on one calm, aligned row */
 @media(min-width:721px){
+ #side>.brand{order:0;flex:0 0 auto;padding:0 4px}
  #side{min-height:64px}
  #side>.side-nav{display:flex;align-items:center;min-height:46px}
  #side>.side-nav>.cap{display:none}
@@ -507,6 +511,7 @@ tbody tr:hover{background:linear-gradient(100deg,var(--soft),var(--head))}
 }
 @media(min-width:721px) and (max-width:1100px){
  #side{padding-top:6px;padding-bottom:6px}
+ #side>.brand{padding-left:0;padding-right:0}
  #side>.side-nav>#nav button{padding:7px 8px}
  .who-meta{max-width:85px}
  .who-role-value{max-width:78px;overflow:hidden;text-overflow:ellipsis}
@@ -523,6 +528,7 @@ tbody tr:hover{background:linear-gradient(100deg,var(--soft),var(--head))}
 <body>
 <div class="app">
 <aside id="side">
+<div class="brand" aria-label="GroupFund ระบบบริหารเงินกองกลาง"><span class="mark" aria-hidden="true">G</span><span class="brand-copy"><span class="bn">GroupFund</span><span class="bs">บริหารเงินกองกลาง</span></span></div>
 <div class="who" id="who"></div>
 <div class="side-nav"><div class="cap">เมนู</div><nav class="nav" id="nav"></nav></div>
 </aside>
@@ -531,7 +537,7 @@ tbody tr:hover{background:linear-gradient(100deg,var(--soft),var(--head))}
 <div class="mc"><div id="v"></div><div class="fn">สำหรับผู้ที่ยังไม่ได้เข้าสู่ระบบ หน้าจอนี้ใช้ข้อมูลตัวอย่าง · เมื่อลงชื่อเข้าใช้จะแสดงข้อมูลกลุ่มที่บัญชีของคุณมีสิทธิ์เข้าถึง</div></div>
 </main>
 </div>
-<div id="auth" hidden><div class="panel"><div class="ph"><div><h2 id="atitle"></h2><p id="asub"></p></div></div><div class="pb"><form id="aform" novalidate></form><p class="err" id="aerr" role="alert"></p><div id="alinks"></div></div></div></div>
+<div id="auth" hidden><div class="panel"><div class="brand auth-brand" aria-label="GroupFund ระบบบริหารเงินกองกลาง"><span class="mark" aria-hidden="true">G</span><span class="brand-copy"><span class="bn">GroupFund</span><span class="bs">บริหารเงินกองกลาง</span></span></div><div class="ph"><div><h2 id="atitle"></h2><p id="asub"></p></div></div><div class="pb"><form id="aform" novalidate></form><p class="err" id="aerr" role="alert"></p><div id="alinks"></div></div></div></div>
 <dialog id="d"></dialog>
 <div class="toast" id="t" role="status" hidden></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
