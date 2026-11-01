@@ -434,7 +434,11 @@ document.addEventListener('change',e=>{const s=e.target;
  if(s.id=='rg'){rgid=s.value;render();return}
  if(s.dataset&&s.dataset.a=='setrole'){SB.rpc('change_member_role',{gid:s.dataset.g,uid:s.dataset.i,new_role:s.value}).then(r=>{if(r.error){toast(aTh(r.error.message));loadFin().then(render)}else{toast('เปลี่ยนบทบาทแล้ว');loadFin().then(render)}})}});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-am]');if(b)return aShow(b.dataset.am);
- if(e.target.id=='logout'&&SB)SB.auth.signOut()});
+ const logout=e.target.closest&&e.target.closest('#logout');
+ if(logout&&SB){
+  if(!window.confirm('คุณต้องการออกจากระบบ GroupFund ใช่หรือไม่?'))return;
+  SB.auth.signOut().then(({error})=>{if(error)toast(aTh(error.message))});
+ }});
 document.getElementById('aform').addEventListener('submit',async e=>{e.preventDefault();
  if(!SB)return aMsg('โหลดไลบรารี Supabase ไม่สำเร็จ');
  const f=new FormData(e.target),em=(f.get('email')||'').trim().toLowerCase(),pw=f.get('password')||'',btn=e.target.querySelector('button[type=submit]');
