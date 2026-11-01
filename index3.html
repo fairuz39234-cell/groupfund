@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GroupFund ระบบบริหารเงินกองกลาง (ตัวอย่าง)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6f6;--panel:#fff;--ink:#1c2b2a;--muted:#5f7270;--line:#dde5e3;--pri:#0f5c54;--pri-d:#0a463f;--pri-t:#fff;--soft:#e6f1ee;--head:#f6f9f8;--hover:#f9fbfa;--ok:#176b4d;--okbg:#e3f3ec;--warn:#8a5a0b;--warnbg:#fbf0dc;--bad:#a82f2f;--badbg:#fbe9e9;--glass:rgba(255,255,255,.64);--glass2:rgba(255,255,255,.88);--gb:rgba(255,255,255,.8);--sh:0 0 0 1px rgba(15,70,62,.06),0 8px 28px rgba(15,70,62,.10);--bg1:#bfe3dc;--bg2:#d3e1f4;--bg3:#e1efd9;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1818;--panel:#152423;--ink:#e4eeed;--muted:#97aeab;--line:#274240;--pri:#4cc9b8;--pri-d:#7fdccf;--pri-t:#062b27;--soft:#173b37;--head:#1a2c2b;--hover:#1a2d2c;--ok:#5fd6a0;--okbg:#14382b;--warn:#f0bf62;--warnbg:#3b2f14;--bad:#f28b8b;--badbg:#401c1c;--glass:rgba(30,52,50,.55);--glass2:rgba(24,40,39,.88);--gb:rgba(255,255,255,.13);--sh:0 0 0 1px rgba(0,0,0,.2),0 8px 28px rgba(0,0,0,.4);--bg1:#10413d;--bg2:#13294a;--bg3:#173520;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1818;--panel:#152423;--ink:#e4eeed;--muted:#97aeab;--line:#274240;--pri:#4cc9b8;--pri-d:#7fdccf;--pri-t:#062b27;--soft:#173b37;--head:#1a2c2b;--hover:#1a2d2c;--ok:#5fd6a0;--okbg:#14382b;--warn:#f0bf62;--warnbg:#3b2f14;--bad:#f28b8b;--badbg:#401c1c;--glass:rgba(30,52,50,.55);--glass2:rgba(24,40,39,.88);--gb:rgba(255,255,255,.13);--sh:0 0 0 1px rgba(0,0,0,.2),0 8px 28px rgba(0,0,0,.4);--bg1:#10413d;--bg2:#13294a;--bg3:#173520;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,'Sarabun','Noto Sans Thai',system-ui,sans-serif;background:radial-gradient(60% 50% at 8% 6%,var(--bg1),transparent 70%),radial-gradient(55% 50% at 95% 12%,var(--bg2),transparent 70%),radial-gradient(60% 55% at 70% 100%,var(--bg3),transparent 70%),var(--bg);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--glass);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);z-index:10}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+.app{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh}
+aside{background:var(--panel);border-right:1px solid var(--line);padding:24px 0;display:flex;flex-direction:column;gap:24px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;align-self:start}
+.brand{display:flex;align-items:center;gap:10px;padding:0 20px}
+.mark{width:34px;height:34px;border-radius:4px;background:var(--pri);color:var(--pri-t);display:grid;place-items:center;font-weight:700;font-size:18px}
+.bn{font-weight:700;font-size:19px}.bs{font-size:12px;color:var(--muted);line-height:1.2}
+.cap{padding:0 20px;margin-bottom:6px;font-size:12px;color:var(--muted);font-weight:600}
+.nav button{display:flex;align-items:center;width:100%;border:0;border-left:3px solid transparent;background:none;padding:10px 20px 10px 17px;color:var(--muted);text-align:left;font-weight:500}
+.nav button:hover{background:var(--hover)}
+.nav button.active{background:var(--soft);border-left-color:var(--pri);color:var(--pri);font-weight:600}
+.pn{margin-left:auto;background:var(--warnbg);color:var(--warn);border-radius:4px;padding:0 7px;font-size:12px;font-weight:600}
+.pn[hidden]{display:none}
+.who{margin-top:auto;padding:16px 20px 0;border-top:1px solid var(--line);font-size:13px}
+.who b{display:block}.who span{color:var(--muted);font-size:12px}
+main{min-width:0}
+.topbar{height:64px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:16px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.crumb{color:var(--muted);font-size:13px}.tt{font-size:17px;font-weight:700;line-height:1.3}
+.menu{display:none;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:6px 12px}
+.right{color:var(--muted);font-size:13px;text-align:right}
+.mc{padding:28px 32px 40px;max-width:1400px;margin:auto}
+.welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px}
+h1{font-size:25px;font-weight:700;margin:0 0 4px;line-height:1.4}.welcome p{margin:0;color:var(--muted)}
+.btn{border:1px solid transparent;border-radius:6px;padding:8px 16px;font-weight:600;white-space:nowrap}
+.btn-primary{background:var(--pri);color:var(--pri-t)}.btn-primary:hover{background:var(--pri-d)}
+.btn-outline{background:var(--panel);border-color:var(--line)}.btn-danger{background:var(--panel);color:var(--bad);border-color:var(--bad)}
+.btn-sm{padding:3px 10px;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.stat,.panel,.gc{background:var(--panel);border:1px solid var(--line);border-radius:6px}
+.stat{padding:16px 18px}.sk{color:var(--muted);font-size:13px}.sv{font-size:25px;font-weight:700;margin:4px 0 2px}.sn{font-size:12px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:16px;margin-bottom:20px}
+.panel{min-width:0;overflow:hidden}.tp{margin-bottom:20px}
+.ph{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.ph h2{font-size:16px;margin:0}.ph p{margin:0;color:var(--muted);font-size:13px}
+.pb{padding:18px 20px}
+.link{border:0;background:none;color:var(--pri);font-weight:600;padding:4px}
+.chart{height:170px;display:flex;gap:12px;border-bottom:1px solid var(--line);background:repeating-linear-gradient(to bottom,transparent 0,transparent 41px,var(--line) 41px,var(--line) 42px)}
+.cc{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0}
+.bp{height:135px;display:flex;align-items:flex-end;gap:4px;justify-content:center;width:100%}
+.bar{width:14px;max-width:36%;border-radius:2px 2px 0 0;background:var(--pri)}.bar.e{background:#c9a24e}
+.cc small{font-size:12px;color:var(--muted)}
+.lg{display:flex;gap:18px;margin-top:12px;font-size:13px;color:var(--muted)}.lg i{display:inline-block;width:10px;height:10px;margin-right:6px;background:var(--pri)}.lg i.e{background:#c9a24e}
+.pi{margin-bottom:18px}.pi:last-child{margin-bottom:0}
+.pl{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}.pl span{color:var(--muted)}
+.track{height:8px;background:var(--line);border-radius:2px;overflow:hidden}.fill{height:100%;background:var(--pri)}
+.pm{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.search,select,.field input,.field select{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:7px 10px;outline:none}
+.search{min-width:200px}.search:focus,select:focus,.field input:focus{border-color:var(--pri)}
+.tw{overflow:auto}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th{text-align:left;font-size:13px;color:var(--muted);background:var(--head);font-weight:600;padding:10px 20px;white-space:nowrap}
+td{padding:11px 20px;border-top:1px solid var(--line);font-size:14px;white-space:nowrap}
+tbody tr:hover{background:var(--hover)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.tot td{font-weight:700;background:var(--head)}
+.sub{display:block;font-size:12px;color:var(--muted);white-space:normal}
+.empty{text-align:center;color:var(--muted);padding:24px}
+.badge{display:inline-block;padding:1px 9px;border-radius:4px;font-size:12px;font-weight:600}
+.paid{color:var(--ok);background:var(--okbg)}.pending{color:var(--warn);background:var(--warnbg)}.rejected{color:var(--bad);background:var(--badbg)}.neutral{color:var(--muted);background:var(--head);border:1px solid var(--line)}
+.ra{display:flex;gap:6px}
+.gcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.gc{padding:18px 20px}.gc h3{margin:0 0 2px;font-size:17px}.gc p{margin:0;color:var(--muted);font-size:13px}
+.ga{font-size:24px;font-weight:700;margin-top:14px}
+.notice{background:var(--soft);border-radius:6px;padding:12px 16px;font-size:14px;margin-bottom:16px}
+.fn{text-align:center;color:var(--muted);font-size:12px;padding:12px}
+dialog{border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);width:calc(100% - 32px);max-width:440px;padding:22px}
+dialog::backdrop{background:rgba(10,25,23,.45)}
+dialog h2{margin:0 0 4px;font-size:19px}dialog>form>p{margin:0 0 14px;color:var(--muted);font-size:14px}
+.field{display:grid;gap:4px;margin-bottom:12px}.field label{font-size:14px;font-weight:600}.field input,.field select{width:100%}
+.err{color:var(--bad);font-size:14px;min-height:1.2em;margin:4px 0 0}
+.acts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.toast{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:6px;font-size:14px}
+.toast[hidden]{display:none}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+@media(max-width:1100px){.app{grid-template-columns:210px minmax(0,1fr)}.mc{padding:22px}.topbar{padding:0 22px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.gcs{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}}
+@media(max-width:720px){.app{display:block}aside{position:fixed;z-index:15;left:-260px;top:0;bottom:0;width:244px;height:auto;padding-top:calc(24px + env(safe-area-inset-top,0px));transition:left .2s}aside.open{left:0}.menu{display:block}.topbar{padding:0 14px;height:60px}.right{display:none}.mc{padding:18px 14px 32px}.welcome{display:block}.welcome .btn{margin-top:12px;width:100%}.gcs{grid-template-columns:1fr}.search{flex:1;min-width:120px}.ph{padding:14px}.pb{padding:14px}.sv{font-size:21px}}
+
+aside,.topbar,.stat,.gc,.panel,.notice,dialog{background:var(--glass);border:1px solid var(--gb);box-shadow:var(--sh),inset 0 1px 0 var(--gb);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px)}
+dialog{background:var(--glass2);border-radius:26px}
+dialog::backdrop{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.panel.tp{background:var(--panel);-webkit-backdrop-filter:none;backdrop-filter:none}
+.stat,.gc,.panel,.notice{border-radius:20px}
+aside{margin:12px 0 12px 12px;border-radius:24px;height:calc(100vh - 24px);top:calc(env(safe-area-inset-top,0px) + 12px)}
+.topbar{margin:12px 16px 0;border-radius:20px;top:calc(env(safe-area-inset-top,0px) + 12px)}
+.mc{padding-top:20px}
+.mark{border-radius:10px}.cap{padding:0 22px}
+.nav{padding:0 10px}
+.nav button{border-left:0;border-radius:12px;padding:10px 12px;margin-bottom:2px}
+.nav button.active{background:var(--soft);box-shadow:inset 0 0 0 1px var(--gb)}
+.btn{border-radius:999px;padding:8px 18px}.btn-sm{padding:3px 12px}
+.btn-primary{box-shadow:0 2px 8px rgba(15,92,84,.28)}
+.btn-outline,.btn-danger,.menu{background:var(--glass2)}.menu{border-radius:999px}
+.badge,.pn{border-radius:999px;padding-left:10px;padding-right:10px}
+.search,select,.field input,.field select{border-radius:12px;background:var(--glass2)}.search{border-radius:999px;padding:7px 16px}
+.track,.fill{border-radius:999px}.bar{border-radius:6px 6px 0 0}
+.toast{background:var(--ink);color:var(--bg);border:0;border-radius:999px;-webkit-backdrop-filter:none;backdrop-filter:none}
+@media(max-width:720px){aside{margin:0;height:auto;top:0;border-radius:0 24px 24px 0}.topbar{margin:8px 10px 0;top:calc(env(safe-area-inset-top,0px) + 8px);border-radius:16px}.mc{padding-top:14px}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){aside,.topbar,.stat,.gc,.panel,.notice,dialog{background:var(--panel)}}
+@media (prefers-reduced-transparency:reduce){aside,.topbar,.stat,.gc,.panel,.notice,dialog{background:var(--panel);-webkit-backdrop-filter:none;backdrop-filter:none}}
+
+:root{--ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1)}
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.985)}}
+@keyframes grow{from{transform:scaleY(0)}}
+@keyframes fillgrow{from{transform:scaleX(0)}}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.92)}}
+@keyframes popout{to{opacity:0;transform:translateY(8px) scale(.96)}}
+@keyframes fade{from{opacity:0}}
+@keyframes fadeout{to{opacity:0}}
+@keyframes toastin{from{opacity:0;transform:translateY(14px) scale(.94)}}
+#v.anim .welcome,#v.anim .stat,#v.anim .gc,#v.anim .panel,#v.anim .notice{animation:rise .6s var(--ease) backwards;animation-delay:calc(var(--i,0)*60ms)}
+#v.anim .bar{transform-origin:bottom;animation:grow .9s var(--ease) backwards;animation-delay:calc(var(--d,0ms) + 250ms)}
+#v.anim .bar.e{animation-delay:calc(var(--d,0ms) + 330ms)}
+#v.anim .fill{transform-origin:left;animation:fillgrow 1s var(--ease) backwards;animation-delay:.3s}
+.btn,.nav button,.menu,.link{transition:transform .25s var(--spring),background-color .2s,box-shadow .25s,color .2s}
+.stat,.gc{transition:transform .35s var(--spring),box-shadow .35s}
+tbody tr{transition:background-color .15s}
+.search,select,.field input,.field select{transition:border-color .2s,box-shadow .2s}
+.search:focus,select:focus,.field input:focus{box-shadow:0 0 0 4px rgba(15,92,84,.14)}
+@media(hover:hover){.btn:hover{transform:translateY(-1px)}.btn-primary:hover{box-shadow:0 6px 16px rgba(15,92,84,.32)}.stat:hover,.gc:hover{transform:translateY(-3px)}.nav button:hover{transform:translateX(2px)}}
+.btn:active,.nav button:active,.menu:active{transform:scale(.95)}
+dialog[open]{animation:pop .45s var(--spring) backwards}
+dialog[open]::backdrop{animation:fade .3s ease backwards}
+dialog[open].closing{animation:popout .2s ease forwards}
+dialog[open].closing::backdrop{animation:fadeout .2s ease forwards}
+.toast:not([hidden]){animation:toastin .45s var(--spring) backwards}
+@media(max-width:720px){aside{transition:left .4s var(--ease)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-delay:0s!important;transition-duration:.001ms!important}}
+
+.seg{display:flex;background:var(--head);border-radius:999px;padding:3px;border:1px solid var(--line)}
+.seg button{flex:1;border:0;background:none;border-radius:999px;padding:5px 4px;font-size:13px;color:var(--muted);transition:background-color .25s,color .25s,box-shadow .25s}
+.seg button.on{background:var(--panel);color:var(--pri);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.field input[type=file]{padding:6px}
+
+.chart{--dp:8px}
+.bp{gap:16px}
+.bar{position:relative;width:20px;max-width:34%;border-radius:1px 1px 0 0;background-color:var(--pri);background-image:linear-gradient(90deg,rgba(255,255,255,.24),rgba(255,255,255,0) 55%,rgba(0,0,0,.1));filter:drop-shadow(3px 4px 3px rgba(0,0,0,.18))}
+.bar.e{background-color:#c9a24e;background-image:linear-gradient(90deg,rgba(255,255,255,.24),rgba(255,255,255,0) 55%,rgba(0,0,0,.1))}
+.bar::before,.bar::after{content:"";position:absolute;background:inherit}
+.bar::before{top:0;right:calc(var(--dp)*-1);width:var(--dp);height:100%;transform-origin:left top;transform:skewY(-45deg);filter:brightness(.72)}
+.bar::after{left:0;top:calc(var(--dp)*-1);width:100%;height:var(--dp);transform-origin:left bottom;transform:skewX(-45deg);filter:brightness(1.18)}
+@media(max-width:720px){.chart{--dp:6px}.bp{gap:12px}.bar{width:12px}}
+
+body{font-family:-apple-system,BlinkMacSystemFont,'Sarabun','Noto Sans Thai',system-ui,sans-serif}
+.mono{font-family:inherit;font-size:inherit}
+.ic{width:20px;height:20px;flex:none}
+.nav button{gap:12px}
+dialog{max-height:calc(100vh - 32px);overflow:auto}
+@media(pointer:coarse){.btn{min-height:40px}.btn-sm{min-height:36px}.nav button{min-height:46px}.search,select,.field input,.field select{min-height:42px}}
+@media(max-width:720px){
+input,select{font-size:16px}
+table{min-width:0}
+table,thead,tbody,tr,td{display:block;width:100%}
+thead{position:absolute;left:-9999px}
+tbody tr{padding:12px 16px;border-top:1px solid var(--line)}
+tbody tr:first-child{border-top:0}
+td{border:0;padding:3px 0;display:flex;justify-content:space-between;gap:16px;white-space:normal;text-align:right}
+td:empty{display:none}
+td::before{content:attr(data-label);color:var(--muted);font-size:13px;text-align:left;flex:none}
+td:first-child{justify-content:flex-start;text-align:left;font-weight:600}
+td:first-child::before,td.empty::before{content:none}
+td.empty{display:block;text-align:center;font-weight:400}
+.ra{justify-content:flex-end}
+}
+
+:root{--bg:#eef4ff;--panel:#fff;--ink:#0f2347;--muted:#566a8f;--line:#d3dff4;--pri:#1f5fd6;--pri-d:#1648b0;--pri-t:#fff;--soft:#e0ebff;--head:#f2f6ff;--hover:#f6f9ff;--glass:rgba(255,255,255,.62);--glass2:rgba(255,255,255,.9);--gb:rgba(255,255,255,.8);--sh:0 0 0 1px rgba(20,60,150,.07),0 8px 28px rgba(20,60,150,.12);--bg1:#9ec4ff;--bg2:#b4e0ff;--bg3:#c9cdff;--bgA:#eaf2ff;--bgB:#cfe1ff;--grad:linear-gradient(135deg,#2c78e6,#1f5fd6 55%,#1736a6);--gradSoft:linear-gradient(135deg,rgba(78,166,255,.28),rgba(31,95,214,.14));--glA:rgba(255,255,255,.78);--glB:rgba(205,225,255,.5)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1228;--panel:#101c3a;--ink:#e6eeff;--muted:#9db0d6;--line:#243459;--pri:#5aa2ff;--pri-d:#8dbdff;--pri-t:#04122e;--soft:#16305f;--head:#142347;--hover:#16264d;--glass:rgba(22,40,84,.55);--glass2:rgba(16,30,66,.9);--gb:rgba(255,255,255,.13);--sh:0 0 0 1px rgba(0,0,0,.25),0 8px 28px rgba(0,0,0,.45);--bg1:#14367a;--bg2:#0f3f70;--bg3:#232d78;--bgA:#091227;--bgB:#0d2250;--grad:linear-gradient(135deg,#6db4ff,#3a78e8 55%,#2447b8);--gradSoft:linear-gradient(135deg,rgba(109,180,255,.3),rgba(58,120,232,.18));--glA:rgba(28,48,100,.62);--glB:rgba(14,28,66,.55)}}
+:root[data-theme="dark"]{--bg:#0a1228;--panel:#101c3a;--ink:#e6eeff;--muted:#9db0d6;--line:#243459;--pri:#5aa2ff;--pri-d:#8dbdff;--pri-t:#04122e;--soft:#16305f;--head:#142347;--hover:#16264d;--glass:rgba(22,40,84,.55);--glass2:rgba(16,30,66,.9);--gb:rgba(255,255,255,.13);--sh:0 0 0 1px rgba(0,0,0,.25),0 8px 28px rgba(0,0,0,.45);--bg1:#14367a;--bg2:#0f3f70;--bg3:#232d78;--bgA:#091227;--bgB:#0d2250;--grad:linear-gradient(135deg,#6db4ff,#3a78e8 55%,#2447b8);--gradSoft:linear-gradient(135deg,rgba(109,180,255,.3),rgba(58,120,232,.18));--glA:rgba(28,48,100,.62);--glB:rgba(14,28,66,.55)}
+body{background:radial-gradient(60% 50% at 8% 6%,var(--bg1),transparent 70%),radial-gradient(55% 50% at 95% 12%,var(--bg2),transparent 70%),radial-gradient(60% 55% at 70% 100%,var(--bg3),transparent 70%),linear-gradient(160deg,var(--bgA),var(--bgB));background-attachment:fixed}
+aside,.topbar,.stat,.gc,.panel,.notice{background:linear-gradient(160deg,var(--glA),var(--glB))}
+.panel.tp{background:var(--panel)}
+h1{background:linear-gradient(90deg,var(--ink),var(--pri));-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn-primary{background:var(--grad);border-color:transparent;box-shadow:0 2px 10px rgba(31,95,214,.32)}
+.btn-primary:hover{background:var(--grad);filter:brightness(1.07);box-shadow:0 6px 18px rgba(31,95,214,.38)}
+.mark{background:var(--grad)}
+.nav button.active{background:var(--gradSoft)}
+.fill{background:var(--grad)}
+.search:focus,select:focus,.field input:focus{box-shadow:0 0 0 4px rgba(31,95,214,.16)}
+.bar.e{background-color:#4fb3f6}.lg i.e{background:#4fb3f6}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){aside,.topbar,.stat,.gc,.panel,.notice{background:var(--panel)}}
+@media (prefers-reduced-transparency:reduce){aside,.topbar,.stat,.gc,.panel,.notice{background:var(--panel);-webkit-backdrop-filter:none;backdrop-filter:none}}
+.chart[hidden],.c3[hidden]{display:none}
+.c-seg button{padding:5px 14px;flex:none}
+.c3{position:relative;height:300px;border-bottom:1px solid var(--line);border-radius:12px}
+.c3 canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.c3 canvas:active{cursor:grabbing}
+.c3bar{position:absolute;left:8px;top:8px;display:flex;gap:6px;flex-wrap:wrap;z-index:2}
+.c3bar button{border:1px solid var(--gb);background:var(--glass2);color:var(--ink);border-radius:999px;padding:3px 12px;font-size:12px;transition:background-color .2s,color .2s}
+.c3bar button[aria-pressed=true]{background:var(--pri);color:var(--pri-t);border-color:var(--pri)}
+.c3hint{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:12px;color:var(--muted);pointer-events:none}
+.c3tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:8px;padding:5px 10px;font-size:13px;white-space:nowrap;z-index:3}
+.c3tip[hidden]{display:none}
+@media(max-width:720px){.c3{height:270px}.c-seg button{padding:5px 10px}}
+:root{--bg:#000;--panel:#141414;--ink:#fff;--muted:#b3b3b3;--line:#2b2b2b;--pri:#e50914;--pri-d:#b20710;--pri-t:#fff;--soft:rgba(229,9,20,.16);--head:#1c1c1c;--hover:#1f1f1f;--glass:rgba(20,20,20,.72);--glass2:rgba(24,24,24,.94);--gb:rgba(255,255,255,.12);--sh:0 0 0 1px rgba(255,255,255,.06),0 10px 30px rgba(0,0,0,.6);--bg1:#3a0508;--bg2:#1a1a1a;--bg3:#2a0306;--bgA:#000;--bgB:#0b0b0b;--grad:linear-gradient(135deg,#f6121d,#e50914 55%,#a10610);--gradSoft:linear-gradient(135deg,rgba(229,9,20,.38),rgba(229,9,20,.14));--glA:rgba(26,26,26,.82);--glB:rgba(14,14,14,.82);--ok:#46d369;--okbg:rgba(70,211,105,.14);--warn:#f5c518;--warnbg:rgba(245,197,24,.14);--bad:#ff8a8a;--badbg:rgba(255,120,120,.14);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--panel:#141414;--ink:#fff;--muted:#b3b3b3;--line:#2b2b2b;--pri:#e50914;--pri-d:#b20710;--pri-t:#fff;--soft:rgba(229,9,20,.16);--head:#1c1c1c;--hover:#1f1f1f;--glass:rgba(20,20,20,.72);--glass2:rgba(24,24,24,.94);--gb:rgba(255,255,255,.12);--sh:0 0 0 1px rgba(255,255,255,.06),0 10px 30px rgba(0,0,0,.6);--bg1:#3a0508;--bg2:#1a1a1a;--bg3:#2a0306;--bgA:#000;--bgB:#0b0b0b;--grad:linear-gradient(135deg,#f6121d,#e50914 55%,#a10610);--gradSoft:linear-gradient(135deg,rgba(229,9,20,.38),rgba(229,9,20,.14));--glA:rgba(26,26,26,.82);--glB:rgba(14,14,14,.82);--ok:#46d369;--okbg:rgba(70,211,105,.14);--warn:#f5c518;--warnbg:rgba(245,197,24,.14);--bad:#ff8a8a;--badbg:rgba(255,120,120,.14);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#000;--panel:#141414;--ink:#fff;--muted:#b3b3b3;--line:#2b2b2b;--pri:#e50914;--pri-d:#b20710;--pri-t:#fff;--soft:rgba(229,9,20,.16);--head:#1c1c1c;--hover:#1f1f1f;--glass:rgba(20,20,20,.72);--glass2:rgba(24,24,24,.94);--gb:rgba(255,255,255,.12);--sh:0 0 0 1px rgba(255,255,255,.06),0 10px 30px rgba(0,0,0,.6);--bg1:#3a0508;--bg2:#1a1a1a;--bg3:#2a0306;--bgA:#000;--bgB:#0b0b0b;--grad:linear-gradient(135deg,#f6121d,#e50914 55%,#a10610);--gradSoft:linear-gradient(135deg,rgba(229,9,20,.38),rgba(229,9,20,.14));--glA:rgba(26,26,26,.82);--glB:rgba(14,14,14,.82);--ok:#46d369;--okbg:rgba(70,211,105,.14);--warn:#f5c518;--warnbg:rgba(245,197,24,.14);--bad:#ff8a8a;--badbg:rgba(255,120,120,.14);color-scheme:dark}
+h1{background:none;color:#fff}
+.bn{color:var(--pri);font-weight:800;letter-spacing:.02em}
+.link{color:#ff6b72}
+.badge{border:1px solid currentColor}
+dialog::backdrop{background:rgba(0,0,0,.68)}
+.btn-primary{box-shadow:0 2px 12px rgba(229,9,20,.35)}
+.btn-primary:hover{box-shadow:0 6px 20px rgba(229,9,20,.5)}
+.search:focus,select:focus,.field input:focus{box-shadow:0 0 0 4px rgba(229,9,20,.22)}
+.seg button.on{background:var(--grad);color:#fff;box-shadow:0 0 14px rgba(229,9,20,.4)}
+.bar{filter:drop-shadow(0 0 6px rgba(229,9,20,.4))}
+.bar.e{background-color:#d9d9d9;filter:drop-shadow(0 0 5px rgba(255,255,255,.2))}
+.lg i.e{background:#d9d9d9}
+.nav{position:relative}
+.nav button{position:relative;z-index:1}
+.nav button.active{background:transparent;color:#fff}
+.nav-hl{position:absolute;left:10px;right:10px;top:0;height:0;opacity:0;border-radius:12px;background:var(--gradSoft);box-shadow:inset 0 0 0 1px rgba(229,9,20,.5),0 0 20px rgba(229,9,20,.3);transition:transform .42s cubic-bezier(.34,1.3,.5,1),height .3s,opacity .3s;pointer-events:none}
+.nav-hl::before{content:"";position:absolute;left:0;top:22%;bottom:22%;width:3px;border-radius:3px;background:var(--pri);box-shadow:0 0 10px var(--pri)}
+@keyframes ibounce{0%{transform:scale(.55) rotate(-14deg)}60%{transform:scale(1.18) rotate(4deg)}100%{transform:none}}
+.nav button.active .ic{color:#ff4d57;animation:ibounce .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(229,9,20,.7),0 0 0 rgba(229,9,20,0)}100%{box-shadow:0 0 0 14px rgba(229,9,20,0),0 0 30px rgba(229,9,20,0)}}
+.pulse{animation:glow .65s ease-out!important}
+.btn:active{box-shadow:0 0 0 3px rgba(229,9,20,.4),0 0 24px rgba(229,9,20,.6)}
+.stat:hover,.gc:hover{box-shadow:var(--sh),0 0 0 1px rgba(229,9,20,.4),0 8px 28px rgba(229,9,20,.2)}
+.stat:active,.gc:active{box-shadow:var(--sh),0 0 0 1px rgba(229,9,20,.7),0 0 28px rgba(229,9,20,.4)}
+
+#invlink{font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.pb .toolbar .btn{flex:none}
+
+:root{--spring:cubic-bezier(.22,1,.36,1)}
+table{min-width:0;table-layout:auto}
+th,td{padding:10px 12px;white-space:normal;vertical-align:middle}
+td.num,th.num,.badge{white-space:nowrap}
+.ra{flex-wrap:wrap}
+tbody tr:hover{box-shadow:inset 3px 0 0 var(--pri)}
+@media(max-width:1100px){table{font-size:13px}th,td{padding:9px 8px}}
+@media(max-width:900px){table{min-width:0}
+table,thead,tbody,tr,td{display:block;width:100%}
+thead{position:absolute;left:-9999px}
+tbody tr{padding:12px 16px;border-top:1px solid var(--line)}
+tbody tr:first-child{border-top:0}
+td{border:0;padding:3px 0;display:flex;justify-content:space-between;gap:16px;white-space:normal;text-align:right}
+td:empty{display:none}
+td::before{content:attr(data-label);color:var(--muted);font-size:13px;text-align:left;flex:none}
+td:first-child{justify-content:flex-start;text-align:left;font-weight:600}
+td:first-child::before,td.empty::before{content:none}
+td.empty{display:block;text-align:center;font-weight:400}
+td .sub{text-align:right}
+td:first-child .sub{text-align:left}
+.ra{justify-content:flex-end}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(229,9,20,.32)}100%{box-shadow:0 0 0 8px rgba(229,9,20,0)}}
+@keyframes ibounce{0%{transform:scale(.8)}100%{transform:none}}
+#v.anim .welcome,#v.anim .stat,#v.anim .gc,#v.anim .panel,#v.anim .notice{animation:rise .45s var(--ease) backwards;animation-delay:calc(var(--i,0)*45ms)}
+.pulse{animation:glow .5s ease-out!important}
+.btn:active{box-shadow:0 0 0 2px rgba(229,9,20,.25),0 0 12px rgba(229,9,20,.3)}
+.stat:hover,.gc:hover{box-shadow:var(--sh),0 0 0 1px rgba(229,9,20,.25),0 6px 20px rgba(229,9,20,.1)}
+.stat:hover,.gc:hover{transform:translateY(-2px)}
+.nav-hl{transition:transform .38s cubic-bezier(.22,1,.36,1),height .25s,opacity .25s}
+.lc{display:flex;gap:8px;height:190px}
+.ly{display:flex;flex-direction:column;justify-content:space-between;font-size:11px;color:var(--muted);text-align:right;min-width:44px;line-height:1}
+.lp{position:relative;flex:1;background:linear-gradient(var(--line),var(--line)) 0 0/100% 1px no-repeat,linear-gradient(var(--line),var(--line)) 0 50%/100% 1px no-repeat,linear-gradient(var(--line),var(--line)) 0 100%/100% 1px no-repeat}
+.lsvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.lx{position:relative;height:20px;margin:6px 0 0 52px}
+.lx span{position:absolute;transform:translateX(-50%);font-size:12px;color:var(--muted)}
+.dot{position:absolute;width:12px;height:12px;transform:translate(-50%,50%);border-radius:50%;background:var(--panel);border:2px solid var(--pri);cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s}
+.dot:hover,.dot:focus{transform:translate(-50%,50%) scale(1.3);box-shadow:0 0 0 5px rgba(229,9,20,.2);outline:none}
+.dot::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);background:var(--ink);color:var(--bg);padding:3px 9px;border-radius:7px;font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s}
+.dot:hover::after,.dot:focus::after{opacity:1;transform:translateX(-50%) translateY(0)}
+.dot.r::after{left:auto;right:-6px;transform:translateY(4px)}
+.dot.r:hover::after,.dot.r:focus::after{transform:none}
+.dn{position:relative;width:170px;height:170px;margin:0 auto}
+.dn svg{width:100%;height:100%;overflow:visible}
+.dseg{transition:stroke-width .2s}.dseg:hover{stroke-width:6}
+.dnc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center}
+.dnc b{font-size:26px;line-height:1.2}.dnc span{font-size:12px;color:var(--muted);max-width:100px}
+.dl{display:grid;gap:6px;margin-top:16px;font-size:14px}
+.dl div{display:flex;align-items:center;gap:8px}.dl i{width:10px;height:10px;border-radius:3px}.dl b{margin-left:auto}
+.lg2{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin-bottom:14px}
+.lg2 i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.sbr{margin-bottom:16px}.sbr:last-child{margin-bottom:0}
+.sbh{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px}
+.sb{display:flex;gap:2px;height:16px;border-radius:8px;overflow:hidden;background:var(--line);max-width:100%;margin-bottom:4px}
+.sb i{display:block;min-width:3px;transition:filter .2s}.sb i:hover{filter:brightness(1.2)}
+.s-p{background:var(--ok)}.s-w{background:var(--warn)}.s-o{background:var(--pri)}
+@keyframes reveal{from{clip-path:inset(0 100% 0 0)}}
+@keyframes dgrow{from{stroke-dasharray:0 100}}
+@keyframes dotin{from{opacity:0;transform:translate(-50%,50%) scale(.3)}}
+#v.anim .lsvg{animation:reveal 1.1s var(--ease) .15s backwards}
+#v.anim .dot{animation:dotin .4s var(--ease) 1s backwards}
+#v.anim .dseg{animation:dgrow .9s var(--ease) .2s backwards}
+#v.anim .sb i{transform-origin:left;animation:fillgrow .8s var(--ease) .2s backwards}
+@media(max-width:720px){.lc{height:170px}.ly{min-width:38px}.lx{margin-left:46px}.dn{width:150px;height:150px}}
+
+#auth{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--bg);padding:16px;overflow:auto}
+#auth[hidden]{display:none}
+#auth .panel{width:100%;max-width:400px}
+#auth form{display:grid;gap:12px}
+#auth .btn{width:100%}
+#alinks{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="app">
+<aside id="side">
+<div class="brand"><div class="mark">G</div><div><div class="bn">GroupFund</div><div class="bs">ระบบบริหารเงินกองกลาง</div></div></div>
+<div><div class="cap">เมนู</div><nav class="nav" id="nav"></nav></div>
+<div class="who" id="who"></div>
+</aside>
+<main>
+<header class="topbar"><div style="display:flex;align-items:center;gap:12px"><button class="menu" id="menu">เมนู</button><div><div class="crumb" id="crumb"></div><div class="tt" id="tt"></div></div></div><div class="right" id="today"></div></header>
+<div class="mc"><div id="v"></div><div class="fn">ระบบสมัครสมาชิกและเข้าสู่ระบบเชื่อมกับ Supabase แล้ว แต่ข้อมูลในทุกหน้ายังเป็นข้อมูลสมมติ ยังไม่เชื่อมต่อฐานข้อมูลจริง ข้อมูลจะกลับเป็นค่าเริ่มต้นเมื่อโหลดหน้าใหม่</div></div>
+</main>
+</div>
+<div id="auth" hidden><div class="panel"><div class="ph"><div><h2 id="atitle"></h2><p id="asub"></p></div></div><div class="pb"><form id="aform" novalidate></form><p class="err" id="aerr" role="alert"></p><div id="alinks"></div></div></div></div>
+<dialog id="d"></dialog>
+<div class="toast" id="t" role="status" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const SB_URL='https://tzqmfcgmwwqfentmypdc.supabase.co',SB_KEY='sb_publishable__dBhm2LuZQxJcpPQ69n1xw_ZCTz3wAe';
+let SB=null,AUSER=null,amode='in',arecovery=false;
+try{SB=window.supabase.createClient(SB_URL,SB_KEY)}catch(e){}
+const AE=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const AF=(n,l,t,x)=>'<div class="field"><label for="a_'+n+'">'+l+'</label><input id="a_'+n+'" name="'+n+'" type="'+t+'" '+(x||'')+'></div>';
+const AMODES={
+ in:{t:'เข้าสู่ระบบ',s:'ใช้บัญชี GroupFund ของคุณ',b:'เข้าสู่ระบบ',h:AF('email','อีเมล','email','autocomplete="email" required')+AF('password','รหัสผ่าน','password','autocomplete="current-password" required'),l:[['up','สมัครสมาชิก'],['fg','ลืมรหัสผ่าน']]},
+ up:{t:'สมัครสมาชิก',s:'สร้างบัญชีใหม่',b:'สมัครสมาชิก',h:AF('name','ชื่อ-นามสกุล','text','autocomplete="name" maxlength="100" required')+AF('email','อีเมล','email','autocomplete="email" required')+AF('password','รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)','password','autocomplete="new-password" minlength="8" required'),l:[['in','มีบัญชีแล้ว เข้าสู่ระบบ']]},
+ fg:{t:'ลืมรหัสผ่าน',s:'ระบบจะส่งลิงก์รีเซ็ตรหัสผ่านไปที่อีเมล',b:'ส่งลิงก์รีเซ็ต',h:AF('email','อีเมล','email','autocomplete="email" required'),l:[['in','กลับไปเข้าสู่ระบบ']]},
+ rs:{t:'ตั้งรหัสผ่านใหม่',s:'กรอกรหัสผ่านใหม่ของคุณ',b:'บันทึกรหัสผ่าน',h:AF('password','รหัสผ่านใหม่ (อย่างน้อย 8 ตัวอักษร)','password','autocomplete="new-password" minlength="8" required'),l:[]}
+};
+function aMsg(m,ok){const e=document.getElementById('aerr');e.textContent=m||'';e.style.color=ok?'var(--ok)':''}
+function aTh(m){m=String(m||'');
+ if(/Invalid login/i.test(m))return 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+ if(/already registered/i.test(m))return 'อีเมลนี้สมัครสมาชิกแล้ว';
+ if(/not confirmed/i.test(m))return 'ยังไม่ได้ยืนยันอีเมล กรุณาตรวจกล่องจดหมาย';
+ if(/at least|weak|short/i.test(m))return 'รหัสผ่านไม่ปลอดภัยพอ ลองใช้ให้ยาวและคาดเดายากขึ้น';
+ if(/rate limit|too many/i.test(m))return 'ลองบ่อยเกินไป กรุณารอสักครู่แล้วลองใหม่';
+ if(/Failed to fetch|network/i.test(m))return 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจอินเทอร์เน็ตและที่อยู่เว็บที่โฮสต์';
+ return 'เกิดข้อผิดพลาด: '+m}
+function aShow(mode){amode=mode;const d=AMODES[mode],g=id=>document.getElementById(id);
+ g('atitle').textContent=d.t;g('asub').textContent=d.s;aMsg('');
+ g('aform').innerHTML=d.h+'<button class="btn btn-primary" type="submit">'+d.b+'</button>';
+ g('alinks').innerHTML=d.l.map(x=>'<button type="button" class="link" data-am="'+x[0]+'">'+x[1]+'</button>').join('');
+ const f=g('aform').querySelector('input');if(f)f.focus()}
+function clearFin(){M.length=0;R.length=0;PE.length=0;L.length=0;AU.length=0}
+async function loadFin(){
+ if(!SB||!AUSER||!G.length){clearFin();return}
+ me=AUSER.id;
+ const [mem,req,it,pay,tx,aud,lk,jq,ic]=await Promise.all([
+  SB.from('group_members').select('group_id,user_id,role,status,profiles(full_name)'),
+  SB.from('collection_requests').select('id,group_id,title,amount,due_date').order('created_at'),
+  SB.from('collection_items').select('id,collection_request_id,user_id,amount_due,status,profiles(full_name)'),
+  SB.from('payments').select('id,collection_item_id,status,created_at').order('created_at'),
+  SB.from('transactions').select('id,group_id,transaction_type,amount,description,reference_id,created_at').order('created_at'),
+  SB.from('audit_logs').select('id,action,metadata,created_at,profiles(full_name)').order('created_at',{ascending:false}).limit(300),
+  SB.from('group_invite_links').select('group_id,token').is('revoked_at',null),
+  SB.from('join_requests').select('id,group_id,user_id,created_at,profiles(full_name)').eq('status','pending').order('created_at'),
+  SB.from('group_invite_codes').select('group_id,code,expires_at,max_uses,uses').is('revoked_at',null)]);
+ const bad=[mem,req,it,pay,tx,aud,lk,jq,ic].find(x=>x.error);
+ if(bad){toast(aTh(bad.error.message));return}
+ PE.length=0;mem.data.forEach(x=>PE.push({code:x.user_id,name:(x.profiles&&x.profiles.full_name)||'สมาชิก',g:x.group_id,role:x.role,status:x.status}));
+ const mine=PE.filter(p=>p.code==AUSER.id).map(p=>p.role);role=mine.some(r=>r=='owner'||r=='admin')?'admin':mine.includes('treasurer')?'treasurer':'member';
+ R.length=0;req.data.forEach(x=>R.push({id:x.id,g:x.group_id,title:x.title,amt:x.amount,due:x.due_date}));
+ const pm={};pay.data.forEach(p=>pm[p.collection_item_id]=p);
+ M.length=0;it.data.forEach(x=>{const q=R.find(r=>r.id==x.collection_request_id),p=pm[x.id];
+  M.push({id:x.id,code:x.user_id,name:(x.profiles&&x.profiles.full_name)||'สมาชิก',g:q?q.g:null,amt:x.amount_due,s:x.status,sub:p?p.created_at.slice(0,10):'',how:p?'โอน':'',reason:'',r:x.collection_request_id,h:p?[{date:p.created_at.slice(0,10),how:'โอน',s:p.status==='approved'?'paid':p.status}]:[],pid:p?p.id:null})});
+ G.forEach(g=>{const k=(lk.data||[]).find(x=>x.group_id==g.id);g.inv=k?k.token:'';const c=(ic.data||[]).find(x=>x.group_id==g.id);g.code=c?c.code:'';g.codeExp=c?c.expires_at:'';g.codeMax=c?c.max_uses:null;g.codeUses=c?c.uses:0});
+JR.length=0;jq.data.forEach(x=>JR.push({id:x.id,g:x.group_id,name:(x.profiles&&x.profiles.full_name)||'สมาชิก',ts:x.created_at,uid:x.user_id}));
+AU.length=0;aud.data.forEach(x=>{const md=x.metadata||{};const pm=md.payment_method;
+  const labels={INSERT_groups:'สร้างกลุ่ม',UPDATE_groups:'แก้ไขข้อมูลกลุ่ม',DELETE_groups:'ลบกลุ่ม',INSERT_group_members:'เพิ่มสมาชิก',UPDATE_group_members:'เปลี่ยนบทบาทสมาชิก',DELETE_group_members:'นำสมาชิกออกจากกลุ่ม',INSERT_collection_requests:'สร้างรายการเรียกเก็บ',DELETE_collection_requests:'ลบรายการเรียกเก็บ',INSERT_transactions:'บันทึกรายการเงิน'};
+  let act=labels[x.action]||x.action;
+  if(x.action=='INSERT_payments')act=pm=='cash'?'บันทึกเงินสด':'ส่งหลักฐานการชำระ';
+  if(x.action=='UPDATE_payments')act=md.status=='approved'?'อนุมัติการชำระ':md.status=='rejected'?'ปฏิเสธหลักฐาน':'อัปเดตการชำระ';
+  const detail=[md.title||md.description||'',md.amount!=null?money(md.amount):'',md.role?'บทบาท: '+md.role:''].filter(Boolean).join(' ');
+  AU.push({id:x.id,ts:x.created_at,who:(x.profiles&&x.profiles.full_name)||'ระบบ',act,detail})});
+L.length=0;tx.data.forEach(x=>L.push({id:x.id,date:x.created_at.slice(0,10),g:x.group_id,type:x.transaction_type,detail:x.description||'',amt:x.amount,ref:x.reference_id,by:'ระบบ'}));
+if(typeof buildNav=='function')buildNav();
+}
+let pendingTok=null;
+let rgid=null;
+let PLAT=false,PG=[];
+async function loadPlat(){
+ if(!SB||!AUSER){PLAT=false;PG=[];return}
+ const p=await SB.rpc('is_platform_admin');PLAT=!!p.data;PG=[];
+ if(PLAT){const l=await SB.rpc('admin_list_groups');PG=l.data||[]}
+}
+async function joinByToken(){
+ if(!pendingTok||!SB||!AUSER)return;
+ const tok=pendingTok;pendingTok=null;
+ history.replaceState(null,'',location.pathname);
+ const r=await SB.rpc('request_join',{tok});
+ if(r.error){toast(aTh(r.error.message));return}
+ toast('ส่งคำขอเข้าร่วมแล้ว รอผู้ดูแลอนุมัติ');
+}
+async function loadGroups(){G=[];if(!SB||!AUSER)return;
+ const r=await SB.from('groups').select('id,name,description,group_type').order('created_at');
+ if(r.error){toast(aTh(r.error.message));return}
+ G=(r.data||[]).map(g=>({id:g.id,name:g.name,desc:g.description||'-',type:g.group_type||'other',inv:'—'}));await loadFin();await loadPlat();}
+function authApply(){const a=document.getElementById('auth');if(!a)return;
+ a.hidden=!!AUSER&&!arecovery;
+ if(!a.hidden&&!document.getElementById('aform').children.length)aShow(arecovery?'rs':'in');
+ if(!AUSER){G=[];clearFin();PLAT=false;PG=[]}
+ if(AUSER&&SB&&!arecovery)loadGroups().then(()=>{joinByToken();if(window.__appReady)render()});
+ else if(window.__appReady&&typeof render=='function')render()}
+document.addEventListener('change',e=>{const s=e.target;
+ if(s.id=='rg'){rgid=s.value;render();return}
+ if(s.dataset&&s.dataset.a=='setrole'){SB.rpc('change_member_role',{gid:s.dataset.g,uid:s.dataset.i,new_role:s.value}).then(r=>{if(r.error){toast(aTh(r.error.message));loadFin().then(render)}else{toast('เปลี่ยนบทบาทแล้ว');loadFin().then(render)}})}});
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-am]');if(b)return aShow(b.dataset.am);
+ if(e.target.id=='logout'&&SB)SB.auth.signOut()});
+document.getElementById('aform').addEventListener('submit',async e=>{e.preventDefault();
+ if(!SB)return aMsg('โหลดไลบรารี Supabase ไม่สำเร็จ');
+ const f=new FormData(e.target),em=(f.get('email')||'').trim().toLowerCase(),pw=f.get('password')||'',btn=e.target.querySelector('button[type=submit]');
+ if(amode!='rs'&&!em)return aMsg('กรุณากรอกอีเมล');
+ if(amode!='fg'&&!pw)return aMsg('กรุณากรอกรหัสผ่าน');
+ if((amode=='up'||amode=='rs')&&pw.length<8)return aMsg('รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร');
+ if(amode=='up'&&!(f.get('name')||'').trim())return aMsg('กรุณากรอกชื่อ-นามสกุล');
+ btn.disabled=true;aMsg('กำลังดำเนินการ...',true);
+ try{let r;
+  if(amode=='in')r=await SB.auth.signInWithPassword({email:em,password:pw});
+  else if(amode=='up'){r=await SB.auth.signUp({email:em,password:pw,options:{data:{full_name:f.get('name').trim()},emailRedirectTo:location.origin+location.pathname}});
+   if(!r.error&&!r.data.session){aMsg('สมัครสำเร็จ กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ',true);btn.disabled=false;return}}
+  else if(amode=='fg'){r=await SB.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});
+   if(!r.error){aMsg('ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว กรุณาตรวจอีเมล',true);btn.disabled=false;return}}
+  else if(amode=='rs'){r=await SB.auth.updateUser({password:pw});if(!r.error){arecovery=false;aMsg('');authApply();btn.disabled=false;return}}
+  if(r.error)aMsg(aTh(r.error.message));else aMsg('')
+ }catch(x){aMsg(aTh(x.message))}
+ btn.disabled=false});
+if(SB){
+ SB.auth.onAuthStateChange((ev,s)=>{
+  if(ev=='PASSWORD_RECOVERY'){arecovery=true;aShow('rs')}
+  const u=s&&s.user;
+  AUSER=u?{id:u.id,email:u.email,name:(u.user_metadata&&u.user_metadata.full_name)||u.email}:null;
+  if(!u)arecovery=false;
+  setTimeout(authApply,0)});
+}else{setTimeout(authApply,0)}
+</script>
+<script>
+const $=s=>document.querySelector(s),E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money=n=>'฿ '+(n/100).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const dt=d=>new Date(d+'T00:00:00').toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
+const today=new Date().toISOString().slice(0,10),ym=today.slice(0,7),BY='ผู้ดูแลการเงิน';
+let animate=true,role='admin',me,af='all',cv='3d',lastDat=[],S3=null,curRoom=1,uid=100,page='dash',tt,qm='',gm='all',ql='',tl='all',pf='all';
+let G=[];
+const gn=i=>(G.find(g=>g.id==i)||{name:'—'}).name,M=[],L=[],R=[],PE=[],AU=[],JR=[];
+const LT={open:'ยอดยกมา',income:'รายรับ',expense:'รายจ่าย'},BD={paid:['ชำระแล้ว','paid'],pending:['รอตรวจสอบ','pending'],rejected:['ปฏิเสธหลักฐาน','rejected'],unpaid:['ยังไม่ชำระ','neutral'],overdue:['เกินกำหนด','rejected']};
+const badge=s=>`<span class="badge ${BD[s][1]}">${BD[s][0]}</span>`;
+const addL=(date,g,type,detail,amt,ref)=>L.push({id:++uid,date,g,type,detail,amt,ref,by:BY});
+const rq=i=>R.find(x=>x.id==i),stx=m=>m.s=='unpaid'&&rq(m.r).due<today?'overdue':m.s,logA=(who,act,detail)=>AU.push({id:++uid,ts:new Date().toISOString(),who,act,detail});
+function mkP(name,g){let p=PE.find(x=>x.name==name&&x.g==g);if(!p){p={code:'GF-'+(1001+PE.length),name,g};PE.push(p)}return p}
+function addM(name,g,amt,s,sub,how,reason,r){const p=mkP(name,g),q=r?rq(r):R.find(x=>x.g==g),m={id:++uid,code:p.code,name,g,amt,s,sub,how,reason,r:q.id,h:s=='unpaid'?[]:[{date:sub,how,s,reason}]};M.push(m);if(s=='paid')addL(sub,g,'income',q.title+': '+name,amt,m.id);return m}
+const A=()=>L.filter(x=>!x.rev&&!x.rv),sum=(t,f)=>A().filter(x=>x.type==t&&(!f||f(x))).reduce((s,x)=>s+x.amt,0);
+const bal=g=>{const f=g?x=>x.g==g:null;return sum('open',f)+sum('income',f)-sum('expense',f)};
+[['2026-05-01',1,'open','ยอดยกมา',900000],['2026-05-01',2,'open','ยอดยกมา',400000],['2026-05-01',3,'open','ยอดยกมา',250000],['2026-05-02',1,'income','เงินกองกลางประจำเดือน',150000],['2026-06-03',1,'expense','ค่าจัดกิจกรรมต้อนรับ',80000],['2026-06-10',2,'income','เงินสมทบทริป งวดที่ 1',200000],['2026-07-05',3,'income','เงินกองกลางประจำเดือน',100000],['2026-07-18',3,'expense','ค่าวัสดุส่วนกลาง',45000],['2026-08-04',1,'income','เงินกองกลางประจำเดือน',150000],['2026-08-20',1,'expense','ค่าอุปกรณ์กิจกรรม',60000],['2026-09-06',2,'income','เงินสมทบทริป งวดที่ 2',200000],['2026-09-15',3,'expense','ค่าซ่อมบำรุงส่วนกลาง',90000],['2026-10-02',1,'income','เงินกองกลางประจำเดือน',120000],['2026-10-18',3,'expense','ค่าอุปกรณ์ทำความสะอาด',60000]].forEach(r=>addL(...r));
+R.push({id:++uid,g:1,title:'ค่ากองกลางประจำเดือน ต.ค.',amt:30000,due:'2026-10-15'},{id:++uid,g:2,title:'เงินสมทบทริป งวดที่ 3',amt:50000,due:'2026-11-01'},{id:++uid,g:3,title:'ค่าส่วนกลางหอพัก',amt:20000,due:'2026-10-31'});
+addM('อามีนา มะ',1,30000,'pending','2026-10-23','โอน');addM('มูฮัมหมัด อาลี',2,50000,'pending','2026-10-23','โอน');addM('นูรฟาติน อิสมาแอ',3,20000,'pending','2026-10-22','โอน');addM('อับดุลเลาะห์ สาและ',1,30000,'paid','2026-10-22','โอน');addM('ซัลมา เจะมะ',2,50000,'rejected','2026-10-21','โอน','ยอดโอนไม่ตรงกับยอดที่ต้องชำระ');addM('ฟารีดา ดอเลาะ',1,30000,'unpaid');addM('ซูไฮนี ยูโซะ',1,30000,'paid','2026-10-20','เงินสด');addM('อัสมา เจ๊ะเล็ง',3,20000,'paid','2026-10-19','โอน');
+
+me=M[5].code;JR.push({id:++uid,g:1,name:'ยูซุฟ ดือราแม',ts:'2026-10-23T08:15:00'});[['2026-10-19T09:30:00','อนุมัติการชำระ','อัสมา เจ๊ะเล็ง / ค่าส่วนกลางหอพัก ฿ 200.00'],['2026-10-20T14:05:00','บันทึกเงินสด','ซูไฮนี ยูโซะ / ค่ากองกลางประจำเดือน ต.ค. ฿ 300.00'],['2026-10-21T11:20:00','ปฏิเสธหลักฐาน','ซัลมา เจะมะ / เงินสมทบทริป งวดที่ 3 เหตุผล: ยอดโอนไม่ตรงกับยอดที่ต้องชำระ'],['2026-10-22T16:40:00','อนุมัติการชำระ','อับดุลเลาะห์ สาและ / ค่ากองกลางประจำเดือน ต.ค. ฿ 300.00']].forEach(a=>AU.push({id:++uid,ts:a[0],who:BY,act:a[1],detail:a[2]}));
+const NAVM=[['mydues','ยอดของฉัน'],['myhist','ประวัติการชำระ']],curNav=()=>{const base=role=='admin'?NAV:role=='treasurer'?NAV.filter(x=>!['roles','settings'].includes(x[0])):NAVM;return base.concat(PLAT?[['platform','ผู้ดูแลระบบ']]:[],[['join','เข้าร่วมกลุ่ม']])};
+const NAV=[['dash','ภาพรวม'],['groups','กลุ่มของฉัน'],['req','รายการเรียกเก็บ'],['mem','สมาชิกและยอดชำระ'],['pay','ตรวจสอบการชำระ'],['led','รายรับ–รายจ่าย'],['rep','รายงาน'],['audit','ประวัติการดำเนินการ'],['roles','จัดการสมาชิกและบทบาท'],['settings','ตั้งค่ากลุ่ม']];
+const head=(t,p,b)=>`<div class="welcome"><div><h1>${t}</h1><p>${p}</p></div>${b||''}</div>`;
+const stat=(k,v,n)=>`<div class="stat"><div class="sk">${k}</div><div class="sv">${v}</div><div class="sn">${n}</div></div>`;
+const byDate=a=>a.slice().sort((x,y)=>y.date.localeCompare(x.date)||y.id-x.id);
+const ltr=(x,a)=>`<tr><td>${dt(x.date)}</td><td>${E(x.detail)}${x.rev?' <span class="badge neutral">กลับรายการแล้ว</span>':''}${x.rv?' <span class="badge neutral">รายการกลับบัญชี</span>':''}<span class="sub">${E(gn(x.g))} / ${x.by}</span></td><td>${LT[x.type]}</td><td class="num" style="color:var(--${x.type=='expense'?'bad':'ok'})">${x.type=='expense'?'−':'+'}${money(x.amt).slice(2)}</td>${a?`<td>${x.type!='open'&&!x.rev&&!x.rv&&!x.ref?`<button class="btn btn-danger btn-sm" data-a="rv" data-i="${x.id}">กลับรายการ</button>`:''}</td>`:''}</tr>`;
+
+function vDash(){
+ const cur=x=>x.date.startsWith(ym),pc=M.filter(m=>m.s=='pending'),y=+today.slice(0,4),mo=+today.slice(5,7)-1;
+ const dat=[...Array(6)].map((_,i)=>{const d=new Date(y,mo-(5-i),1),k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),f=x=>x.date.startsWith(k);return{l:d.toLocaleDateString('th-TH',{month:'short'}),i:sum('income',f),e:sum('expense',f)}});
+ const mx=Math.max(1,...dat.flatMap(d=>[d.i,d.e]));lastDat=dat;
+ return head('ภาพรวมเงินกองกลาง','สรุปฐานะการเงินของทุกกลุ่ม ณ วันที่ '+dt(today),'<button class="btn btn-primary" data-a="newg">เพิ่มกลุ่ม</button>')+
+ `<div class="stats">${stat('ยอดเงินคงเหลือ',money(bal()),'จากรายการบัญชีที่ยืนยันแล้ว')}${stat('รายรับเดือนนี้',money(sum('income',cur)),'ไม่รวมยอดยกมา')}${stat('รายจ่ายเดือนนี้',money(sum('expense',cur)),'จากรายการบัญชีที่ยืนยันแล้ว')}${stat('รอตรวจสอบ',pc.length+' รายการ',money(pc.reduce((s,m)=>s+m.amt,0))+' ยังไม่นับเป็นรายรับ')}</div>
+<div class="grid2"><div class="panel"><div class="ph"><div><h2>รายรับและรายจ่ายรายเดือน</h2><p>ย้อนหลัง 6 เดือน</p></div><div class="seg c-seg" role="group" aria-label="รูปแบบกราฟ"><button data-a="cv" data-v="3d" class="${cv=='3d'?'on':''}">โมเดล 3 มิติ</button><button data-a="cv" data-v="2d" class="${cv=='2d'?'on':''}">กราฟ</button></div></div><div class="pb"><div class="chart"${cv=='3d'?' hidden':''}>${dat.map(d=>`<div class="cc"><div class="bp"><i class="bar" style="height:${d.i/mx*100}%" title="รายรับ ${money(d.i)}"></i><i class="bar e" style="height:${d.e/mx*100}%" title="รายจ่าย ${money(d.e)}"></i></div><small>${d.l}</small></div>`).join('')}</div><div class="c3" id="c3"${cv=='3d'?'':' hidden'}></div><div class="lg"><span><i></i>รายรับ</span><span><i class="e"></i>รายจ่าย</span></div></div></div>
+<div class="panel"><div class="ph"><div><h2>สถานะการเก็บเงิน</h2><p>จำนวนรายการที่ชำระแล้วในแต่ละกลุ่ม</p></div><button class="link" data-a="go" data-p="groups">ดูทั้งหมด</button></div><div class="pb">${G.map(g=>{const ms=M.filter(m=>m.g==g.id),n=ms.filter(m=>m.s=='paid').length,p=ms.length?Math.round(n/ms.length*100):0;return `<div class="pi"><div class="pl"><b>${E(g.name)}</b><span>${p}%</span></div><div class="track"><div class="fill" style="width:${p}%"></div></div><div class="pm"><span>${n} จาก ${ms.length} รายการ</span><span>${money(ms.filter(m=>m.s=='paid').reduce((s,m)=>s+m.amt,0))}</span></div></div>`}).join('')}</div></div></div>
+<div class="grid2">${lineChart()}${donut()}</div>
+<div class="panel tp"><div class="ph"><div><h2>รายการบัญชีล่าสุด</h2></div><button class="link" data-a="go" data-p="led">ดูทั้งหมด</button></div><div class="tw"><table><thead><tr><th>วันที่</th><th>รายละเอียด</th><th>ประเภท</th><th class="num">จำนวนเงิน</th></tr></thead><tbody>${byDate(L).slice(0,6).map(x=>ltr(x)).join('')}</tbody></table></div></div>`}
+
+function vGroups(){return head('กลุ่มของฉัน','กลุ่มเงินกองกลางที่อยู่ในความดูแล','<button class="btn btn-primary" data-a="newg">เพิ่มกลุ่ม</button>')+`<div class="gcs">${G.map(g=>{const ms=M.filter(m=>m.g==g.id),n=ms.filter(m=>m.s=='paid').length,p=ms.filter(m=>m.s=='pending').length;return `<div class="gc"><h3>${E(g.name)}</h3><p>${E(g.desc)}</p><div class="ga">${money(bal(g.id))}</div><div class="sn">ยอดเงินคงเหลือ</div><div class="track" style="margin:14px 0 6px"><div class="fill" style="width:${ms.length?n/ms.length*100:0}%"></div></div><div class="pm"><span>ชำระแล้ว ${n} จาก ${ms.length} รายการ</span><span>รอตรวจสอบ ${p} รายการ</span></div><div class="acts" style="justify-content:space-between;align-items:center"><span class="sn">${JR.filter(x=>x.g==g.id).length?'คำขอเข้าร่วม '+JR.filter(x=>x.g==g.id).length+' รายการ':''}</span><button class="btn btn-outline btn-sm" data-a="room" data-i="${g.id}">จัดการห้อง</button></div></div>`}).join('')}</div>`}
+
+function vMem(){return head('สมาชิกและยอดชำระ','รายชื่อสมาชิกและสถานะการชำระเงินแยกตามกลุ่ม','<button class="btn btn-primary" data-a="newm">เพิ่มสมาชิก</button>')+`<div class="panel tp"><div class="ph"><div><h2>รายชื่อสมาชิก</h2><p id="mcnt"></p></div><div class="toolbar"><input class="search" id="qm" placeholder="ค้นหาชื่อหรือรหัสสมาชิก" value="${E(qm)}"><select id="gm"><option value="all">ทุกกลุ่ม</option>${G.map(g=>`<option value="${g.id}"${gm==g.id?' selected':''}>${E(g.name)}</option>`).join('')}</select></div></div><div class="tw"><table><thead><tr><th>ชื่อสมาชิก</th><th>รายการ</th><th class="num">ยอดที่ต้องชำระ</th><th>สถานะ</th><th>การดำเนินการ</th></tr></thead><tbody id="mt"></tbody></table></div></div>`}
+function fillM(){const q=qm.trim().toLowerCase(),a=M.filter(m=>(gm=='all'||m.g==gm)&&(m.name+m.code+rq(m.r).title).toLowerCase().includes(q));
+ $('#mt').innerHTML=a.length?a.map(m=>`<tr><td><b>${E(m.name)}</b><span class="sub">${m.code} / ${E(gn(m.g))}</span></td><td>${E(rq(m.r).title)}</td><td class="num">${money(m.amt).slice(2)}</td><td>${badge(stx(m))}</td><td>${m.s=='unpaid'||m.s=='rejected'?`<button class="btn btn-outline btn-sm" data-a="cash" data-i="${m.id}">บันทึกเงินสด</button>`:''}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">ไม่พบรายการที่ค้นหา</td></tr>';
+ $('#mcnt').textContent='แสดง '+a.length+' จาก '+M.length+' รายการ'}
+
+function vPay(){return head('ตรวจสอบการชำระ','ตรวจสอบหลักฐานการชำระเงินที่สมาชิกส่งเข้ามา')+`<div class="notice">การอนุมัติหมายถึงผู้ดูแลได้ตรวจสอบแล้วว่าเงินเข้าบัญชีจริง การแนบสลิปเพียงอย่างเดียวไม่ถือว่าได้รับเงิน รายการที่รอตรวจสอบหรือถูกปฏิเสธจะไม่ถูกนับเป็นรายรับ</div><div class="panel tp"><div class="ph"><div><h2>รายการส่งหลักฐาน</h2><p id="pcnt"></p></div><select id="pf"><option value="all">ทุกสถานะ</option><option value="pending"${pf=='pending'?' selected':''}>รอตรวจสอบ</option><option value="paid"${pf=='paid'?' selected':''}>ชำระแล้ว</option><option value="rejected"${pf=='rejected'?' selected':''}>ปฏิเสธหลักฐาน</option></select></div><div class="tw"><table><thead><tr><th>สมาชิก</th><th>รายการ</th><th class="num">จำนวนเงิน</th><th>ช่องทาง / วันที่ส่ง</th><th>สถานะ</th><th>การดำเนินการ</th></tr></thead><tbody id="pt"></tbody></table></div></div>`}
+function fillP(){const a=M.filter(m=>m.sub&&(pf=='all'||m.s==pf)).sort((x,y)=>y.sub.localeCompare(x.sub));
+ $('#pt').innerHTML=a.length?a.map(m=>`<tr><td><b>${E(m.name)}</b><span class="sub">${m.code} / ${E(gn(m.g))}</span></td><td>${E(rq(m.r).title)}</td><td class="num">${money(m.amt).slice(2)}</td><td>${m.how}<span class="sub">${dt(m.sub)}</span></td><td>${badge(m.s)}${m.reason?`<span class="sub">เหตุผล: ${E(m.reason)}</span>`:''}</td><td>${m.s=='pending'?`<div class="ra"><button class="btn btn-primary btn-sm" data-a="apr" data-i="${m.id}">อนุมัติ</button><button class="btn btn-danger btn-sm" data-a="rej" data-i="${m.id}">ปฏิเสธ</button></div>`:''}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">ไม่มีรายการ</td></tr>';
+ $('#pcnt').textContent=a.length+' รายการ'}
+
+function vLed(){return head('รายรับ–รายจ่าย','ประวัติรายการบัญชีของกลุ่ม','<button class="btn btn-primary" data-a="newl">บันทึกรายการ</button>')+`<div class="stats">${stat('ยอดเงินคงเหลือ',money(bal()),'ยอดยกมา + รายรับ − รายจ่าย')}${stat('รายรับรวม',money(sum('income')),'ไม่รวมยอดยกมา')}${stat('รายจ่ายรวม',money(sum('expense')),'รายการที่ยืนยันแล้ว')}${stat('จำนวนรายการ',A().length+' รายการ','ไม่รวมรายการที่กลับรายการ')}</div><div class="panel tp"><div class="ph"><div><h2>บัญชีธุรกรรม</h2><p>รายการที่บันทึกแล้วลบไม่ได้ หากผิดพลาดให้ใช้การกลับรายการ</p></div><div class="toolbar"><input class="search" id="ql" placeholder="ค้นหารายละเอียด" value="${E(ql)}"><select id="tl"><option value="all">ทุกประเภท</option>${[['income','รายรับ'],['expense','รายจ่าย'],['open','ยอดยกมา']].map(([k,t])=>`<option value="${k}"${tl==k?' selected':''}>${t}</option>`).join('')}</select></div></div><div class="tw"><table><thead><tr><th>วันที่</th><th>รายละเอียด</th><th>ประเภท</th><th class="num">จำนวนเงิน</th><th>การดำเนินการ</th></tr></thead><tbody id="lt"></tbody></table></div></div>`}
+function fillL(){const q=ql.trim().toLowerCase(),a=byDate(L.filter(x=>(tl=='all'||x.type==tl)&&x.detail.toLowerCase().includes(q)));
+ $('#lt').innerHTML=a.length?a.map(x=>ltr(x,1)).join(''):'<tr><td colspan="5" class="empty">ไม่พบรายการ</td></tr>'}
+
+function vRep(){const rows=G.map(g=>{const ms=M.filter(m=>m.g==g.id),f=x=>x.g==g.id,s=(l)=>ms.filter(m=>l.includes(m.s)).reduce((t,m)=>t+m.amt,0);return{n:g.name,o:sum('open',f),i:sum('income',f),e:sum('expense',f),b:bal(g.id),pd:ms.filter(m=>m.s=='paid').length,t:ms.length,ov:s(['unpaid','rejected']),pe:s(['pending'])}});
+ const T=k=>rows.reduce((s,r)=>s+r[k],0),c=v=>`<td class="num">${money(v).slice(2)}</td>`;
+ return head('รายงานสรุปฐานะการเงิน','ณ วันที่ '+dt(today))+`<div class="panel tp"><div class="tw"><table><thead><tr><th>กลุ่ม</th><th class="num">ยอดยกมา</th><th class="num">รายรับ</th><th class="num">รายจ่าย</th><th class="num">คงเหลือ</th><th class="num">ชำระแล้ว (รายการ)</th><th class="num">ค้างชำระ</th><th class="num">รอตรวจสอบ</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${E(r.n)}</td>${c(r.o)}${c(r.i)}${c(r.e)}${c(r.b)}<td class="num">${r.pd}/${r.t}</td>${c(r.ov)}${c(r.pe)}</tr>`).join('')}<tr class="tot"><td>รวมทุกกลุ่ม</td>${c(T('o'))}${c(T('i'))}${c(T('e'))}${c(T('b'))}<td class="num">${T('pd')}/${T('t')}</td>${c(T('ov'))}${c(T('pe'))}</tr></tbody></table></div></div>${stackChart()}<div class="notice">หมายเหตุ: ยอดคงเหลือคำนวณจากรายการบัญชีที่ยืนยันแล้ว ไม่รวมรายการรอตรวจสอบและรายการที่กลับรายการแล้ว ยอดค้างชำระหมายถึงสมาชิกที่ยังไม่ชำระหรือถูกปฏิเสธหลักฐาน หน่วยเป็นบาท</div>`}
+
+function vMy(){const rs=M.filter(m=>m.code==me),p=PE.find(x=>x.code==me),due=rs.filter(m=>m.s!='paid').reduce((t,m)=>t+m.amt,0);
+ const msg=(m,l)=>({unpaid:rq(m.r).due<today?'เกินกำหนดชำระแล้ว กรุณาโอนเงินและส่งหลักฐานโดยเร็ว':'ยังไม่มีการชำระเงิน กรุณาโอนเงินแล้วส่งหลักฐานให้ผู้ดูแลตรวจสอบ',pending:'ส่งหลักฐานแล้ว รอผู้ดูแลตรวจสอบกับบัญชีจริง ยังไม่นับว่าชำระแล้ว',rejected:'หลักฐานถูกปฏิเสธ เหตุผล: '+E(m.reason||'-')+' กรุณาส่งหลักฐานใหม่',paid:'ชำระเงินเรียบร้อยแล้วเมื่อ '+(l?dt(l.date):'')}[m.s]);
+ return head('ยอดที่ต้องชำระของฉัน',E(p.name)+' กลุ่ม'+E(gn(p.g)))+`<div class="stats">${stat('ยอดที่ยังไม่ชำระ',money(due),'รวมรายการค้างชำระและรอตรวจสอบ')}${stat('จำนวนรายการ',rs.length+' รายการ','ชำระแล้ว '+rs.filter(m=>m.s=='paid').length+' รายการ')}</div>`+rs.map(m=>`<div class="panel" style="margin-bottom:14px"><div class="pb"><div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:8px"><div><h2 style="margin:0;font-size:16px">${E(rq(m.r).title)}</h2><div class="sn">ครบกำหนด ${dt(rq(m.r).due)}</div></div><div style="text-align:right"><b style="font-size:20px">${money(m.amt)}</b><div>${badge(stx(m))}</div></div></div><p style="margin:0 0 12px">${msg(m,m.h[m.h.length-1])}</p>${m.s=='unpaid'||m.s=='rejected'?`<button class="btn btn-primary" data-a="mysub" data-i="${m.id}">ส่งหลักฐานการชำระ (โอน)</button>`:''}</div></div>`).join('')+`<div class="notice">การส่งหลักฐานไม่ได้หมายความว่าได้รับเงินแล้ว ผู้ดูแลจะตรวจสอบกับรายการเข้าบัญชีจริงก่อนอนุมัติทุกครั้ง</div>`}
+function vHist(){const p=PE.find(x=>x.code==me),a=M.filter(m=>m.code==me).flatMap(m=>m.h.map(x=>({...x,m}))).sort((x,y)=>y.date.localeCompare(x.date));
+ return head('ประวัติการชำระของฉัน',E(p.name)+' กลุ่ม'+E(gn(p.g)))+`<div class="panel tp"><div class="tw"><table><thead><tr><th>วันที่</th><th>รายการ</th><th>ช่องทาง</th><th class="num">จำนวนเงิน</th><th>สถานะ</th><th>หมายเหตุ</th></tr></thead><tbody>${a.length?a.map(x=>`<tr><td>${dt(x.date)}</td><td>${E(rq(x.m.r).title)}</td><td>${x.how}</td><td class="num">${money(x.m.amt).slice(2)}</td><td>${badge(x.s)}</td><td>${x.reason?'เหตุผล: '+E(x.reason):''}${x.file?'ไฟล์: '+E(x.file):''}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">ยังไม่มีประวัติการชำระ</td></tr>'}</tbody></table></div></div>`}
+function mySub(id){const m=M.find(x=>x.id==id);if(!m||m.code!=me)return;dlg('ส่งหลักฐานการชำระ',E(rq(m.r).title)+' ยอด '+money(m.amt)+' ตัวอย่างนี้ไม่ได้อัปโหลดไฟล์จริง',fld('วันที่โอน',`<input name="d" type="date" value="${today}" max="${today}" required>`)+fld('แนบสลิป (รูปภาพ ไม่เกิน 5 MB)','<input name="s" type="file" accept="image/*" required>'),'ส่งหลักฐาน',f=>{
+ if(m.s=='pending'||m.s=='paid')return 'รายการนี้อยู่ระหว่างตรวจสอบหรือชำระแล้ว ไม่สามารถส่งซ้ำได้';
+ const s=f.get('s'),d=f.get('d');if(!s||!s.name)return 'กรุณาแนบสลิป';if(!/^image\//.test(s.type))return 'รองรับเฉพาะไฟล์รูปภาพ';if(s.size>5*1024*1024)return 'ไฟล์ใหญ่เกิน 5 MB';
+ if(!d||d>today)return 'วันที่โอนไม่ถูกต้อง';
+ if(!SB||!AUSER)return 'กรุณาเข้าสู่ระบบก่อน';const path=m.g+'/'+AUSER.id+'/'+Date.now()+'_'+s.name.replace(/[^\w.\-]/g,'_');
+ (async()=>{const up=await SB.storage.from('payment-slips').upload(path,s,{contentType:s.type});if(up.error){toast(aTh(up.error.message));return}
+  const ins=await SB.from('payments').insert({group_id:m.g,collection_item_id:m.id,user_id:AUSER.id,amount:m.amt,slip_path:path}).select('id').single();if(ins.error){toast(aTh(ins.error.message));return}
+  logA(m.name,'ส่งหลักฐานการชำระ',rq(m.r).title+' '+money(m.amt));await loadFin();render();toast('ส่งหลักฐานแล้ว รอผู้ดูแลตรวจสอบ')})()})}
+const whoHtml=()=>AUSER?`<div><b>${E(AUSER.name)}</b><span>${E(AUSER.email)}</span><span>บทบาทสูงสุด: ${({admin:'ผู้ดูแล',treasurer:'เหรัญญิก',member:'สมาชิก'})[role]||''}</span></div>`:'';
+const whoHtmlOld=()=>`<div class="seg" role="group" aria-label="สลับบทบาท"><button data-role="admin" class="${role=='admin'?'on':''}">ผู้ดูแลการเงิน</button><button data-role="member" class="${role=='member'?'on':''}">สมาชิก</button></div>`+(role=='member'?`<select id="asm" aria-label="ดูในฐานะสมาชิก" style="width:100%;margin-top:8px">${PE.map(p=>`<option value="${p.code}"${p.code==me?' selected':''}>${E(p.name)}</option>`).join('')}</select>`:'')+`<span style="display:block;margin-top:8px">บัญชีตัวอย่าง สลับบทบาทเพื่อดูตัวอย่าง</span>`+(AUSER?`<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)"><b>${E(AUSER.name)}</b><span>${E(AUSER.email)}</span><button class="btn btn-outline btn-sm" id="logout" style="margin-top:8px;width:100%">ออกจากระบบ</button></div>`:'');
+const IC={join:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>',platform:'<path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',roles:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 11l2 2 4-4"/>',dash:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',groups:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',req:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/>',mem:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>',pay:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',led:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',rep:'<path d="M3 3v18h18"/><path d="M7 16V9"/><path d="M12 16V5"/><path d="M17 16v-4"/>',audit:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',mydues:'<path d="M3 7a2 2 0 0 1 2-2h13v4"/><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="16.5" cy="13.5" r="1"/>',myhist:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/>'};
+const ico=p=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[p]}</svg>`;
+let navFresh=true;
+function buildNav(){navFresh=true;$('#nav').innerHTML='<span class="nav-hl" aria-hidden="true"></span>'+curNav().map(([p,t])=>`<button data-p="${p}">${ico(p)}${t}${p=='pay'?'<span class="pn" id="pn"></span>':''}</button>`).join('')}
+function labelTables(){document.querySelectorAll('#v table').forEach(t=>{const h=[...t.tHead.rows[0].cells].map(c=>c.textContent.trim());t.tBodies[0].querySelectorAll('tr').forEach(r=>[...r.cells].forEach((c,k)=>{if(c.colSpan==1)c.dataset.label=h[k]||''}))})}
+function vReq(){const rows=R.slice().sort((a,b)=>a.due.localeCompare(b.due));
+ return head('รายการเรียกเก็บ','รายการเรียกเก็บเงินจากสมาชิกในแต่ละกลุ่ม','<button class="btn btn-primary" data-a="newreq">สร้างรายการเรียกเก็บ</button>')+`<div class="panel tp"><div class="tw"><table><thead><tr><th>รายการ</th><th>กลุ่ม</th><th class="num">ยอดต่อคน</th><th>ครบกำหนด</th><th class="num">ชำระแล้ว</th><th class="num">ยอดค้างชำระ</th><th>สถานะ</th></tr></thead><tbody>${rows.length?rows.map(q=>{const ms=M.filter(m=>m.r==q.id),n=ms.filter(m=>m.s=='paid').length,ov=ms.filter(m=>m.s=='unpaid'||m.s=='rejected').reduce((t,m)=>t+m.amt,0),sx=n==ms.length?['ครบแล้ว','paid']:q.due<today?['เกินกำหนด','rejected']:['กำลังเก็บ','pending'];return `<tr><td><b>${E(q.title)}</b></td><td>${E(gn(q.g))}</td><td class="num">${money(q.amt).slice(2)}</td><td>${dt(q.due)}</td><td class="num">${n}/${ms.length}</td><td class="num">${money(ov).slice(2)}</td><td><span class="badge ${sx[1]}">${sx[0]}</span></td></tr>`}).join(''):'<tr><td colspan="7" class="empty">ยังไม่มีรายการเรียกเก็บ</td></tr>'}</tbody></table></div></div>`}
+function newReq(pg){const d0=new Date(Date.now()+12096e5).toISOString().slice(0,10);
+ dlg('สร้างรายการเรียกเก็บ','เรียกเก็บจากสมาชิกทุกคนในกลุ่มที่เลือก ยอดเท่ากันทุกคน',fld('กลุ่ม',`<select name="g">${gopt(pg)}</select>`)+fld('ชื่อรายการ','<input name="t" required maxlength="60">')+fld('ยอดต่อคน (บาท)','<input name="a" type="number" min="1" step="0.01" required>')+fld('วันครบกำหนด',`<input name="d" type="date" value="${d0}" min="${today}" required>`),'สร้างรายการ',f=>{
+ const g=f.get('g'),t=f.get('t').trim(),a=Math.round(f.get('a')*100),d=f.get('d'),ps=PE.filter(p=>p.g==g);
+ if(!t||!(a>0))return 'กรอกชื่อรายการและยอดต่อคนให้ถูกต้อง';if(!d||d<today)return 'วันครบกำหนดต้องไม่ก่อนวันนี้';
+ if(!ps.length)return 'กลุ่มนี้ยังไม่มีสมาชิก';if(R.some(x=>x.g==g&&x.title==t))return 'มีรายการชื่อนี้ในกลุ่มแล้ว';
+ if(!SB||!AUSER)return 'กรุณาเข้าสู่ระบบก่อน';(async()=>{const r=await SB.from('collection_requests').insert({group_id:g,title:t,amount:a,due_date:d,created_by:AUSER.id}).select('id').single();if(r.error){toast(aTh(r.error.message));return}await loadFin();render();toast('สร้างรายการเรียกเก็บแล้ว')})()})}
+function vAudit(){const acts=[...new Set(AU.map(x=>x.act))];return head('ประวัติการดำเนินการ','บันทึกการดำเนินการสำคัญของระบบ ลบหรือแก้ไขไม่ได้')+`<div class="panel tp"><div class="ph"><div><h2>บันทึกกิจกรรม</h2><p id="acnt"></p></div><select id="af"><option value="all">ทุกการดำเนินการ</option>${acts.map(a=>`<option value="${E(a)}"${af==a?' selected':''}>${E(a)}</option>`).join('')}</select></div><div class="tw"><table><thead><tr><th>เวลา</th><th>ผู้ดำเนินการ</th><th>การดำเนินการ</th><th>รายละเอียด</th></tr></thead><tbody id="at"></tbody></table></div></div>`}
+function fillA(){const a=AU.filter(x=>af=='all'||x.act==af).slice().sort((x,y)=>y.ts.localeCompare(x.ts));$('#at').innerHTML=a.length?a.map(x=>`<tr><td>${new Date(x.ts).toLocaleString('th-TH',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</td><td>${E(x.who)}</td><td>${E(x.act)}</td><td style="white-space:normal">${E(x.detail)}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">ไม่มีรายการ</td></tr>';$('#acnt').textContent=a.length+' รายการ'}
+function dispose3D(){if(S3){S3.stop=true;if(S3.ro)S3.ro.disconnect();try{S3.r.dispose();S3.r.forceContextLoss()}catch(e){}S3=null}}
+function fail3(){const c=$('#v .chart'),b=$('#c3');if(b)b.hidden=true;if(c)c.hidden=false;cv='2d';document.querySelectorAll('[data-a=cv]').forEach(x=>x.classList.toggle('on',x.dataset.v=='2d'));toast('อุปกรณ์นี้แสดงโมเดล 3 มิติไม่ได้ จึงแสดงกราฟแบบปกติแทน')}
+function setCv(v){const c=$('#v .chart'),b=$('#c3');if(!c||!b)return;cv=v;c.hidden=v=='3d';b.hidden=v!='3d';document.querySelectorAll('[data-a=cv]').forEach(x=>x.classList.toggle('on',x.dataset.v==v));if(v=='3d')init3D();else dispose3D()}
+function init3D(){
+ const box=$('#c3');if(!box)return;dispose3D();box.innerHTML='';
+ if(typeof THREE=='undefined')return fail3();
+ let r;try{r=new THREE.WebGLRenderer({antialias:true,alpha:true})}catch(e){return fail3()}
+ const cs=getComputedStyle(document.documentElement),col=n=>cs.getPropertyValue(n).trim(),cn=r.domElement,cl=(v,a,b)=>Math.min(b,Math.max(a,v));
+ r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));box.appendChild(cn);
+ box.insertAdjacentHTML('beforeend','<div class="c3bar"><button data-k="auto" aria-pressed="true">หมุนอัตโนมัติ</button><button data-k="glass" aria-pressed="false">โปร่งแสง</button><button data-k="reset">รีเซ็ตมุมมอง</button></div><div class="c3tip" id="c3t" hidden></div><div class="c3hint">ลากเพื่อหมุน เลื่อนหรือหยิกเพื่อซูม แตะแท่งเพื่อดูตัวเลข</div>');
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(38,1,.1,100),S={stop:false,r};S3=S;
+ sc.add(new THREE.AmbientLight(0xffffff,.78));const dl=new THREE.DirectionalLight(0xffffff,.85);dl.position.set(6,11,7);sc.add(dl);
+ const gr=new THREE.GridHelper(16,16,col('--line'),col('--line'));gr.material.transparent=true;gr.material.opacity=.8;sc.add(gr);
+ const d=lastDat,mx=Math.max(1,...d.flatMap(x=>[x.i,x.e])),H=4.2,bars=[];
+ const lab=(t,x,z)=>{const c=document.createElement('canvas');c.width=160;c.height=64;const g=c.getContext('2d');g.fillStyle=col('--ink');g.font='600 30px Sarabun,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(t,80,32);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false}));s.scale.set(1.6,.64,1);s.position.set(x,.05,z);sc.add(s)};
+ d.forEach((m,i)=>{const cx=(i-(d.length-1)/2)*2.2;lab(m.l,cx,1.5);[['i','รายรับ',col('--pri'),-.5],['e','รายจ่าย','#d9d9d9',.5]].forEach(([k,nm,c,o])=>{const h=Math.max(.05,m[k]/mx*H),g=new THREE.BoxGeometry(.8,h,.8),mesh=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:c,roughness:.4,metalness:.2,transparent:true,opacity:1}));mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.4})));mesh.position.x=cx+o;mesh.userData={l:m.l,nm,v:m[k],h};sc.add(mesh);bars.push(mesh)})});
+ const o={th:.65,ph:1.05,rad:13},tg=new THREE.Vector3(0,1.5,.2),home=()=>{o.th=.65;o.ph=1.05;o.rad=13};
+ const place=()=>{cam.position.set(tg.x+o.rad*Math.sin(o.ph)*Math.sin(o.th),tg.y+o.rad*Math.cos(o.ph),tg.z+o.rad*Math.sin(o.ph)*Math.cos(o.th));cam.lookAt(tg)};
+ const P=new Map(),ray=new THREE.Raycaster(),mv=new THREE.Vector2(),tip=$('#c3t'),autoBtn=box.querySelector('[data-k=auto]');let auto=!RM(),moved=false,hov=null,glass=false;
+ autoBtn.setAttribute('aria-pressed',String(auto));
+ const dist=()=>{const a=[...P.values()];return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)};
+ const hover=e=>{const b=cn.getBoundingClientRect();mv.set((e.clientX-b.left)/b.width*2-1,-((e.clientY-b.top)/b.height)*2+1);ray.setFromCamera(mv,cam);const h=ray.intersectObjects(bars)[0];hov=h?h.object:null;bars.forEach(m=>m.material.emissive.setHex(m===hov?0x2a4a7a:0));if(hov){const u=hov.userData;tip.innerHTML='<b>'+E(u.l)+'</b> '+u.nm+' '+money(u.v);tip.style.left=Math.min(b.width-160,Math.max(4,e.clientX-b.left+12))+'px';tip.style.top=Math.max(4,e.clientY-b.top-34)+'px';tip.hidden=false}else tip.hidden=true};
+ cn.addEventListener('pointerdown',e=>{cn.setPointerCapture(e.pointerId);P.set(e.pointerId,{x:e.clientX,y:e.clientY});auto=false;moved=false;autoBtn.setAttribute('aria-pressed','false')});
+ cn.addEventListener('pointermove',e=>{const p=P.get(e.pointerId);if(!p){hover(e);return}moved=true;if(P.size==2){const d0=dist();p.x=e.clientX;p.y=e.clientY;const d1=dist();if(d1>0)o.rad=cl(o.rad*d0/d1,3.5,22)}else{o.th-=(e.clientX-p.x)*.008;o.ph=cl(o.ph-(e.clientY-p.y)*.006,.12,1.5);p.x=e.clientX;p.y=e.clientY}});
+ cn.addEventListener('pointerup',e=>{if(P.has(e.pointerId)&&!moved&&P.size==1)hover(e);P.delete(e.pointerId)});
+ cn.addEventListener('pointercancel',e=>P.delete(e.pointerId));
+ cn.addEventListener('pointerleave',e=>{if(e.pointerType=='mouse'&&!P.size){tip.hidden=true;bars.forEach(m=>m.material.emissive.setHex(0))}});
+ cn.addEventListener('wheel',e=>{e.preventDefault();o.rad=cl(o.rad*(1+e.deltaY*.001),3.5,22)},{passive:false});
+ box.querySelector('.c3bar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k;if(k=='auto'){auto=!auto;b.setAttribute('aria-pressed',String(auto))}else if(k=='glass'){glass=!glass;b.setAttribute('aria-pressed',String(glass));bars.forEach(m=>{m.material.opacity=glass?.35:1;m.material.depthWrite=!glass})}else{home();auto=false;autoBtn.setAttribute('aria-pressed','false')}});
+ const fit=()=>{const w=box.clientWidth,h=box.clientHeight;if(!w||!h)return;r.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()};
+ S.ro=new ResizeObserver(fit);S.ro.observe(box);fit();
+ const t0=performance.now();let last=t0;
+ const tick=now=>{if(S.stop)return;if(!box.isConnected){if(S3===S)dispose3D();return}requestAnimationFrame(tick);const dt=Math.min(.1,(now-last)/1000);last=now;if(auto)o.th+=dt*.25;
+  bars.forEach((m,k)=>{const p=RM()?1:cl((now-t0-k*70)/900,0,1),z=Math.max(.001,1-Math.pow(1-p,3));m.scale.y=z;m.position.y=m.userData.h*z/2});place();r.render(sc,cam)};
+ place();requestAnimationFrame(tick)}
+function moveHl(first){const a=document.querySelector('#nav button.active'),h=document.querySelector('#nav .nav-hl');if(!a||!h)return;if(first)h.style.transition='none';h.style.height=a.offsetHeight+'px';h.style.transform='translateY('+a.offsetTop+'px)';h.style.opacity='1';if(first){void h.offsetWidth;h.style.transition=''}}
+window.addEventListener('resize',()=>moveHl(true));if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>moveHl(true));
+document.addEventListener('pointerdown',e=>{const t=e.target.closest('.btn,.stat,.gc,.nav button,.chip,.c3bar button,.seg button,.link');if(!t)return;t.classList.remove('pulse');void t.offsetWidth;t.classList.add('pulse');setTimeout(()=>t.classList.remove('pulse'),650)});
+const BASE=location.origin+location.pathname;
+const genCode=()=>{const a='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<6;i++)c+=a[Math.floor(Math.random()*a.length)];return c};
+const inviteLink=g=>BASE[0]=='h'?BASE+'#join-'+g.inv:'รหัสเชิญ: '+g.inv;
+function copyTxt(t,msg){const done=()=>toast(msg),fb=()=>{const x=document.createElement('textarea');x.value=t;x.style.cssText='position:fixed;opacity:0';document.body.appendChild(x);x.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}x.remove();ok?done():toast('คัดลอกอัตโนมัติไม่ได้ กรุณาเลือกข้อความแล้วคัดลอกเอง')};try{navigator.clipboard.writeText(t).then(done,fb)}catch(e){fb()}}
+function openJoin(code){const g=G.find(x=>x.inv==code);
+ if(!g)return dlg('ลิงก์เชิญไม่ถูกต้อง','ลิงก์นี้ไม่ถูกต้องหรือถูกยกเลิกแล้ว กรุณาขอลิงก์ใหม่จากผู้ดูแลห้อง','','ปิด',()=>{});
+ dlg('ขอเข้าร่วมห้อง “'+E(g.name)+'”','กรอกชื่อของคุณ ผู้ดูแลห้องต้องอนุมัติก่อนจึงจะเข้าห้องได้',fld('ชื่อ-นามสกุล','<input name="n" required maxlength="60">'),'ส่งคำขอ',f=>{
+  const n=f.get('n').trim();if(!n)return 'กรุณากรอกชื่อ';
+  if(PE.some(p=>p.g==g.id&&p.name==n))return 'คุณเป็นสมาชิกห้องนี้อยู่แล้ว';
+  if(JR.some(x=>x.g==g.id&&x.name==n))return 'ส่งคำขอไว้แล้ว รอผู้ดูแลอนุมัติ';
+  JR.push({id:++uid,g:g.id,name:n,ts:new Date().toISOString()});logA(n,'ขอเข้าร่วมห้อง','กลุ่ม'+g.name);toast('ส่งคำขอแล้ว รอผู้ดูแลอนุมัติ');render()})}
+function handleHash(){if(typeof location=='undefined')return;const m=/^#join-([a-f0-9]{64})$/.exec(location.hash||'');if(m){pendingTok=m[1];if(AUSER)joinByToken()}}
+function vPlatform(){
+ if(!PLAT)return head('ผู้ดูแลระบบ','ไม่มีสิทธิ์เข้าถึงหน้านี้');
+ const TY={classroom:'ห้องเรียน',club:'ชมรม',student_group:'กลุ่มนักศึกษา',organization:'องค์กร',other:'อื่น ๆ'};
+ return head('ผู้ดูแลระบบ','รายชื่อกลุ่มทั้งหมด สถานะ และจำนวนสมาชิก ไม่รวมข้อมูลการเงิน')+
+ `<div class="panel tp"><div class="tw"><table><thead><tr><th>กลุ่ม</th><th>ประเภท</th><th class="num">สมาชิก</th><th>สถานะ</th><th>การดำเนินการ</th></tr></thead><tbody>${PG.length?PG.map(g=>`<tr><td><b>${E(g.name)}</b></td><td>${TY[g.group_type]||''}</td><td class="num">${g.member_count}</td><td>${g.status=='suspended'?'<span class="badge rejected">ระงับ</span>':'<span class="badge paid">ใช้งาน</span>'}</td><td><button class="btn btn-outline btn-sm" data-a="pgstatus" data-i="${g.id}" data-s="${g.status=='suspended'?'active':'suspended'}">${g.status=='suspended'?'เปิดกลุ่ม':'ระงับกลุ่ม'}</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">ยังไม่มีกลุ่ม</td></tr>'}</tbody></table></div></div>`}
+function codePanel(gid,g){
+ const has=!!g.code,exp=has?new Date(g.codeExp).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+ return `<div class="panel tp"><div class="ph"><div><h2>รหัสเชิญ</h2><p>ผู้ที่กรอกรหัสต้องรอผู้ดูแลอนุมัติก่อนเข้ากลุ่ม</p></div></div><div class="pb">${has?`<div class="field"><label>รหัสปัจจุบัน</label><input readonly value="${E(g.code)}"></div><p class="sn">หมดอายุ ${exp} · มีผู้ขอแล้ว ${g.codeUses}${g.codeMax!=null?' จาก '+g.codeMax:''} คน</p>`:'<p class="sn">ยังไม่มีรหัสเชิญที่ใช้งานอยู่</p>'}
+ <div class="field"><label for="ci_h">อายุรหัส</label><select id="ci_h"><option value="24">24 ชั่วโมง</option><option value="72">3 วัน</option><option value="168">7 วัน</option><option value="720">30 วัน</option></select></div>
+ <div class="field"><label for="ci_m">จำนวนคนที่ขอเข้าได้ (เว้นว่างหมายถึงไม่จำกัด)</label><input id="ci_m" type="number" min="1" step="1"></div>
+ <div class="acts"><button class="btn btn-primary" data-a="mkcode" data-i="${gid}">${has?'สร้างรหัสใหม่':'สร้างรหัส'}</button>${has?`<button class="btn btn-danger" data-a="revcode" data-i="${gid}">ยกเลิกรหัส</button>`:''}</div></div></div>`;
+}
+function deletePanel(gid){
+ return `<div class="panel tp"><div class="ph"><div><h2>ลบกลุ่ม</h2><p>ลบได้เฉพาะกลุ่มที่ยังไม่มีประวัติการเงินที่อนุมัติแล้ว การลบย้อนกลับไม่ได้</p></div></div><div class="pb"><div class="acts"><button class="btn btn-danger" data-a="delgroup" data-i="${gid}">ลบกลุ่มนี้</button></div></div></div>`;
+}
+function vJoin(){
+ return head('เข้าร่วมกลุ่ม','กรอกรหัสเชิญที่ได้รับจากผู้ดูแลกลุ่ม')+`<div class="panel tp"><div class="pb"><div class="field"><label for="jc">รหัสเชิญ (8 ตัวอักษร)</label><input id="jc" maxlength="8" autocomplete="off"></div><div class="acts"><button class="btn btn-primary" data-a="joincode">ส่งคำขอเข้าร่วม</button></div></div></div>`;
+}
+function vSettingsBase(){
+ const gid=rgid&&G.some(g=>g.id==rgid)?rgid:(G[0]&&G[0].id);rgid=gid;
+ if(!gid)return head('ตั้งค่ากลุ่ม','ยังไม่มีกลุ่มที่คุณดูแล');
+ const g=G.find(x=>x.id==gid),actor=(PE.find(p=>p.code==me&&p.g==gid)||{}).role;
+ const TY={classroom:'ห้องเรียน',club:'ชมรม',student_group:'กลุ่มนักศึกษา',organization:'องค์กร',other:'อื่น ๆ'};
+ const cands=PE.filter(p=>p.g==gid&&p.code!=me&&p.status!='suspended'&&p.role!='owner');
+ return head('ตั้งค่ากลุ่ม','ปรับชื่อ รายละเอียด และประเภทของกลุ่ม')+
+ `<div class="panel tp"><div class="ph"><div><h2>ข้อมูลกลุ่ม</h2></div>${G.length>1?`<select id="rg" aria-label="เลือกกลุ่ม">${G.map(x=>`<option value="${x.id}"${x.id==gid?' selected':''}>${E(x.name)}</option>`).join('')}</select>`:''}</div>
+ <div class="pb"><div class="field"><label for="sg_n">ชื่อกลุ่ม</label><input id="sg_n" maxlength="60" value="${E(g.name)}"></div>
+ <div class="field"><label for="sg_d">รายละเอียด</label><input id="sg_d" maxlength="200" value="${E(g.desc=='-'?'':g.desc)}"></div>
+ <div class="field"><label for="sg_t">ประเภทกลุ่ม</label><select id="sg_t">${Object.entries(TY).map(([k,v])=>`<option value="${k}"${(g.type||'other')==k?' selected':''}>${v}</option>`).join('')}</select></div>
+ <div class="acts"><button class="btn btn-primary" data-a="savegroup" data-i="${gid}">บันทึกการตั้งค่า</button></div></div></div>`+
+ (actor=='owner'?`<div class="panel tp"><div class="ph"><div><h2>โอนความเป็นเจ้าของกลุ่ม</h2><p>หลังโอน คุณจะเป็นผู้ดูแล และกลับมาเป็นเจ้าของเองไม่ได้</p></div></div><div class="pb"><div class="field"><label for="tr_u">ผู้รับโอน</label><select id="tr_u">${cands.map(p=>`<option value="${p.code}">${E(p.name)}</option>`).join('')}</select></div><div class="acts"><button class="btn btn-danger" data-a="transfer" data-i="${gid}" ${cands.length?'':'disabled'}>โอนความเป็นเจ้าของ</button></div></div></div>`:'');
+}
+function vSettings(){
+ const base=vSettingsBase();
+ const gid=rgid&&G.some(g=>g.id==rgid)?rgid:(G[0]&&G[0].id);
+ const g=G.find(x=>x.id==gid);if(!g)return base;
+ const actor=(PE.find(p=>p.code==me&&p.g==gid)||{}).role;
+ return base+codePanel(gid,g)+(actor=='owner'?deletePanel(gid):'');
+}
+function vRoles(){
+ const gid=rgid&&G.some(g=>g.id==rgid)?rgid:(G[0]&&G[0].id);rgid=gid;
+ if(!gid)return head('จัดการสมาชิกและบทบาท','ยังไม่มีกลุ่มที่คุณดูแล');
+ const rows=PE.filter(p=>p.g==gid),actor=(PE.find(p=>p.code==me&&p.g==gid)||{}).role;
+ const OPT=actor=='owner'?['admin','treasurer','member']:['treasurer','member'];
+ const RL={owner:'เจ้าของกลุ่ม',admin:'ผู้ดูแล',treasurer:'เหรัญญิก',member:'สมาชิก'};
+ return head('จัดการสมาชิกและบทบาท','กำหนดบทบาทและสถานะของสมาชิก แยกตามแต่ละกลุ่ม')+
+ `<div class="panel tp"><div class="ph"><div><h2>รายชื่อสมาชิก</h2><p>${rows.length} คน</p></div><select id="rg" aria-label="เลือกกลุ่ม">${G.map(g=>`<option value="${g.id}"${g.id==gid?' selected':''}>${E(g.name)}</option>`).join('')}</select></div><div class="tw"><table><thead><tr><th>ชื่อ</th><th>บทบาท</th><th>สถานะ</th><th>การดำเนินการ</th></tr></thead><tbody>${rows.length?rows.map(p=>{
+  const self=p.code==me,locked=self||p.role=='owner'||(actor=='admin'&&p.role=='admin');
+  const sel=p.role=='owner'?`<span class="sub">${RL.owner}</span>`:`<select data-a="setrole" data-i="${p.code}" data-g="${gid}" aria-label="บทบาท" ${locked?'disabled':''}>${OPT.map(o=>`<option value="${o}"${o==p.role?' selected':''}>${RL[o]}</option>`).join('')}${p.role=='admin'&&actor=='owner'?'':''}</select>`;
+  const st=p.status=='suspended'?'<span class="badge rejected">ระงับ</span>':'<span class="badge paid">ใช้งาน</span>';
+  const acts=locked?'':`<div class="ra"><button class="btn btn-outline btn-sm" data-a="suspend" data-i="${p.code}" data-g="${gid}" data-s="${p.status=='suspended'?'active':'suspended'}">${p.status=='suspended'?'เปิดใช้งาน':'ระงับ'}</button><button class="btn btn-danger btn-sm" data-a="remove" data-i="${p.code}" data-g="${gid}">นำออก</button></div>`;
+  return `<tr><td><b>${E(p.name)}</b>${self?' <span class="sub">(คุณ)</span>':''}</td><td>${sel}</td><td>${st}</td><td>${acts}</td></tr>`}).join(''):'<tr><td colspan="4" class="empty">ยังไม่มีสมาชิก</td></tr>'}</tbody></table></div></div>`}
+function vRoom(){const g=G.find(x=>x.id==curRoom),ms=M.filter(m=>m.g==g.id),rs=R.filter(x=>x.g==g.id),ps=PE.filter(p=>p.g==g.id),jr=JR.filter(x=>x.g==g.id),link=inviteLink(g),canShare=typeof navigator!='undefined'&&navigator.share;
+ const tm=t=>new Date(t).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+ return `<button class="link" data-a="go" data-p="groups">← กลับไปหน้ากลุ่มของฉัน</button>`+head(E(g.name),E(g.desc),`<button class="btn btn-primary" data-a="newreqg" data-i="${g.id}">สร้างรายการเรียกเก็บ</button>`)+
+ `<div class="stats">${stat('ยอดเงินคงเหลือ',money(bal(g.id)),'ของห้องนี้')}${stat('สมาชิก',ps.length+' คน','ในห้องนี้')}${stat('รายการเรียกเก็บ',rs.length+' รายการ','ของห้องนี้')}${stat('คำขอเข้าร่วม',jr.length+' รายการ','รอผู้ดูแลอนุมัติ')}</div>
+<div class="panel tp"><div class="ph"><div><h2>เชิญเพื่อนเข้าห้อง</h2><p>แชร์ลิงก์ให้เพื่อน เพื่อนต้องรอผู้ดูแลอนุมัติก่อนจึงเข้าห้องได้</p></div></div><div class="pb"><div class="field"><label>ลิงก์เชิญ</label><input id="invlink" readonly value="${E(link)}"></div><div class="toolbar"><button class="btn btn-primary btn-sm" data-a="copylink" data-i="${g.id}">คัดลอกลิงก์</button>${canShare?`<button class="btn btn-outline btn-sm" data-a="share" data-i="${g.id}">แชร์</button>`:''}<button class="btn btn-outline btn-sm" data-a="copycode" data-i="${g.id}">คัดลอกรหัส ${E(g.inv)}</button><button class="btn btn-outline btn-sm" data-a="trylink" data-i="${g.id}">ทดลองเปิดลิงก์</button><button class="btn btn-danger btn-sm" data-a="newlink" data-i="${g.id}">สร้างลิงก์ใหม่</button></div><p class="sn" style="margin:10px 0 0">สร้างลิงก์ใหม่เมื่อไรลิงก์เดิมจะใช้ไม่ได้ทันที เพื่อนที่กดลิงก์จะต้องรอผู้ดูแลอนุมัติ</p></div></div>`+
+ (jr.length?`<div class="panel tp"><div class="ph"><div><h2>คำขอเข้าร่วมที่รออนุมัติ</h2></div></div><div class="tw"><table><thead><tr><th>ชื่อ</th><th>เวลาที่ขอ</th><th>การดำเนินการ</th></tr></thead><tbody>${jr.map(x=>`<tr><td><b>${E(x.name)}</b></td><td>${tm(x.ts)}</td><td><div class="ra"><button class="btn btn-primary btn-sm" data-a="jrok" data-i="${x.id}">อนุมัติ</button><button class="btn btn-danger btn-sm" data-a="jrno" data-i="${x.id}">ปฏิเสธ</button></div></td></tr>`).join('')}</tbody></table></div></div>`:'')+
+ `<div class="panel tp"><div class="ph"><div><h2>รายการเรียกเก็บของห้อง</h2></div></div><div class="tw"><table><thead><tr><th>รายการ</th><th class="num">ยอดต่อคน</th><th>ครบกำหนด</th><th class="num">ชำระแล้ว</th><th>สถานะ</th></tr></thead><tbody>${rs.length?rs.map(q=>{const a=ms.filter(m=>m.r==q.id),n=a.filter(m=>m.s=='paid').length,sx=a.length&&n==a.length?['ครบแล้ว','paid']:q.due<today?['เกินกำหนด','rejected']:['กำลังเก็บ','pending'];return `<tr><td><b>${E(q.title)}</b></td><td class="num">${money(q.amt).slice(2)}</td><td>${dt(q.due)}</td><td class="num">${n}/${a.length}</td><td><span class="badge ${sx[1]}">${sx[0]}</span></td></tr>`}).join(''):'<tr><td colspan="5" class="empty">ห้องนี้ยังไม่มีรายการเรียกเก็บ กดปุ่ม “สร้างรายการเรียกเก็บ” ด้านบน</td></tr>'}</tbody></table></div></div>
+<div class="panel tp"><div class="ph"><div><h2>สมาชิกในห้อง</h2></div></div><div class="tw"><table><thead><tr><th>ชื่อ</th><th>รหัส</th><th class="num">ชำระแล้ว</th><th class="num">ยอดค้างชำระ</th></tr></thead><tbody>${ps.length?ps.map(p=>{const a=M.filter(m=>m.code==p.code),n=a.filter(m=>m.s=='paid').length,ov=a.filter(m=>m.s=='unpaid'||m.s=='rejected').reduce((t,m)=>t+m.amt,0);return `<tr><td><b>${E(p.name)}</b></td><td>${p.code}</td><td class="num">${n}/${a.length}</td><td class="num">${money(ov).slice(2)}</td></tr>`}).join(''):'<tr><td colspan="4" class="empty">ยังไม่มีสมาชิก ส่งลิงก์เชิญให้เพื่อนได้เลย</td></tr>'}</tbody></table></div></div>`}
+const ds=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),kb=v=>Math.round(v/100).toLocaleString('th-TH');let dnDef='';
+function trend(){const y=+today.slice(0,4),mo=+today.slice(5,7)-1;return [...Array(6)].map((_,i)=>{const d=new Date(y,mo-(5-i),1),e=ds(new Date(y,mo-(5-i)+1,0)),v=A().filter(x=>x.date<=e).reduce((t,x)=>t+(x.type=='expense'?-x.amt:x.amt),0);return{l:d.toLocaleDateString('th-TH',{month:'short'}),v}})}
+function lineChart(){const d=trend(),n=d.length,vs=d.map(x=>x.v),mn=Math.min(...vs),mx=Math.max(...vs),pad=(mx-mn)*.15||mx*.1||1,lo=Math.max(0,mn-pad),hi=mx+pad,px=i=>6+i*88/(n-1),py=v=>(v-lo)/(hi-lo)*84+8,P=d.map((x,i)=>[px(i),100-py(x.v)]);
+ let p='M'+P[0][0]+' '+P[0][1];for(let i=0;i<n-1;i++){const a=P[i-1]||P[i],b=P[i],c=P[i+1],e=P[i+2]||c;p+=` C${b[0]+(c[0]-a[0])/6} ${b[1]+(c[1]-a[1])/6},${c[0]-(e[0]-b[0])/6} ${c[1]-(e[1]-b[1])/6},${c[0]} ${c[1]}`}
+ return `<div class="panel"><div class="ph"><div><h2>แนวโน้มยอดเงินคงเหลือ</h2><p>ยอดสะสม ณ สิ้นเดือน ย้อนหลัง 6 เดือน (บาท)</p></div></div><div class="pb"><div class="lc"><div class="ly"><span>${kb(hi)}</span><span>${kb((hi+lo)/2)}</span><span>${kb(lo)}</span></div><div class="lp"><svg class="lsvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="lgf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--pri);stop-opacity:.4"/><stop offset="1" style="stop-color:var(--pri);stop-opacity:0"/></linearGradient></defs><path d="${p} L${P[n-1][0]} 100 L${P[0][0]} 100 Z" fill="url(#lgf)"/><path d="${p}" fill="none" stroke="var(--pri)" stroke-width="2.2" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg>${d.map((x,i)=>`<i class="dot${i>n-3?' r':''}" tabindex="0" style="left:${P[i][0]}%;bottom:${100-P[i][1]}%" data-tip="${x.l}: ${money(x.v)}"></i>`).join('')}</div></div><div class="lx">${d.map((x,i)=>`<span style="left:${P[i][0]}%">${x.l}</span>`).join('')}</div></div></div>`}
+function donut(){const c={paid:0,pending:0,rejected:0,overdue:0,unpaid:0};M.forEach(m=>c[stx(m)]++);const tot=M.length||1,meta=[['paid','ชำระแล้ว','var(--ok)'],['pending','รอตรวจสอบ','var(--warn)'],['rejected','ปฏิเสธหลักฐาน','var(--bad)'],['overdue','เกินกำหนด','var(--pri)'],['unpaid','ยังไม่ชำระ','var(--muted)']].filter(k=>c[k[0]]);let cum=0;
+ const segs=meta.map(([k,l,col])=>{const pc=c[k]/tot*100,w=Math.max(0,pc-(pc>3?.8:0)),r=`<circle class="dseg" cx="21" cy="21" r="15.915" fill="none" stroke="${col}" stroke-width="5" stroke-dasharray="${w} ${100-w}" stroke-dashoffset="${25-cum}" data-l="${l}" data-n="${c[k]}" data-p="${Math.round(pc)}"/>`;cum+=pc;return r});
+ dnDef=`<b>${Math.round(c.paid/tot*100)}%</b><span>ชำระแล้ว</span>`;
+ return `<div class="panel"><div class="ph"><div><h2>สัดส่วนสถานะการชำระ</h2><p>นับตามรายการเรียกเก็บทั้งหมด</p></div></div><div class="pb"><div class="dn"><svg viewBox="0 0 42 42" aria-hidden="true"><circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--line)" stroke-width="5"/>${segs.join('')}</svg><div class="dnc" id="dnc">${dnDef}</div></div><div class="dl">${meta.map(([k,l,col])=>`<div><i style="background:${col}"></i>${l}<b>${c[k]}</b></div>`).join('')}</div></div></div>`}
+function stackChart(){const rows=R.slice().sort((a,b)=>a.due.localeCompare(b.due)).map(q=>{const a=M.filter(m=>m.r==q.id),f=t=>a.filter(m=>t.includes(m.s)).reduce((z,m)=>z+m.amt,0);return{q,p:f(['paid']),w:f(['pending']),o:f(['unpaid','rejected']),t:q.amt*a.length}}).filter(r=>r.t>0),mx=Math.max(1,...rows.map(r=>r.t));
+ return `<div class="panel tp"><div class="ph"><div><h2>ยอดเก็บและยอดค้างตามรายการเรียกเก็บ</h2><p>ความยาวแท่งเทียบตามยอดเรียกเก็บรวมของแต่ละรายการ</p></div></div><div class="pb"><div class="lg2"><span><i style="background:var(--ok)"></i>ชำระแล้ว</span><span><i style="background:var(--warn)"></i>รอตรวจสอบ</span><span><i style="background:var(--pri)"></i>ค้างชำระ</span></div>${rows.map(r=>`<div class="sbr"><div class="sbh"><b>${E(r.q.title)}</b><span class="sn">${E(gn(r.q.g))}</span></div><div class="sb" style="width:${r.t/mx*100}%">${[['p','ชำระแล้ว'],['w','รอตรวจสอบ'],['o','ค้างชำระ']].map(([k,l])=>r[k]?`<i class="s-${k}" style="flex:${r[k]}" title="${l} ${money(r[k])}"></i>`:'').join('')}</div><div class="sn">เก็บแล้ว ${money(r.p)} จากทั้งหมด ${money(r.t)}</div></div>`).join('')}</div></div>`}
+$('#v').addEventListener('mouseover',e=>{const t=e.target.closest&&e.target.closest('.dseg'),c=$('#dnc');if(c&&t)c.innerHTML='<b>'+t.dataset.n+'</b><span>'+t.dataset.l+' ('+t.dataset.p+'%)</span>'});
+$('#v').addEventListener('mouseout',e=>{const t=e.target.closest&&e.target.closest('.dseg'),c=$('#dnc');if(c&&t)c.innerHTML=dnDef});
+function toast(m){const t=$('#t');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2600)}
+const D=$('#d'),fld=(l,h)=>`<div class="field"><label>${l}</label>${h}</div>`,gopt=sel=>G.map(g=>`<option value="${g.id}"${g.id==sel?' selected':''}>${E(g.name)}</option>`).join('');
+const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function closeD(){if(!D.open||D.classList.contains('closing'))return;D.classList.add('closing');setTimeout(()=>{D.close();D.classList.remove('closing')},RM()?0:200)}
+D.addEventListener('cancel',e=>{e.preventDefault();closeD()});
+function dlg(t,p,html,ok,fn){D.innerHTML=`<form method="dialog"><h2>${t}</h2><p>${p}</p>${html}<p class="err" id="er"></p><div class="acts"><button type="button" class="btn btn-outline" id="cx">ยกเลิก</button><button class="btn btn-primary">${ok}</button></div></form>`;
+ $('#cx').onclick=closeD;
+ D.querySelector('form').onsubmit=e=>{e.preventDefault();const r=fn(new FormData(e.target));if(r){$('#er').textContent=r;return}closeD()};D.showModal()}
+const conf=(p,ok,fn)=>dlg('ยืนยันการดำเนินการ',p,'',ok,()=>{fn()});
+
+function newG(){dlg('เพิ่มกลุ่มใหม่','ระบุชื่อกลุ่มและรายละเอียดเบื้องต้น',fld('ชื่อกลุ่ม','<input name="n" required maxlength="60">')+fld('รายละเอียด','<input name="d" maxlength="80">')+fld('ประเภทกลุ่ม','<select name="ty">'+[['classroom','ห้องเรียน'],['club','ชมรม'],['student_group','กลุ่มนักศึกษา'],['organization','องค์กร'],['other','อื่น ๆ']].map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')+'</select>')+fld('ยอดยกมา (บาท)','<input name="a" type="number" min="0" step="0.01" value="0">'),'เพิ่มกลุ่ม',f=>{
+ const n=f.get('n').trim(),a=Math.round(f.get('a')*100);if(!n)return 'กรุณากรอกชื่อกลุ่ม';if(G.some(g=>g.name==n))return 'มีกลุ่มชื่อนี้อยู่แล้ว';
+ if(!SB||!AUSER)return 'กรุณาเข้าสู่ระบบก่อน';
+ (async()=>{const r=await SB.from('groups').insert({name:n,description:f.get('d').trim()||null,group_type:f.get('ty')||'other',created_by:AUSER.id}).select('id').single();
+  if(r.error){toast(aTh(r.error.message));return}
+  if(a>0){const o=await SB.rpc('add_ledger_entry',{p_group:r.data.id,p_type:'opening',p_amount:a,p_description:'ยอดยกมา'});if(o.error)toast(aTh(o.error.message))}
+  await loadGroups();curRoom=r.data.id;page='room';animate=true;render();toast('เพิ่มกลุ่มแล้ว')})()})}
+function newM(){dlg('เพิ่มสมาชิก','สมาชิกใหม่จะถูกเรียกเก็บตามรายการเรียกเก็บทุกรายการของกลุ่ม',fld('ชื่อ-นามสกุล','<input name="n" required maxlength="60">')+fld('กลุ่ม',`<select name="g">${gopt()}</select>`),'เพิ่มสมาชิก',f=>{
+ const n=f.get('n').trim(),g=+f.get('g'),rs=R.filter(x=>x.g==g);if(!n)return 'กรุณากรอกชื่อสมาชิก';
+ if(PE.some(p=>p.g==g&&p.name==n))return 'มีสมาชิกชื่อนี้ในกลุ่มแล้ว';
+ if(!rs.length)return 'กลุ่มนี้ยังไม่มีรายการเรียกเก็บ กรุณาสร้างรายการเรียกเก็บก่อน';
+ rs.forEach(q=>addM(n,g,q.amt,'unpaid',undefined,undefined,undefined,q.id));logA(BY,'เพิ่มสมาชิก',n+' กลุ่ม'+gn(g));toast('เพิ่มสมาชิกแล้ว');render()})}
+function newL(){dlg('บันทึกรายการบัญชี','รายการที่บันทึกแล้วจะถูกนำไปคำนวณยอดคงเหลือทันที',fld('ประเภท','<select name="t"><option value="expense">รายจ่าย</option><option value="income">รายรับอื่น ๆ</option></select>')+fld('กลุ่ม',`<select name="g">${gopt()}</select>`)+fld('รายละเอียด','<input name="n" required maxlength="80">')+fld('จำนวนเงิน (บาท)','<input name="a" type="number" min="0.01" step="0.01" required>'),'บันทึกรายการ',f=>{
+ const t=f.get('t'),g=f.get('g'),n=f.get('n').trim(),a=Math.round(f.get('a')*100);if(!n||!(a>0))return 'กรอกรายละเอียดและจำนวนเงินให้ถูกต้อง';
+ if(!SB||!AUSER)return 'กรุณาเข้าสู่ระบบก่อน';
+ SB.rpc('add_ledger_entry',{p_group:g,p_type:t,p_amount:a,p_description:n}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('บันทึกรายการแล้ว');loadFin().then(render)}});})}
+function okM(m){if(!m.pid)return;SB.rpc('approve_payment',{pid:m.pid}).then(r=>{if(r.error)toast(aTh(r.error.message));else loadFin().then(render)})}
+
+$('#v').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,i=b.dataset.i;
+ if(role=='member'&&!['mysub','go','joincode','newg'].includes(a))return;if(a=='newg')newG();else if(a=='newm')newM();else if(a=='newl')newL();else if(a=='mysub')mySub(i);else if(a=='newreq')newReq();else if(a=='cv')setCv(b.dataset.v);
+ else if(a=='room'){curRoom=i;page='room';animate=true;scrollTo(0,0);render()}
+ else if(a=='newreqg')newReq(i);
+ else if(a=='copylink'||a=='copycode'){const g=G.find(x=>x.id==i);copyTxt(a=='copylink'?inviteLink(g):g.inv,a=='copylink'?'คัดลอกลิงก์แล้ว':'คัดลอกรหัสแล้ว')}
+ else if(a=='share'){const g=G.find(x=>x.id==i),u=inviteLink(g),d={title:'เชิญเข้าห้อง '+g.name,text:'เชิญเข้าร่วมห้อง '+g.name+' ใน GroupFund '+u};if(BASE[0]=='h')d.url=u;if(navigator.share)navigator.share(d).catch(()=>copyTxt(u,'คัดลอกลิงก์แล้ว'));else copyTxt(u,'คัดลอกลิงก์แล้ว')}
+ else if(a=='trylink')window.open(inviteLink(G.find(x=>x.id==i)),'_blank');
+ else if(a=='newlink'){const g=G.find(x=>x.id==i);conf('สร้างลิงก์เชิญใหม่สำหรับห้อง “'+E(g.name)+'”? ลิงก์เดิมจะใช้ไม่ได้อีก','สร้างลิงก์ใหม่',()=>{SB.rpc('create_invite_link',{gid:g.id}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('สร้างลิงก์ใหม่แล้ว ลิงก์เดิมใช้ไม่ได้แล้ว');loadFin().then(render)}})})}
+ else if(a=='jrok'){const x=JR.find(y=>y.id==i);conf('อนุมัติให้ '+E(x.name)+' เข้าร่วมห้อง “'+E(gn(x.g))+'”? สมาชิกใหม่จะถูกเรียกเก็บตามรายการของห้องทั้งหมด','อนุมัติ',()=>{SB.rpc('decide_join_request',{rid:x.id,approve:true}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('อนุมัติให้เข้าห้องแล้ว');loadFin().then(render)}})})}
+ else if(a=='jrno'){const x=JR.find(y=>y.id==i);conf('ปฏิเสธคำขอเข้าห้องของ '+E(x.name)+'?','ปฏิเสธ',()=>{SB.rpc('decide_join_request',{rid:x.id,approve:false}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('ปฏิเสธคำขอแล้ว');loadFin().then(render)}})})}
+ else if(a=='pgstatus'){const ns=b.dataset.s,gid=i;const g=PG.find(x=>x.id==gid);
+   const run=()=>SB.rpc('set_group_status',{gid,new_status:ns}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast(ns=='suspended'?'ระงับกลุ่มแล้ว':'เปิดกลุ่มแล้ว');loadPlat().then(render)}});
+   if(ns=='suspended')conf('ระงับกลุ่ม “'+E(g?g.name:'')+'”? สมาชิกและผู้ดูแลจะเข้าถึงกลุ่มไม่ได้จนกว่าจะเปิดใหม่','ระงับกลุ่ม',run);else run()}
+ else if(a=='mkcode'){const gid=i;const h=+$('#ci_h').value;const mv=$('#ci_m').value;
+   SB.rpc('create_invite_code',{gid,valid_hours:h,max_req:mv?+mv:null}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('สร้างรหัสเชิญแล้ว');loadFin().then(render)}})}
+ else if(a=='revcode'){const gid=i;SB.rpc('revoke_invite_code',{gid}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('ยกเลิกรหัสเชิญแล้ว');loadFin().then(render)}})}
+ else if(a=='delgroup'){const gid=i;const g=G.find(x=>x.id==gid);
+   conf('ลบกลุ่ม “'+E(g?g.name:'')+'”? การกระทำนี้ย้อนกลับไม่ได้','ลบกลุ่ม',()=>{SB.rpc('delete_group',{gid}).then(r=>{if(r.error)toast(aTh(r.error.message));else{rgid=null;toast('ลบกลุ่มแล้ว');loadGroups().then(render)}})})}
+ else if(a=='joincode'){const code=($('#jc').value||'').trim();if(!code){toast('กรุณากรอกรหัสเชิญ');return}
+   SB.rpc('request_join_by_code',{input_code:code}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('ส่งคำขอแล้ว รอผู้ดูแลอนุมัติ');const f=$('#jc');if(f)f.value=''}})}
+ else if(a=='savegroup'){const gid=b.dataset.i;
+   SB.rpc('update_group',{gid,new_name:$('#sg_n').value,new_desc:$('#sg_d').value,new_type:$('#sg_t').value}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('บันทึกการตั้งค่าแล้ว');loadGroups().then(render)}})}
+ else if(a=='transfer'){const gid=b.dataset.i,uid2=$('#tr_u').value;const p=PE.find(x=>x.code==uid2&&x.g==gid);
+   conf('โอนความเป็นเจ้าของให้ '+E(p?p.name:'สมาชิก')+' ? คุณจะกลายเป็นผู้ดูแลกลุ่ม','โอนความเป็นเจ้าของ',()=>{SB.rpc('transfer_ownership',{gid,uid:uid2}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('โอนความเป็นเจ้าของแล้ว');loadGroups().then(render)}})})}
+ else if(a=='suspend'){const gid=b.dataset.g,uid2=b.dataset.i,ns=b.dataset.s;const p=PE.find(x=>x.code==uid2&&x.g==gid);
+   const run=()=>SB.rpc('set_member_status',{gid,uid:uid2,new_status:ns}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast(ns=='suspended'?'ระงับสมาชิกแล้ว':'เปิดใช้งานสมาชิกแล้ว');loadFin().then(render)}});
+   if(ns=='suspended')conf('ระงับ '+E(p?p.name:'สมาชิก')+' ? ระหว่างระงับจะเข้าถึงข้อมูลกลุ่มไม่ได้','ระงับ',run);else run()}
+ else if(a=='remove'){const gid=b.dataset.g,uid2=b.dataset.i;const p=PE.find(x=>x.code==uid2&&x.g==gid);
+   conf('นำ '+E(p?p.name:'สมาชิก')+' ออกจากกลุ่ม? ประวัติการชำระเดิมจะยังคงอยู่','นำออก',()=>{SB.rpc('remove_member',{gid,uid:uid2}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('นำสมาชิกออกแล้ว');loadFin().then(render)}})})}
+ else if(a=='go'){page=b.dataset.p;animate=true;scrollTo(0,0);render()}
+ else if(a=='cash'){const m=M.find(y=>y.id==i);conf('ยืนยันการรับเงินสด '+money(m.amt)+' จาก '+E(m.name)+' กลุ่ม'+E(gn(m.g))+'?','ยืนยันรับเงิน',()=>{SB.rpc('record_cash_payment',{item_id:m.id}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('บันทึกการรับเงินสดแล้ว');loadFin().then(render)}})})}
+ else if(a=='apr'){const m=M.find(y=>y.id==i);conf('ยืนยันว่าได้รับเงิน '+money(m.amt)+' จาก '+E(m.name)+' เข้าบัญชีจริงแล้ว และอนุมัติรายการนี้?','อนุมัติ',()=>{okM(m);logA(BY,'อนุมัติการชำระ',m.name+' / '+rq(m.r).title+' '+money(m.amt));toast('อนุมัติแล้ว');render()})}
+ else if(a=='rej'){const m=M.find(y=>y.id==i);dlg('ปฏิเสธหลักฐานการชำระ','ระบุเหตุผลเพื่อแจ้งสมาชิก',fld('เหตุผล','<input name="r" required maxlength="100">'),'ปฏิเสธ',f=>{m.reason=f.get('r').trim();if(m.pid)SB.rpc('reject_payment',{pid:m.pid}).then(r=>{if(r.error)toast(aTh(r.error.message));else loadFin().then(render)});logA(BY,'ปฏิเสธหลักฐาน',m.name+' / '+rq(m.r).title+' เหตุผล: '+m.reason);toast('ปฏิเสธหลักฐานแล้ว');render()})}
+ else if(a=='rv'){const x=L.find(y=>y.id==i),t=x.type=='expense'?'income':'expense';
+  if(t=='expense'&&x.amt>bal(x.g))return toast('ยอดคงเหลือของกลุ่มไม่พอสำหรับการกลับรายการนี้');
+  conf('กลับรายการ “'+E(x.detail)+'” จำนวน '+money(x.amt)+'? ระบบจะเพิ่มรายการกลับบัญชีและเก็บรายการเดิมไว้เป็นหลักฐาน','กลับรายการ',()=>{x.rev=true;L.push({id:++uid,date:today,g:x.g,type:t,detail:'กลับรายการ: '+x.detail,amt:x.amt,rv:x.id,by:BY});logA(BY,'กลับรายการ',x.detail+' '+money(x.amt));toast('กลับรายการแล้ว');render()})}};
+$('#v').addEventListener('input',e=>{const t=e.target,k=t.id;if(k=='qm'){qm=t.value;fillM()}else if(k=='gm'){gm=t.value;fillM()}else if(k=='ql'){ql=t.value;fillL()}else if(k=='tl'){tl=t.value;fillL()}else if(k=='pf'){pf=t.value;fillP()}else if(k=='af'){af=t.value;fillA()}labelTables()});
+
+buildNav();
+$('#nav').onclick=e=>{const b=e.target.closest('button');if(b){page=b.dataset.p;animate=true;scrollTo(0,0);render()}};
+$('#menu').onclick=e=>{e.stopPropagation();$('#side').classList.toggle('open')};
+document.addEventListener('click',e=>{if(!e.target.closest('#side'))$('#side').classList.remove('open')});
+$('#today').textContent=dt(today);
+
+$('#who').onchange=e=>{if(e.target.id=='asm'){me=e.target.value;animate=true;render()}};
+function countUp(el){const t=el.textContent,m=t.match(/[\d,]+(?:\.\d+)?/);if(!m)return;const q=m[0],v=parseFloat(q.replace(/,/g,'')),d=(q.split('.')[1]||'').length,pre=t.slice(0,m.index),post=t.slice(m.index+q.length),t0=performance.now();
+ const f=n=>pre+n.toLocaleString('th-TH',{minimumFractionDigits:d,maximumFractionDigits:d})+post;
+ const step=now=>{const p=Math.min(1,(now-t0)/900),e=1-Math.pow(1-p,3);el.textContent=f(v*e);if(p<1)requestAnimationFrame(step)};el.textContent=f(0);requestAnimationFrame(step)}
+function render(){if(page=='room'&&(role=='member'||!G.some(g=>g.id==curRoom)))page='groups';if(!curNav().some(x=>x[0]==page)&&page!='room')page=curNav()[0][0];$('#who').innerHTML=whoHtml();const n=M.filter(m=>m.s=='pending').length,t=page=='room'?gn(curRoom):curNav().find(x=>x[0]==page)[1];
+ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.p==(page=='room'?'groups':page)));
+ const pn=$('#pn');if(pn){pn.textContent=n;pn.hidden=!n}$('#crumb').textContent='ระบบบริหารเงินกองกลาง / '+t;$('#tt').textContent=t;
+ $('#v').innerHTML={join:vJoin,platform:vPlatform,settings:vSettings,roles:vRoles,dash:vDash,groups:vGroups,mem:vMem,pay:vPay,led:vLed,rep:vRep,mydues:vMy,myhist:vHist,req:vReq,audit:vAudit,room:vRoom}[page]();
+ const f={mem:fillM,pay:fillP,led:fillL,audit:fillA}[page];if(f)f();$('#side').classList.remove('open');
+ const V=$('#v');V.classList.toggle('anim',animate);
+ if(animate){V.querySelectorAll('.welcome,.stat,.gc,.panel,.notice').forEach((el,i)=>el.style.setProperty('--i',Math.min(i,9)));V.querySelectorAll('.cc').forEach((c,i)=>c.style.setProperty('--d',i*70+'ms'));if(!RM())V.querySelectorAll('.sv,.ga').forEach(countUp)}
+ dispose3D();if(page=='dash'&&cv=='3d')init3D();animate=false;labelTables();moveHl(navFresh);navFresh=false}
+render();
+window.addEventListener('hashchange',handleHash);handleHash();
+window.__appReady=true;authApply();
+</script>
+</body>
+</html>
