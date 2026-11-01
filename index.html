@@ -394,7 +394,7 @@ AU.length=0;aud.data.forEach(x=>{const md=x.metadata||{};const pm=md.payment_met
 L.length=0;tx.data.forEach(x=>L.push({id:x.id,date:x.created_at.slice(0,10),g:x.group_id,type:x.transaction_type,detail:x.description||'',amt:x.amount,ref:x.reference_id,by:'ระบบ'}));
 if(typeof buildNav=='function')buildNav();
 }
-let pendingTok=null;
+let pendingTok=null,joiningToken=false;window.__pendingInviteToken=null;
 let rgid=null;
 let PLAT=false,PG=[];
 async function loadPlat(){
@@ -403,12 +403,16 @@ async function loadPlat(){
  if(PLAT){const l=await SB.rpc('admin_list_groups');PG=l.data||[]}
 }
 async function joinByToken(){
- if(!pendingTok||!SB||!AUSER)return;
- const tok=pendingTok;pendingTok=null;
- history.replaceState(null,'',location.pathname);
- const r=await SB.rpc('request_join',{tok});
- if(r.error){toast(aTh(r.error.message));return}
- toast('ส่งคำขอเข้าร่วมแล้ว รอผู้ดูแลอนุมัติ');
+ if(!pendingTok||!SB||!AUSER||joiningToken)return;
+ const tok=pendingTok;pendingTok=null;joiningToken=true;
+ try{
+  const r=await SB.rpc('request_join',{tok});
+  if(r.error){pendingTok=tok;window.__pendingInviteToken=tok;toast(aTh(r.error.message));return}
+  window.__pendingInviteToken=null;
+  history.replaceState(null,'',location.pathname);
+  toast('ส่งคำขอเข้าร่วมห้องแล้ว รอผู้ดูแลอนุมัติ');
+ }catch(err){pendingTok=tok;window.__pendingInviteToken=tok;toast(aTh(err.message||err))}
+ finally{joiningToken=false}
 }
 async function loadMyProfile(){
  if(!SB||!AUSER)return;
@@ -439,6 +443,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
   if(!window.confirm('คุณต้องการออกจากระบบ GroupFund ใช่หรือไม่?'))return;
   SB.auth.signOut().then(({error})=>{if(error)toast(aTh(error.message))});
  }});
+function inviteRedirect(){const token=window.__pendingInviteToken||new URLSearchParams(location.search).get('join')||((/^#join-([a-f0-9]{64})$/i.exec(location.hash||''))||[])[1],target=new URL(location.origin+location.pathname);if(token)target.searchParams.set('join',token);return target.toString()}
 document.getElementById('aform').addEventListener('submit',async e=>{e.preventDefault();
  if(!SB)return aMsg('โหลดไลบรารี Supabase ไม่สำเร็จ');
  const f=new FormData(e.target),em=(f.get('email')||'').trim().toLowerCase(),pw=f.get('password')||'',btn=e.target.querySelector('button[type=submit]');
@@ -449,7 +454,7 @@ document.getElementById('aform').addEventListener('submit',async e=>{e.preventDe
  btn.disabled=true;aMsg('กำลังดำเนินการ...',true);
  try{let r;
   if(amode=='in')r=await SB.auth.signInWithPassword({email:em,password:pw});
-  else if(amode=='up'){r=await SB.auth.signUp({email:em,password:pw,options:{data:{full_name:f.get('name').trim()},emailRedirectTo:location.origin+location.pathname}});
+  else if(amode=='up'){r=await SB.auth.signUp({email:em,password:pw,options:{data:{full_name:f.get('name').trim()},emailRedirectTo:inviteRedirect()}});
    if(!r.error&&!r.data.session){aMsg('สมัครสำเร็จ กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ',true);btn.disabled=false;return}}
   else if(amode=='fg'){r=await SB.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});
    if(!r.error){aMsg('ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว กรุณาตรวจอีเมล',true);btn.disabled=false;return}}
@@ -594,7 +599,7 @@ function moveHl(first){const a=document.querySelector('#nav button.active'),h=do
 window.addEventListener('resize',()=>moveHl(true));if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>moveHl(true));
 document.addEventListener('pointerdown',e=>{const t=e.target.closest('.btn,.stat,.gc,.nav button,.chip,.c3bar button,.seg button,.link');if(!t)return;t.classList.remove('pulse');void t.offsetWidth;t.classList.add('pulse');setTimeout(()=>t.classList.remove('pulse'),650)});
 const genCode=()=>{const a='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<6;i++)c+=a[Math.floor(Math.random()*a.length)];return c};
-const inviteLink=g=>g&&g.inv?location.origin+location.pathname+'#join-'+g.inv:'';
+const inviteLink=g=>g&&g.inv?location.origin+location.pathname+'?join='+encodeURIComponent(g.inv):'';
 function copyTxt(t,msg){const done=()=>toast(msg),fb=()=>{const x=document.createElement('textarea');x.value=t;x.style.cssText='position:fixed;opacity:0';document.body.appendChild(x);x.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}x.remove();ok?done():toast('คัดลอกอัตโนมัติไม่ได้ กรุณาเลือกข้อความแล้วคัดลอกเอง')};try{navigator.clipboard.writeText(t).then(done,fb)}catch(e){fb()}}
 function openJoin(code){const g=G.find(x=>x.inv==code);
  if(!g)return dlg('ลิงก์เชิญไม่ถูกต้อง','ลิงก์นี้ไม่ถูกต้องหรือถูกยกเลิกแล้ว กรุณาขอลิงก์ใหม่จากผู้ดูแลห้อง','','ปิด',()=>{});
@@ -603,7 +608,7 @@ function openJoin(code){const g=G.find(x=>x.inv==code);
   if(PE.some(p=>p.g==g.id&&p.name==n))return 'คุณเป็นสมาชิกห้องนี้อยู่แล้ว';
   if(JR.some(x=>x.g==g.id&&x.name==n))return 'ส่งคำขอไว้แล้ว รอผู้ดูแลอนุมัติ';
   JR.push({id:++uid,g:g.id,name:n,ts:new Date().toISOString()});logA(n,'ขอเข้าร่วมห้อง','กลุ่ม'+g.name);toast('ส่งคำขอแล้ว รอผู้ดูแลอนุมัติ');render()})}
-function handleHash(){if(typeof location=='undefined')return;const m=/^#join-([a-f0-9]{64})$/.exec(location.hash||'');if(m){pendingTok=m[1];if(AUSER)joinByToken()}}
+function handleHash(){if(typeof location=='undefined')return;const q=new URLSearchParams(location.search).get('join'),m=/^#join-([a-f0-9]{64})$/i.exec(location.hash||''),token=q||(m&&m[1]);if(token&&/^[a-f0-9]{64}$/i.test(token)){pendingTok=token.toLowerCase();window.__pendingInviteToken=pendingTok;if(AUSER)joinByToken();else aMsg('ลิงก์นี้เป็นคำเชิญเข้าร่วมห้อง กรุณาเข้าสู่ระบบหรือสมัครสมาชิกเพื่อส่งคำขอ',true)}}
 function vPlatform(){
  if(!PLAT)return head('ผู้ดูแลระบบ','ไม่มีสิทธิ์เข้าถึงหน้านี้');
  const TY={classroom:'ห้องเรียน',club:'ชมรม',student_group:'กลุ่มนักศึกษา',organization:'องค์กร',other:'อื่น ๆ'};
@@ -715,14 +720,13 @@ $('#v').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.
  else if(a=='copylink'||a=='copycode'){const g=G.find(x=>x.id==i),u=inviteLink(g);if(a=='copylink'&&!u){toast('กรุณาสร้างลิงก์เชิญก่อน');return}if(a=='copycode'&&!g.code){toast('ยังไม่มีรหัสเชิญ กรุณาสร้างรหัสก่อน');return}copyTxt(a=='copylink'?u:g.code,a=='copylink'?'คัดลอกลิงก์แล้ว':'คัดลอกรหัสเชิญแล้ว')}
  else if(a=='share'){const g=G.find(x=>x.id==i),u=inviteLink(g);if(!u){toast('กรุณาสร้างลิงก์เชิญก่อน');return}const d={title:'เชิญเข้าห้อง '+g.name,text:'เชิญเข้าร่วมห้อง '+g.name+' ใน GroupFund: '+u,url:u};if(navigator.share)navigator.share(d).catch(err=>{if(err&&err.name!=='AbortError')copyTxt(u,'คัดลอกลิงก์แล้ว')});else copyTxt(u,'คัดลอกลิงก์แล้ว')}
  else if(a=='trylink'){const u=inviteLink(G.find(x=>x.id==i));if(!u){toast('กรุณาสร้างลิงก์เชิญก่อน');return}window.open(u,'_blank')}
- else if(a=='newlink'){const g=G.find(x=>x.id==i);const create=()=>{SB.rpc('create_invite_link',{gid:g.id}).then(r=>{if(r.error){toast(aTh(r.error.message));return}toast(g.inv?'สร้างลิงก์ใหม่แล้ว ลิงก์เดิมใช้ไม่ได้แล้ว':'สร้างลิงก์เชิญเรียบร้อยแล้ว');loadFin().then(render)})};if(g.inv)conf('สร้างลิงก์เชิญใหม่สำหรับห้อง “'+E(g.name)+'”? ลิงก์เดิมจะใช้ไม่ได้อีก','สร้างลิงก์ใหม่',create);else create()}
+ else if(a=='newlink'){const g=G.find(x=>x.id==i);if(!g){toast('ไม่พบกลุ่มที่เลือก');return}const create=async()=>{b.disabled=true;try{const r=await SB.rpc('create_invite_link',{gid:g.id});if(r.error){toast(aTh(r.error.message));return}g.inv=r.data;toast(g.inv?'สร้างลิงก์เชิญสำหรับห้อง '+g.name+' แล้ว':'สร้างลิงก์เชิญไม่สำเร็จ');render();loadFin().then(render)}catch(err){toast(aTh(err.message||err))}finally{b.disabled=false}};if(g.inv)conf('สร้างลิงก์เชิญใหม่สำหรับห้อง “'+E(g.name)+'”? ลิงก์เดิมจะใช้ไม่ได้อีก','สร้างลิงก์ใหม่',create);else create()}
  else if(a=='jrok'){const x=JR.find(y=>y.id==i);conf('อนุมัติให้ '+E(x.name)+' เข้าร่วมห้อง “'+E(gn(x.g))+'”? สมาชิกใหม่จะถูกเรียกเก็บตามรายการของห้องทั้งหมด','อนุมัติ',()=>{SB.rpc('decide_join_request',{rid:x.id,approve:true}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('อนุมัติให้เข้าห้องแล้ว');loadFin().then(render)}})})}
  else if(a=='jrno'){const x=JR.find(y=>y.id==i);conf('ปฏิเสธคำขอเข้าห้องของ '+E(x.name)+'?','ปฏิเสธ',()=>{SB.rpc('decide_join_request',{rid:x.id,approve:false}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('ปฏิเสธคำขอแล้ว');loadFin().then(render)}})})}
  else if(a=='pgstatus'){const ns=b.dataset.s,gid=i;const g=PG.find(x=>x.id==gid);
    const run=()=>SB.rpc('set_group_status',{gid,new_status:ns}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast(ns=='suspended'?'ระงับกลุ่มแล้ว':'เปิดกลุ่มแล้ว');loadPlat().then(render)}});
    if(ns=='suspended')conf('ระงับกลุ่ม “'+E(g?g.name:'')+'”? สมาชิกและผู้ดูแลจะเข้าถึงกลุ่มไม่ได้จนกว่าจะเปิดใหม่','ระงับกลุ่ม',run);else run()}
- else if(a=='mkcode'){const gid=i;const h=+$('#ci_h').value;const mv=$('#ci_m').value;
-   SB.rpc('create_invite_code',{gid,valid_hours:h,max_req:mv?+mv:null}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('สร้างรหัสเชิญแล้ว');loadFin().then(render)}})}
+ else if(a=='mkcode'){const gid=i,h=+$('#ci_h').value,mv=$('#ci_m').value,g=G.find(x=>x.id==gid);if(!g){toast('ไม่พบกลุ่มที่เลือก');return}b.disabled=true;SB.rpc('create_invite_code',{gid,valid_hours:h,max_req:mv?+mv:null}).then(async r=>{if(r.error){toast(aTh(r.error.message));return}g.code=r.data;g.codeExp=new Date(Date.now()+h*3600000).toISOString();g.codeMax=mv?+mv:null;g.codeUses=0;toast('สร้างรหัสเชิญสำหรับห้อง '+g.name+' แล้ว');render();loadFin().then(render)}).catch(err=>toast(aTh(err.message||err))).finally(()=>{b.disabled=false})}
  else if(a=='revcode'){const gid=i;SB.rpc('revoke_invite_code',{gid}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('ยกเลิกรหัสเชิญแล้ว');loadFin().then(render)}})}
  else if(a=='delgroup'){const gid=i;const g=G.find(x=>x.id==gid);
    conf('ลบกลุ่ม “'+E(g?g.name:'')+'”? การกระทำนี้ย้อนกลับไม่ได้','ลบกลุ่ม',()=>{SB.rpc('delete_group',{gid}).then(r=>{if(r.error)toast(aTh(r.error.message));else{rgid=null;toast('ลบกลุ่มแล้ว');loadGroups().then(render)}})})}
