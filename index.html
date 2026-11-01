@@ -617,11 +617,159 @@ function vAppSettings(){
  return vProfile();
 }
 function vProfile(){
-  const photo=AUSER&&AUSER.avatarUrl?`<img class="profile-photo" id="profilePreview" src="${E(AUSER.avatarUrl)}" alt="รูปโปรไฟล์">`:`<div class="profile-photo-empty" id="profilePreview">${E((AUSER&&AUSER.name||'ส').slice(0,1))}</div>`;
-  const email=AUSER&&AUSER.email||'',username=email?email.split('@')[0]:'สมาชิก GroupFund';
-  const roleName=({admin:'ผู้ดูแลระบบ',treasurer:'เหรัญญิก',member:'สมาชิก'})[role]||'สมาชิก';
-  return head('โปรไฟล์ของฉัน','ข้อมูลโปรไฟล์บัญชี GroupFund')+
-  `<div class="panel tp"><div class="pb"><form id="profileForm"><div class="profile-layout" style="align-items:flex-start;gap:30px"><div><button type="button" id="profilePhotoTrigger" aria-label="เปลี่ยนรูปโปรไฟล์" title="กดเพื่อเปลี่ยนรูป" style="border:0;background:transparent;padding:0;cursor:pointer;display:block">${photo}<span class="profile-help" style="display:block;text-align:center;margin-top:8px">เปลี่ยนรูปโปรไฟล์</span></button><input id="profilePhoto" name="photo" type="file" accept="image/jpeg,image/png,image/webp" style="display:none"><div class="profile-help">JPG, PNG, WebP ไม่เกิน 10 MB</div></div><div style="flex:1;min-width:220px;padding-top:8px"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px"><h2 style="margin:0;font-size:22px">${E(username)}</h2><button class="btn btn-outline btn-sm" type="button" onclick="document.getElementById('profileEditFields').hidden=false;document.getElementById('profileName').focus()">แก้ไขโปรไฟล์</button></div><div style="font-size:15px;font-weight:600;margin-bottom:10px">${E(AUSER&&AUSER.name||'ยังไม่ได้ตั้งชื่อ')}</div><div style="font-size:14px;color:var(--muted);margin-bottom:12px">${E(email)}</div><div style="font-size:13px;color:var(--muted)">ประเภทบัญชี: ${E(roleName)}</div><div id="profileEditFields" hidden style="margin-top:22px;padding-top:18px;border-top:1px solid var(--line)"><div class="field"><label for="profileName">ชื่อที่แสดง</label><input id="profileName" name="full_name" maxlength="100" required value="${E(AUSER&&AUSER.name||'')}"></div><div class="acts"><button class="btn btn-primary" type="submit">บันทึกการเปลี่ยนแปลง</button><button class="btn btn-outline" type="button" onclick="document.getElementById('profileEditFields').hidden=true">ยกเลิก</button></div></div></div></div></form></div></div>`;
+ const photo=AUSER&&AUSER.avatarUrl?`<img class="profile-photo" id="profilePreview" src="${E(AUSER.avatarUrl)}" alt="รูปโปรไฟล์">`:`<div class="profile-photo-empty" id="profilePreview">${E((AUSER&&AUSER.name||'ส').slice(0,1))}</div>`;
+ return head('โปรไฟล์ของฉัน','จัดการชื่อที่แสดงและรูปโปรไฟล์ของบัญชี')+
+ `<div class="panel tp"><div class="ph"><div><h2>ข้อมูลส่วนตัว</h2><p>ข้อมูลนี้จะแสดงใน GroupFund</p></div></div><div class="pb"><form id="profileForm"><div class="profile-layout"><div><button type="button" id="profilePhotoTrigger" aria-label="เปลี่ยนรูปโปรไฟล์" title="กดเพื่อเปลี่ยนรูป" style="border:0;background:transparent;padding:0;cursor:pointer;display:block">${photo}<span class="profile-help" style="display:block;text-align:center;margin-top:6px">กดที่รูปเพื่อเปลี่ยน</span></button></div><div class="field" style="flex:1;min-width:220px"><label for="profilePhoto">เลือกรูปโปรไฟล์</label><input id="profilePhoto" name="photo" type="file" accept="image/jpeg,image/png,image/webp" style="display:none"><div class="profile-help">รองรับ JPG, PNG, WebP ขนาดไม่เกิน 10 MB ระบบจะบันทึกรูปให้อัตโนมัติ</div></div></div><div class="field" style="margin-top:20px"><label for="profileName">ชื่อที่แสดง</label><input id="profileName" name="full_name" maxlength="100" required value="${E(AUSER&&AUSER.name||'')}"></div><div class="acts"><button class="btn btn-primary" type="submit">บันทึกชื่อ</button></div></form></div></div>`;
+}
+function vJoin(){
+ return head('เข้าร่วมกลุ่ม','วางลิงก์เชิญหรือกรอกรหัสเชิญที่ได้รับจากผู้ดูแลกลุ่ม')+`<div class="panel tp"><div class="pb"><div class="field"><label for="jc">ลิงก์เชิญหรือรหัสเชิญ</label><input id="jc" maxlength="300" autocomplete="off" placeholder="วางลิงก์เชิญ หรือกรอกรหัส 8 ตัวอักษร"></div><div class="acts"><button class="btn btn-primary" data-a="joincode">ส่งคำขอเข้าร่วม</button></div></div></div>`;
+}
+function vSettingsBase(){
+ const gid=rgid&&G.some(g=>g.id==rgid)?rgid:(G[0]&&G[0].id);rgid=gid;
+ if(!gid)return head('ตั้งค่ากลุ่ม','ยังไม่มีกลุ่มที่คุณดูแล');
+ const g=G.find(x=>x.id==gid),actor=(PE.find(p=>p.code==me&&p.g==gid)||{}).role;
+ const TY={classroom:'ห้องเรียน',club:'ชมรม',student_group:'กลุ่มนักศึกษา',organization:'องค์กร',other:'อื่น ๆ'};
+ const cands=PE.filter(p=>p.g==gid&&p.code!=me&&p.status!='suspended'&&p.role!='owner');
+ return head('ตั้งค่ากลุ่ม','ปรับชื่อ รายละเอียด และประเภทของกลุ่ม')+
+ `<div class="panel tp"><div class="ph"><div><h2>ข้อมูลกลุ่ม</h2></div>${G.length>1?`<select id="rg" aria-label="เลือกกลุ่ม">${G.map(x=>`<option value="${x.id}"${x.id==gid?' selected':''}>${E(x.name)}</option>`).join('')}</select>`:''}</div>
+ <div class="pb"><div class="field"><label for="sg_n">ชื่อกลุ่ม</label><input id="sg_n" maxlength="60" value="${E(g.name)}"></div>
+ <div class="field"><label for="sg_d">รายละเอียด</label><input id="sg_d" maxlength="200" value="${E(g.desc=='-'?'':g.desc)}"></div>
+ <div class="field"><label for="sg_t">ประเภทกลุ่ม</label><select id="sg_t">${Object.entries(TY).map(([k,v])=>`<option value="${k}"${(g.type||'other')==k?' selected':''}>${v}</option>`).join('')}</select></div>
+ <div class="acts"><button class="btn btn-primary" data-a="savegroup" data-i="${gid}">บันทึกการตั้งค่า</button></div></div></div>`+
+ (actor=='owner'?`<div class="panel tp"><div class="ph"><div><h2>โอนความเป็นเจ้าของกลุ่ม</h2><p>หลังโอน คุณจะเป็นผู้ดูแล และกลับมาเป็นเจ้าของเองไม่ได้</p></div></div><div class="pb"><div class="field"><label for="tr_u">ผู้รับโอน</label><select id="tr_u">${cands.map(p=>`<option value="${p.code}">${E(p.name)}</option>`).join('')}</select></div><div class="acts"><button class="btn btn-danger" data-a="transfer" data-i="${gid}" ${cands.length?'':'disabled'}>โอนความเป็นเจ้าของ</button></div></div></div>`:'');
+}
+function vSettings(){
+ const base=vSettingsBase();
+ const gid=rgid&&G.some(g=>g.id==rgid)?rgid:(G[0]&&G[0].id);
+ const g=G.find(x=>x.id==gid);if(!g)return base;
+ const actor=(PE.find(p=>p.code==me&&p.g==gid)||{}).role;
+ return base+(actor=='owner'?deletePanel(gid):'');
+}
+function vRoles(){
+ const gid=rgid&&G.some(g=>g.id==rgid)?rgid:(G[0]&&G[0].id);rgid=gid;
+ if(!gid)return head('จัดการสมาชิกและบทบาท','ยังไม่มีกลุ่มที่คุณดูแล');
+ const rows=PE.filter(p=>p.g==gid),actor=(PE.find(p=>p.code==me&&p.g==gid)||{}).role;
+ const OPT=actor=='owner'?['admin','treasurer','member']:['treasurer','member'];
+ const RL={owner:'เจ้าของกลุ่ม',admin:'ผู้ดูแล',treasurer:'เหรัญญิก',member:'สมาชิก'};
+ return head('จัดการสมาชิกและบทบาท','กำหนดบทบาทและสถานะของสมาชิก แยกตามแต่ละกลุ่ม')+
+ `<div class="panel tp"><div class="ph"><div><h2>รายชื่อสมาชิก</h2><p>${rows.length} คน</p></div><select id="rg" aria-label="เลือกกลุ่ม">${G.map(g=>`<option value="${g.id}"${g.id==gid?' selected':''}>${E(g.name)}</option>`).join('')}</select></div><div class="tw"><table><thead><tr><th>ชื่อ</th><th>บทบาท</th><th>สถานะ</th><th>การดำเนินการ</th></tr></thead><tbody>${rows.length?rows.map(p=>{
+  const self=p.code==me,locked=self||p.role=='owner'||(actor=='admin'&&p.role=='admin');
+  const sel=p.role=='owner'?`<span class="sub">${RL.owner}</span>`:`<select data-a="setrole" data-i="${p.code}" data-g="${gid}" aria-label="บทบาท" ${locked?'disabled':''}>${OPT.map(o=>`<option value="${o}"${o==p.role?' selected':''}>${RL[o]}</option>`).join('')}${p.role=='admin'&&actor=='owner'?'':''}</select>`;
+  const st=p.status=='suspended'?'<span class="badge rejected">ระงับ</span>':'<span class="badge paid">ใช้งาน</span>';
+  const acts=locked?'':`<div class="ra"><button class="btn btn-outline btn-sm" data-a="suspend" data-i="${p.code}" data-g="${gid}" data-s="${p.status=='suspended'?'active':'suspended'}">${p.status=='suspended'?'เปิดใช้งาน':'ระงับ'}</button><button class="btn btn-danger btn-sm" data-a="remove" data-i="${p.code}" data-g="${gid}">นำออก</button></div>`;
+  return `<tr><td><b>${E(p.name)}</b>${self?' <span class="sub">(คุณ)</span>':''}</td><td>${sel}</td><td>${st}</td><td>${acts}</td></tr>`}).join(''):'<tr><td colspan="4" class="empty">ยังไม่มีสมาชิก</td></tr>'}</tbody></table></div></div>`}
+function vRoom(){const g=G.find(x=>x.id==curRoom),ms=M.filter(m=>m.g==g.id),rs=R.filter(x=>x.g==g.id),ps=PE.filter(p=>p.g==g.id),jr=JR.filter(x=>x.g==g.id),link=inviteLink(g),canShare=typeof navigator!='undefined'&&navigator.share,actor=(PE.find(p=>p.code==me&&p.g==g.id)||{}).role,canManageCode=['owner','admin'].includes(actor),codeExp=g.codeExp?new Date(g.codeExp).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+ const tm=t=>new Date(t).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+ return `<button class="link" data-a="go" data-p="groups">← กลับไปหน้ากลุ่มของฉัน</button>`+head(E(g.name),E(g.desc),`<button class="btn btn-primary" data-a="newreqg" data-i="${g.id}">สร้างรายการเรียกเก็บ</button>`)+
+ `<div class="stats">${stat('ยอดเงินคงเหลือ',money(bal(g.id)),'ของห้องนี้')}${stat('สมาชิก',ps.length+' คน','ในห้องนี้')}${stat('รายการเรียกเก็บ',rs.length+' รายการ','ของห้องนี้')}${stat('คำขอเข้าร่วม',jr.length+' รายการ','รอผู้ดูแลอนุมัติ')}</div>
+<div class="panel tp"><div class="ph"><div><h2>เชิญเพื่อนเข้าห้อง</h2><p>แชร์ลิงก์หรือรหัสให้เพื่อน เพื่อนต้องรอผู้ดูแลอนุมัติก่อนจึงเข้าห้องได้</p></div></div><div class="pb"><div class="field"><label>ลิงก์เชิญ</label><input id="invlink" readonly value="${E(link||'ยังไม่มีลิงก์เชิญ กรุณากดสร้างลิงก์')}"></div><div class="field"><label>รหัสเชิญเข้ากลุ่ม (8 ตัวอักษร)</label><input id="roomcode" readonly value="${E(g.code||'ยังไม่มีรหัสเชิญ')}"></div>${g.code?`<p class="sn">หมดอายุ ${codeExp||'-'} · มีผู้ขอแล้ว ${g.codeUses}${g.codeMax!=null?' จาก '+g.codeMax:''} คน</p>`:''}<div class="toolbar"><button class="btn btn-primary btn-sm" data-a="copylink" data-i="${g.id}" ${link?'':'disabled'}>คัดลอกลิงก์</button><button class="btn btn-outline btn-sm" data-a="share" data-i="${g.id}" ${link?'':'disabled'}>แชร์ผ่าน LINE หรือแอปอื่น</button><button class="btn btn-outline btn-sm" data-a="copycode" data-i="${g.id}" ${g.code?'':'disabled'}>คัดลอกรหัส 8 ตัว</button><button class="btn btn-outline btn-sm" data-a="trylink" data-i="${g.id}" ${link?'':'disabled'}>ทดลองเปิดลิงก์</button><button class="btn btn-danger btn-sm" data-a="newlink" data-i="${g.id}">${link?'สร้างลิงก์ใหม่':'สร้างลิงก์เชิญ'}</button></div><p class="sn" style="margin:10px 0 0">เมื่อสร้างลิงก์ใหม่ ลิงก์เดิมจะใช้ไม่ได้ทันที</p>${canManageCode?`<div class="divider" style="margin:18px 0"></div><h3 style="margin:0 0 10px">จัดการรหัสเชิญ</h3><div class="field"><label for="ci_h">อายุรหัส</label><select id="ci_h"><option value="24">24 ชั่วโมง</option><option value="72">3 วัน</option><option value="168">7 วัน</option><option value="720">30 วัน</option></select></div><div class="field"><label for="ci_m">จำนวนคนที่ขอเข้าได้ (เว้นว่างหมายถึงไม่จำกัด)</label><input id="ci_m" type="number" min="1" step="1" placeholder="ไม่จำกัด"></div><div class="acts"><button class="btn btn-primary" data-a="mkcode" data-i="${g.id}">${g.code?'สร้างรหัสใหม่':'สร้างรหัส'}</button>${g.code?`<button class="btn btn-danger" data-a="revcode" data-i="${g.id}">ยกเลิกรหัส</button>`:''}</div>`:''}</div></div>`+
+ (jr.length?`<div class="panel tp"><div class="ph"><div><h2>คำขอเข้าร่วมที่รออนุมัติ</h2></div></div><div class="tw"><table><thead><tr><th>ชื่อ</th><th>เวลาที่ขอ</th><th>การดำเนินการ</th></tr></thead><tbody>${jr.map(x=>`<tr><td><b>${E(x.name)}</b></td><td>${tm(x.ts)}</td><td><div class="ra"><button class="btn btn-primary btn-sm" data-a="jrok" data-i="${x.id}">อนุมัติ</button><button class="btn btn-danger btn-sm" data-a="jrno" data-i="${x.id}">ปฏิเสธ</button></div></td></tr>`).join('')}</tbody></table></div></div>`:'')+
+ `<div class="panel tp"><div class="ph"><div><h2>รายการเรียกเก็บของห้อง</h2></div></div><div class="tw"><table><thead><tr><th>รายการ</th><th class="num">ยอดต่อคน</th><th>ครบกำหนด</th><th class="num">ชำระแล้ว</th><th>สถานะ</th></tr></thead><tbody>${rs.length?rs.map(q=>{const a=ms.filter(m=>m.r==q.id),n=a.filter(m=>m.s=='paid').length,sx=a.length&&n==a.length?['ครบแล้ว','paid']:q.due<today?['เกินกำหนด','rejected']:['กำลังเก็บ','pending'];return `<tr><td><b>${E(q.title)}</b></td><td class="num">${money(q.amt).slice(2)}</td><td>${dt(q.due)}</td><td class="num">${n}/${a.length}</td><td><span class="badge ${sx[1]}">${sx[0]}</span></td></tr>`}).join(''):'<tr><td colspan="5" class="empty">ห้องนี้ยังไม่มีรายการเรียกเก็บ กดปุ่ม “สร้างรายการเรียกเก็บ” ด้านบน</td></tr>'}</tbody></table></div></div>
+<div class="panel tp"><div class="ph"><div><h2>สมาชิกในห้อง</h2></div></div><div class="tw"><table><thead><tr><th>ชื่อ</th><th>รหัส</th><th class="num">ชำระแล้ว</th><th class="num">ยอดค้างชำระ</th></tr></thead><tbody>${ps.length?ps.map(p=>{const a=M.filter(m=>m.code==p.code),n=a.filter(m=>m.s=='paid').length,ov=a.filter(m=>m.s=='unpaid'||m.s=='rejected').reduce((t,m)=>t+m.amt,0);return `<tr><td><b>${E(p.name)}</b></td><td>${p.code}</td><td class="num">${n}/${a.length}</td><td class="num">${money(ov).slice(2)}</td></tr>`}).join(''):'<tr><td colspan="4" class="empty">ยังไม่มีสมาชิก ส่งลิงก์เชิญให้เพื่อนได้เลย</td></tr>'}</tbody></table></div></div>`}
+const ds=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),kb=v=>Math.round(v/100).toLocaleString('th-TH');let dnDef='';
+function trend(){const y=+today.slice(0,4),mo=+today.slice(5,7)-1;return [...Array(6)].map((_,i)=>{const d=new Date(y,mo-(5-i),1),e=ds(new Date(y,mo-(5-i)+1,0)),v=A().filter(x=>x.date<=e).reduce((t,x)=>t+(x.type=='expense'?-x.amt:x.amt),0);return{l:d.toLocaleDateString('th-TH',{month:'short'}),v}})}
+function lineChart(){const d=trend(),n=d.length,vs=d.map(x=>x.v),mn=Math.min(...vs),mx=Math.max(...vs),pad=(mx-mn)*.15||mx*.1||1,lo=Math.max(0,mn-pad),hi=mx+pad,px=i=>6+i*88/(n-1),py=v=>(v-lo)/(hi-lo)*84+8,P=d.map((x,i)=>[px(i),100-py(x.v)]);
+ let p='M'+P[0][0]+' '+P[0][1];for(let i=0;i<n-1;i++){const a=P[i-1]||P[i],b=P[i],c=P[i+1],e=P[i+2]||c;p+=` C${b[0]+(c[0]-a[0])/6} ${b[1]+(c[1]-a[1])/6},${c[0]-(e[0]-b[0])/6} ${c[1]-(e[1]-b[1])/6},${c[0]} ${c[1]}`}
+ return `<div class="panel"><div class="ph"><div><h2>แนวโน้มยอดเงินคงเหลือ</h2><p>ยอดสะสม ณ สิ้นเดือน ย้อนหลัง 6 เดือน (บาท)</p></div></div><div class="pb"><div class="lc"><div class="ly"><span>${kb(hi)}</span><span>${kb((hi+lo)/2)}</span><span>${kb(lo)}</span></div><div class="lp"><svg class="lsvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="lgf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--pri);stop-opacity:.4"/><stop offset="1" style="stop-color:var(--pri);stop-opacity:0"/></linearGradient></defs><path d="${p} L${P[n-1][0]} 100 L${P[0][0]} 100 Z" fill="url(#lgf)"/><path d="${p}" fill="none" stroke="var(--pri)" stroke-width="2.2" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg>${d.map((x,i)=>`<i class="dot${i>n-3?' r':''}" tabindex="0" style="left:${P[i][0]}%;bottom:${100-P[i][1]}%" data-tip="${x.l}: ${money(x.v)}"></i>`).join('')}</div></div><div class="lx">${d.map((x,i)=>`<span style="left:${P[i][0]}%">${x.l}</span>`).join('')}</div></div></div>`}
+function donut(){const c={paid:0,pending:0,rejected:0,overdue:0,unpaid:0};M.forEach(m=>c[stx(m)]++);const tot=M.length||1,meta=[['paid','ชำระแล้ว','var(--ok)'],['pending','รอตรวจสอบ','var(--warn)'],['rejected','ปฏิเสธหลักฐาน','var(--bad)'],['overdue','เกินกำหนด','var(--pri)'],['unpaid','ยังไม่ชำระ','var(--muted)']].filter(k=>c[k[0]]);let cum=0;
+ const segs=meta.map(([k,l,col])=>{const pc=c[k]/tot*100,w=Math.max(0,pc-(pc>3?.8:0)),r=`<circle class="dseg" cx="21" cy="21" r="15.915" fill="none" stroke="${col}" stroke-width="5" stroke-dasharray="${w} ${100-w}" stroke-dashoffset="${25-cum}" data-l="${l}" data-n="${c[k]}" data-p="${Math.round(pc)}"/>`;cum+=pc;return r});
+ dnDef=`<b>${Math.round(c.paid/tot*100)}%</b><span>ชำระแล้ว</span>`;
+ return `<div class="panel"><div class="ph"><div><h2>สัดส่วนสถานะการชำระ</h2><p>นับตามรายการเรียกเก็บทั้งหมด</p></div></div><div class="pb"><div class="dn"><svg viewBox="0 0 42 42" aria-hidden="true"><circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--line)" stroke-width="5"/>${segs.join('')}</svg><div class="dnc" id="dnc">${dnDef}</div></div><div class="dl">${meta.map(([k,l,col])=>`<div><i style="background:${col}"></i>${l}<b>${c[k]}</b></div>`).join('')}</div></div></div>`}
+function stackChart(){const rows=R.slice().sort((a,b)=>a.due.localeCompare(b.due)).map(q=>{const a=M.filter(m=>m.r==q.id),f=t=>a.filter(m=>t.includes(m.s)).reduce((z,m)=>z+m.amt,0);return{q,p:f(['paid']),w:f(['pending']),o:f(['unpaid','rejected']),t:q.amt*a.length}}).filter(r=>r.t>0),mx=Math.max(1,...rows.map(r=>r.t));
+ return `<div class="panel tp"><div class="ph"><div><h2>ยอดเก็บและยอดค้างตามรายการเรียกเก็บ</h2><p>ความยาวแท่งเทียบตามยอดเรียกเก็บรวมของแต่ละรายการ</p></div></div><div class="pb"><div class="lg2"><span><i style="background:var(--ok)"></i>ชำระแล้ว</span><span><i style="background:var(--warn)"></i>รอตรวจสอบ</span><span><i style="background:var(--pri)"></i>ค้างชำระ</span></div>${rows.map(r=>`<div class="sbr"><div class="sbh"><b>${E(r.q.title)}</b><span class="sn">${E(gn(r.q.g))}</span></div><div class="sb" style="width:${r.t/mx*100}%">${[['p','ชำระแล้ว'],['w','รอตรวจสอบ'],['o','ค้างชำระ']].map(([k,l])=>r[k]?`<i class="s-${k}" style="flex:${r[k]}" title="${l} ${money(r[k])}"></i>`:'').join('')}</div><div class="sn">เก็บแล้ว ${money(r.p)} จากทั้งหมด ${money(r.t)}</div></div>`).join('')}</div></div>`}
+$('#v').addEventListener('mouseover',e=>{const t=e.target.closest&&e.target.closest('.dseg'),c=$('#dnc');if(c&&t)c.innerHTML='<b>'+t.dataset.n+'</b><span>'+t.dataset.l+' ('+t.dataset.p+'%)</span>'});
+$('#v').addEventListener('mouseout',e=>{const t=e.target.closest&&e.target.closest('.dseg'),c=$('#dnc');if(c&&t)c.innerHTML=dnDef});
+function toast(m){const t=$('#t');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2600)}
+const D=$('#d'),fld=(l,h)=>`<div class="field"><label>${l}</label>${h}</div>`,gopt=sel=>G.map(g=>`<option value="${g.id}"${g.id==sel?' selected':''}>${E(g.name)}</option>`).join('');
+const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function closeD(){if(!D.open||D.classList.contains('closing'))return;D.classList.add('closing');setTimeout(()=>{D.close();D.classList.remove('closing')},RM()?0:200)}
+D.addEventListener('cancel',e=>{e.preventDefault();closeD()});
+function dlg(t,p,html,ok,fn){D.innerHTML=`<form method="dialog"><h2>${t}</h2><p>${p}</p>${html}<p class="err" id="er"></p><div class="acts"><button type="button" class="btn btn-outline" id="cx">ยกเลิก</button><button class="btn btn-primary">${ok}</button></div></form>`;
+ $('#cx').onclick=closeD;
+ D.querySelector('form').onsubmit=e=>{e.preventDefault();const r=fn(new FormData(e.target));if(r){$('#er').textContent=r;return}closeD()};D.showModal()}
+const conf=(p,ok,fn)=>dlg('ยืนยันการดำเนินการ',p,'',ok,()=>{fn()});
+
+function newG(){dlg('เพิ่มกลุ่มใหม่','ระบุชื่อกลุ่มและรายละเอียดเบื้องต้น',fld('ชื่อกลุ่ม','<input name="n" required maxlength="60">')+fld('รายละเอียด','<input name="d" maxlength="80">')+fld('ประเภทกลุ่ม','<select name="ty">'+[['classroom','ห้องเรียน'],['club','ชมรม'],['student_group','กลุ่มนักศึกษา'],['organization','องค์กร'],['other','อื่น ๆ']].map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')+'</select>')+fld('ยอดยกมา (บาท)','<input name="a" type="number" min="0" step="0.01" value="0">'),'เพิ่มกลุ่ม',f=>{
+ const n=f.get('n').trim(),a=Math.round(f.get('a')*100);if(!n)return 'กรุณากรอกชื่อกลุ่ม';if(G.some(g=>g.name==n))return 'มีกลุ่มชื่อนี้อยู่แล้ว';
+ if(!SB||!AUSER)return 'กรุณาเข้าสู่ระบบก่อน';
+ (async()=>{const r=await SB.from('groups').insert({name:n,description:f.get('d').trim()||null,group_type:f.get('ty')||'other',created_by:AUSER.id}).select('id').single();
+  if(r.error){toast(aTh(r.error.message));return}
+  if(a>0){const o=await SB.rpc('add_ledger_entry',{p_group:r.data.id,p_type:'opening',p_amount:a,p_description:'ยอดยกมา'});if(o.error)toast(aTh(o.error.message))}
+  await loadGroups();curRoom=r.data.id;page='room';animate=true;render();toast('เพิ่มกลุ่มแล้ว')})()})}
+function newM(){dlg('เพิ่มสมาชิก','สมาชิกใหม่จะถูกเรียกเก็บตามรายการเรียกเก็บทุกรายการของกลุ่ม',fld('ชื่อ-นามสกุล','<input name="n" required maxlength="60">')+fld('กลุ่ม',`<select name="g">${gopt()}</select>`),'เพิ่มสมาชิก',f=>{
+ const n=f.get('n').trim(),g=+f.get('g'),rs=R.filter(x=>x.g==g);if(!n)return 'กรุณากรอกชื่อสมาชิก';
+ if(PE.some(p=>p.g==g&&p.name==n))return 'มีสมาชิกชื่อนี้ในกลุ่มแล้ว';
+ if(!rs.length)return 'กลุ่มนี้ยังไม่มีรายการเรียกเก็บ กรุณาสร้างรายการเรียกเก็บก่อน';
+ rs.forEach(q=>addM(n,g,q.amt,'unpaid',undefined,undefined,undefined,q.id));logA(BY,'เพิ่มสมาชิก',n+' กลุ่ม'+gn(g));toast('เพิ่มสมาชิกแล้ว');render()})}
+function newL(){dlg('บันทึกรายการบัญชี','รายการที่บันทึกแล้วจะถูกนำไปคำนวณยอดคงเหลือทันที',fld('ประเภท','<select name="t"><option value="expense">รายจ่าย</option><option value="income">รายรับอื่น ๆ</option></select>')+fld('กลุ่ม',`<select name="g">${gopt()}</select>`)+fld('รายละเอียด','<input name="n" required maxlength="80">')+fld('จำนวนเงิน (บาท)','<input name="a" type="number" min="0.01" step="0.01" required>'),'บันทึกรายการ',f=>{
+ const t=f.get('t'),g=f.get('g'),n=f.get('n').trim(),a=Math.round(f.get('a')*100);if(!n||!(a>0))return 'กรอกรายละเอียดและจำนวนเงินให้ถูกต้อง';
+ if(!SB||!AUSER)return 'กรุณาเข้าสู่ระบบก่อน';
+ SB.rpc('add_ledger_entry',{p_group:g,p_type:t,p_amount:a,p_description:n}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('บันทึกรายการแล้ว');loadFin().then(render)}});})}
+function okM(m){if(!m.pid)return;SB.rpc('approve_payment',{pid:m.pid}).then(r=>{if(r.error)toast(aTh(r.error.message));else loadFin().then(render)})}
+
+$('#v').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,i=b.dataset.i;
+ if(role=='member'&&!['mysub','go','joincode','newg'].includes(a))return;if(a=='newg')newG();else if(a=='newm')newM();else if(a=='newl')newL();else if(a=='mysub')mySub(i);else if(a=='newreq')newReq();else if(a=='cv')setCv(b.dataset.v);
+ else if(a=='room'){curRoom=i;page='room';animate=true;scrollTo(0,0);render()}
+ else if(a=='newreqg')newReq(i);
+ else if(a=='copylink'||a=='copycode'){const g=G.find(x=>x.id==i),u=inviteLink(g);if(a=='copylink'&&!u){toast('กรุณาสร้างลิงก์เชิญก่อน');return}if(a=='copycode'&&!g.code){toast('ยังไม่มีรหัสเชิญ กรุณาสร้างรหัสก่อน');return}copyTxt(a=='copylink'?u:g.code,a=='copylink'?'คัดลอกลิงก์แล้ว':'คัดลอกรหัสเชิญแล้ว')}
+ else if(a=='share'){const g=G.find(x=>x.id==i),u=inviteLink(g);if(!u){toast('กรุณาสร้างลิงก์เชิญก่อน');return}const d={title:'เชิญเข้าห้อง '+g.name,text:'เชิญเข้าร่วมห้อง '+g.name+' ใน GroupFund: '+u,url:u};if(navigator.share)navigator.share(d).catch(err=>{if(err&&err.name!=='AbortError')copyTxt(u,'คัดลอกลิงก์แล้ว')});else copyTxt(u,'คัดลอกลิงก์แล้ว')}
+ else if(a=='trylink'){const u=inviteLink(G.find(x=>x.id==i));if(!u){toast('กรุณาสร้างลิงก์เชิญก่อน');return}window.open(u,'_blank')}
+ else if(a=='newlink'){const g=G.find(x=>x.id==i);const create=()=>{SB.rpc('create_invite_link',{gid:g.id}).then(r=>{if(r.error){toast(aTh(r.error.message));return}toast(g.inv?'สร้างลิงก์ใหม่แล้ว ลิงก์เดิมใช้ไม่ได้แล้ว':'สร้างลิงก์เชิญเรียบร้อยแล้ว');loadFin().then(render)})};if(g.inv)conf('สร้างลิงก์เชิญใหม่สำหรับห้อง “'+E(g.name)+'”? ลิงก์เดิมจะใช้ไม่ได้อีก','สร้างลิงก์ใหม่',create);else create()}
+ else if(a=='jrok'){const x=JR.find(y=>y.id==i);conf('อนุมัติให้ '+E(x.name)+' เข้าร่วมห้อง “'+E(gn(x.g))+'”? สมาชิกใหม่จะถูกเรียกเก็บตามรายการของห้องทั้งหมด','อนุมัติ',()=>{SB.rpc('decide_join_request',{rid:x.id,approve:true}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('อนุมัติให้เข้าห้องแล้ว');loadFin().then(render)}})})}
+ else if(a=='jrno'){const x=JR.find(y=>y.id==i);conf('ปฏิเสธคำขอเข้าห้องของ '+E(x.name)+'?','ปฏิเสธ',()=>{SB.rpc('decide_join_request',{rid:x.id,approve:false}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('ปฏิเสธคำขอแล้ว');loadFin().then(render)}})})}
+ else if(a=='pgstatus'){const ns=b.dataset.s,gid=i;const g=PG.find(x=>x.id==gid);
+   const run=()=>SB.rpc('set_group_status',{gid,new_status:ns}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast(ns=='suspended'?'ระงับกลุ่มแล้ว':'เปิดกลุ่มแล้ว');loadPlat().then(render)}});
+   if(ns=='suspended')conf('ระงับกลุ่ม “'+E(g?g.name:'')+'”? สมาชิกและผู้ดูแลจะเข้าถึงกลุ่มไม่ได้จนกว่าจะเปิดใหม่','ระงับกลุ่ม',run);else run()}
+ else if(a=='mkcode'){const gid=i;const h=+$('#ci_h').value;const mv=$('#ci_m').value;
+   SB.rpc('create_invite_code',{gid,valid_hours:h,max_req:mv?+mv:null}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('สร้างรหัสเชิญแล้ว');loadFin().then(render)}})}
+ else if(a=='revcode'){const gid=i;SB.rpc('revoke_invite_code',{gid}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('ยกเลิกรหัสเชิญแล้ว');loadFin().then(render)}})}
+ else if(a=='delgroup'){const gid=i;const g=G.find(x=>x.id==gid);
+   conf('ลบกลุ่ม “'+E(g?g.name:'')+'”? การกระทำนี้ย้อนกลับไม่ได้','ลบกลุ่ม',()=>{SB.rpc('delete_group',{gid}).then(r=>{if(r.error)toast(aTh(r.error.message));else{rgid=null;toast('ลบกลุ่มแล้ว');loadGroups().then(render)}})})}
+ else if(a=='joincode'){const code=($('#jc').value||'').trim();if(!code){toast('กรุณากรอกรหัสเชิญหรือลิงก์เชิญ');return}
+   const match=code.match(/#join-([a-f0-9]{64})$/i),tok=match?match[1]:(/^[a-f0-9]{64}$/i.test(code)?code:null);
+   const call=tok?SB.rpc('request_join',{tok}):SB.rpc('request_join_by_code',{input_code:code});
+   call.then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('ส่งคำขอแล้ว รอผู้ดูแลอนุมัติ');const f=$('#jc');if(f)f.value=''}})}
+ else if(a=='savegroup'){const gid=b.dataset.i;
+   SB.rpc('update_group',{gid,new_name:$('#sg_n').value,new_desc:$('#sg_d').value,new_type:$('#sg_t').value}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('บันทึกการตั้งค่าแล้ว');loadGroups().then(render)}})}
+ else if(a=='transfer'){const gid=b.dataset.i,uid2=$('#tr_u').value;const p=PE.find(x=>x.code==uid2&&x.g==gid);
+   conf('โอนความเป็นเจ้าของให้ '+E(p?p.name:'สมาชิก')+' ? คุณจะกลายเป็นผู้ดูแลกลุ่ม','โอนความเป็นเจ้าของ',()=>{SB.rpc('transfer_ownership',{gid,uid:uid2}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('โอนความเป็นเจ้าของแล้ว');loadGroups().then(render)}})})}
+ else if(a=='suspend'){const gid=b.dataset.g,uid2=b.dataset.i,ns=b.dataset.s;const p=PE.find(x=>x.code==uid2&&x.g==gid);
+   const run=()=>SB.rpc('set_member_status',{gid,uid:uid2,new_status:ns}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast(ns=='suspended'?'ระงับสมาชิกแล้ว':'เปิดใช้งานสมาชิกแล้ว');loadFin().then(render)}});
+   if(ns=='suspended')conf('ระงับ '+E(p?p.name:'สมาชิก')+' ? ระหว่างระงับจะเข้าถึงข้อมูลกลุ่มไม่ได้','ระงับ',run);else run()}
+ else if(a=='remove'){const gid=b.dataset.g,uid2=b.dataset.i;const p=PE.find(x=>x.code==uid2&&x.g==gid);
+   conf('นำ '+E(p?p.name:'สมาชิก')+' ออกจากกลุ่ม? ประวัติการชำระเดิมจะยังคงอยู่','นำออก',()=>{SB.rpc('remove_member',{gid,uid:uid2}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('นำสมาชิกออกแล้ว');loadFin().then(render)}})})}
+ else if(a=='go'){page=b.dataset.p;animate=true;scrollTo(0,0);render()}
+ else if(a=='slip'){const m=M.find(y=>y.id==i);if(!m||!m.slip)return toast('ไม่พบไฟล์สลิป');const w=window.open('about:blank','_blank');SB.storage.from('payment-slips').createSignedUrl(m.slip,60).then(r=>{if(r.error){if(w)w.close();toast(aTh(r.error.message));return}if(w)w.location=r.data.signedUrl;else toast('เบราว์เซอร์บล็อกหน้าต่างใหม่ กรุณาอนุญาตป๊อปอัป')})}
+ else if(a=='cash'){const m=M.find(y=>y.id==i);conf('ยืนยันการรับเงินสด '+money(m.amt)+' จาก '+E(m.name)+' กลุ่ม'+E(gn(m.g))+'?','ยืนยันรับเงิน',()=>{SB.rpc('record_cash_payment',{item_id:m.id}).then(r=>{if(r.error)toast(aTh(r.error.message));else{toast('บันทึกการรับเงินสดแล้ว');loadFin().then(render)}})})}
+ else if(a=='apr'){const m=M.find(y=>y.id==i);conf('ยืนยันว่าได้รับเงิน '+money(m.amt)+' จาก '+E(m.name)+' เข้าบัญชีจริงแล้ว และอนุมัติรายการนี้?','อนุมัติ',()=>{if(!m.pid)return toast('ไม่พบรายการชำระเงิน');SB.rpc('approve_payment',{pid:m.pid}).then(async r=>{if(r.error){toast(aTh(r.error.message));return}logA(BY,'อนุมัติการชำระ',m.name+' / '+rq(m.r).title+' '+money(m.amt));await loadFin();render();toast('อนุมัติแล้ว')})})}
+ else if(a=='rej'){const m=M.find(y=>y.id==i);dlg('ปฏิเสธหลักฐานการชำระ','ระบุเหตุผลเพื่อแจ้งสมาชิก',fld('เหตุผล','<input name="r" required maxlength="100">'),'ปฏิเสธ',f=>{const reason=f.get('r').trim();if(!reason)return 'กรุณาระบุเหตุผล';if(!m.pid)return 'ไม่พบรายการชำระเงิน';SB.rpc('reject_payment',{pid:m.pid,p_reason:reason}).then(async r=>{if(r.error){toast(aTh(r.error.message));return}logA(BY,'ปฏิเสธหลักฐาน',m.name+' / '+rq(m.r).title+' เหตุผล: '+reason);await loadFin();render();toast('ปฏิเสธหลักฐานแล้ว')})})}
+ else if(a=='rv'){const x=L.find(y=>y.id==i),t=x.type=='expense'?'income':'expense';
+  if(t=='expense'&&x.amt>bal(x.g))return toast('ยอดคงเหลือของกลุ่มไม่พอสำหรับการกลับรายการนี้');
+  conf('กลับรายการ “'+E(x.detail)+'” จำนวน '+money(x.amt)+'? ระบบจะเพิ่มรายการกลับบัญชีและเก็บรายการเดิมไว้เป็นหลักฐาน','กลับรายการ',()=>{x.rev=true;L.push({id:++uid,date:today,g:x.g,type:t,detail:'กลับรายการ: '+x.detail,amt:x.amt,rv:x.id,by:BY});logA(BY,'กลับรายการ',x.detail+' '+money(x.amt));toast('กลับรายการแล้ว');render()})}};
+$('#v').addEventListener('click',e=>{
+ if(e.target.closest&&e.target.closest('#profilePhotoTrigger'))$('#profilePhoto').click();
+});
+$('#v').addEventListener('change',async e=>{
+ if(e.target.id!='profilePhoto')return;
+ const input=e.target,file=input.files&&input.files[0];if(!file)return;
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){toast('กรุณาเลือกรูป JPG, PNG หรือ WebP ขนาดไม่เกิน 10 MB');input.value='';return}
+ if(!SB||!AUSER){toast('กรุณาเข้าสู่ระบบก่อน');input.value='';return}
+ const trigger=$('#profilePhotoTrigger'),oldPath=AUSER.avatarPath||'';
+ if(trigger){trigger.disabled=true;trigger.style.opacity='.6'}
+ toast('กำลังอัปโหลดรูปโปรไฟล์...');
+ let newPath='';
+ try{
+  const ext=file.type=='image/png'?'png':file.type=='image/webp'?'webp':'jpg';
+  newPath=AUSER.id+'/'+Date.now()+'.'+ext;
+  const up=await SB.storage.from('avatars').upload(newPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+  if(up.error)throw up.error;
+  const signed=await SB.storage.from('avatars').createSignedUrl(newPath,3600);
+  if(signed.error)throw signed.error;
+  const saved=await SB.from('profiles').update({avatar_url:newPath,updated_at:new Date().toISOString()}).eq('id',AUSER.id).select('id').maybeSingle();
+  if(saved.error||!saved.data)throw saved.error||new Error('ไม่พบข้อมูลโปรไฟล์ของบัญชีนี้');
+  AUSER.avatarPath=newPath;AUSER.avatarUrl=signed.data.signedUrl;
+  if(oldPath&&oldPath!=newPath)await SB.storage.from('avatars').remove([oldPath]);
+  toast('เปลี่ยนรูปโปรไฟล์เรียบร้อยแล้ว');render();
  }catch(err){
   if(newPath)await SB.storage.from('avatars').remove([newPath]);
   toast(aTh(err.message||err));
@@ -657,7 +805,7 @@ $('#v').addEventListener('submit',async e=>{
   if(file&&oldPath&&oldPath!=newPath)await SB.storage.from('avatars').remove([oldPath]);
   toast('บันทึกโปรไฟล์เรียบร้อยแล้ว');render();
  }catch(err){toast(aTh(err.message||err))}
- finally{btn.disabled=false;btn.textContent='บันทึกการเปลี่ยนแปลง'}
+ finally{btn.disabled=false;btn.textContent='บันทึกโปรไฟล์'}
 });
 $('#v').addEventListener('input',e=>{const t=e.target,k=t.id;if(k=='qm'){qm=t.value;fillM()}else if(k=='gm'){gm=t.value;fillM()}else if(k=='ql'){ql=t.value;fillL()}else if(k=='tl'){tl=t.value;fillL()}else if(k=='pf'){pf=t.value;fillP()}else if(k=='af'){af=t.value;fillA()}labelTables()});
 
