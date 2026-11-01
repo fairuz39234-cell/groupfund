@@ -1,5 +1,5 @@
-Warning: truncated output (original token count: 39759)
-Total output lines: 1163
+Warning: truncated output (original token count: 42493)
+Total output lines: 1339
 
 <!DOCTYPE html>
 <html lang="th">
@@ -550,6 +550,172 @@ thead th:last-child{border-top-right-radius:10px}
 tbody tr:nth-child(even){background:linear-gradient(100deg,var(--head),var(--panel))}
 tbody tr:hover{background:linear-gradient(100deg,var(--soft),var(--head))}
 .tot td{background:linear-gradient(100deg,var(--soft),var(--head))}
+
+/* GroupFund olive and lime digital banking theme */
+:root{
+ --bg:#f5f6f0;--panel:#fff;--head:#f0f1e9;--hover:#f7f8f2;
+ --ink:#171a14;--muted:#85877d;--line:#e4e6dc;--line-strong:#d2d5c7;
+ --pri:#59613b;--pri-d:#444c2a;--pri-t:#fff;--soft:#edf2d8;
+ --ok:#59613b;--okbg:#eff3dc;--warn:#887021;--warnbg:#fbf3d5;--bad:#b94e3d;--badbg:#fae8e2;
+ --glass:rgba(255,255,255,.9);--glass2:rgba(255,255,255,.97);--gb:rgba(255,255,255,.72);
+ --r-card:22px;--r-ctl:13px;--sh:0 2px 6px rgba(23,27,12,.04),0 12px 30px rgba(23,27,12,.055);--sh-pop:0 20px 60px rgba(23,27,12,.24);
+ color-scheme:light
+}
+:root[data-theme="dark"]{
+ --bg:#10120b;--panel:#1a1d12;--head:#202316;--hover:#25291a;--ink:#f2f3e9;--muted:#a4a68f;
+ --line:#343824;--line-strong:#464b33;--pri:#d6f36a;--pri-d:#e1fa83;--pri-t:#171b0c;--soft:#2d3518;
+ --ok:#d6f36a;--okbg:#30391a;--warn:#eacb63;--warnbg:#3b3418;--bad:#ff9a82;--badbg:#44251e;
+ --glass:rgba(26,29,18,.94);--glass2:rgba(26,29,18,.98);--gb:rgba(255,255,255,.08);
+ color-scheme:dark
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#10120b;--panel:#1a1d12;--head:#202316;--hover:#25291a;--ink:#f2f3e9;--muted:#a4a68f;
+ --line:#343824;--line-strong:#464b33;--pri:#d6f36a;--pri-d:#e1fa83;--pri-t:#171b0c;--soft:#2d3518;
+ --ok:#d6f36a;--okbg:#30391a;--warn:#eacb63;--warnbg:#3b3418;--bad:#ff9a82;--badbg:#44251e;
+ --glass:rgba(26,29,18,.94);--glass2:rgba(26,29,18,.98);--gb:rgba(255,255,255,.08);color-scheme:dark
+}}
+body{background:var(--bg);color:var(--ink)}
+.app{display:grid;grid-template-columns:258px minmax(0,1fr);min-height:100vh}
+#side{position:sticky;top:0;z-index:16;width:auto;height:100vh;min-height:100vh;margin:0;padding:24px 14px 18px;display:flex;flex-direction:column;align-items:stretch;gap:18px;overflow:hidden;border:0;border-radius:0 24px 24px 0;background:#171b0c;color:#f5f6f0;box-shadow:8px 0 32px rgba(23,27,12,.08)}
+#side>.brand{order:0;flex:0 0 auto;padding:0 10px}
+#side .mark{background:#d6f36a;color:#171b0c;border-radius:12px}
+#side .bn{color:#fff}.bs{color:#b3b79d}
+#side>.side-nav{order:1;display:block;flex:1;min-height:0;overflow-y:auto;padding:10px 0}
+#side .cap{padding:0 14px;color:#a6aa91;text-transform:uppercase;letter-spacing:.09em;font-size:10px}
+#nav{display:grid;gap:5px;padding:0 4px;overflow:visible}
+#nav button{min-height:44px;width:100%;margin:0;padding:9px 12px;border-radius:14px;color:#c6c9b7;font-size:13px}
+#nav button:hover{background:rgba(255,255,255,.08);color:#fff}
+#nav button.active{background:#d6f36a;color:#171b0c;font-weight:700}
+#nav button.active::after{display:none}
+#nav .ic{width:19px;height:19px}
+#side>.who{order:2;display:block;flex:0 0 auto;margin:0;padding:14px 0 0;border-top:1px solid rgba(255,255,255,.14);color:#fff}
+#side .who-identity{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.06)}
+#side .who-meta b{color:#fff}#side .who-meta span,#side .who-role-label{color:#b3b79d}
+#side .who-role-value{background:rgba(214,243,106,.14);color:#d6f36a}
+#side .who-actions .btn{color:#f1f2e9;border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.07)}
+main{min-width:0}
+.topbar{position:sticky;top:0;z-index:10;display:flex;height:68px;margin:0;padding:0 32px;border:0;border-radius:0;background:#171b0c;color:#fff;box-shadow:none}
+.crumb{color:#b3b79d}.tt{color:#fff}.right{color:#b3b79d}
+.menu{color:#fff;border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.08)}
+.mc{max-width:1600px;padding:30px clamp(18px,3vw,48px) 54px}
+h1{color:var(--ink);font-size:clamp(25px,2.5vw,34px);letter-spacing:-.025em}
+.welcome{margin-bottom:22px}
+.btn-primary{background:#d6f36a;color:#171b0c;box-shadow:0 5px 14px rgba(214,243,106,.2)}
+.btn-primary:hover{background:#c9e95a;color:#171b0c}
+.btn-outline{border-color:var(--line);background:var(--panel)}
+.btn-outline:hover{border-color:var(--pri);background:var(--soft);color:var(--pri-d)}
+.link{color:var(--pri-d)}
+.stat,.panel,.gc,.notice,.balance{border-color:var(--line);border-radius:var(--r-card);background:var(--panel);box-shadow:var(--sh)}
+.stat{padding:20px 22px;backdrop-filter:none;-webkit-backdrop-filter:none}
+.sv,.ga{color:var(--ink);font-size:28px;font-weight:700;letter-spacing:-.035em}
+.panel{overflow:hidden}
+.ph{padding:18px 22px;background:var(--panel)}.pb{padding:22px}
+.gc{padding:22px}.gc h3{font-size:18px}.ga{margin-top:14px}
+.group-overview-card{border-color:var(--line);border-radius:20px;background:#fff;box-shadow:var(--sh)}
+.group-overview-balance{background:#171b0c;color:#fff}
+.group-overview-balance span{color:#c9ceb1}.group-overview-balance strong{color:#d6f36a}
+.group-overview-flow>div{border-radius:12px;background:#f5f6f0}
+.dashboard-intro{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 18px}
+.dashboard-intro h1{margin:2px 0 0}
+.dashboard-intro p{margin:0;color:var(--muted)}
+.dashboard-intro .profile-chip{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:999px;background:var(--panel);padding:6px 14px 6px 6px;color:var(--ink);font-weight:600}
+.dashboard-intro .profile-chip img,.dashboard-intro .profile-chip .avatar-fallback{width:38px;height:38px;border-radius:50%;object-fit:cover;background:var(--soft);display:grid;place-items:center;color:var(--pri-d)}
+.balance-hero{position:relative;overflow:hidden;margin-bottom:16px;padding:24px 28px;border:1px solid #303522;border-radius:24px;background:radial-gradient(120% 170% at 100% 0%,#3a4224 0%,transparent 55%),#171b0c;color:#fff;box-shadow:0 16px 38px rgba(23,27,12,.14)}
+.balance-hero::after{content:"";position:absolute;width:240px;height:240px;right:-70px;top:-120px;border:1px solid rgba(214,243,106,.2);border-radius:50%;box-shadow:0 0 0 24px rgba(214,243,106,.035),0 0 0 50px rgba(214,243,106,.025)}
+.balance-hero-label{position:relative;z-index:1;color:#d4d7c3;font-size:14px}
+.balance-hero strong{position:relative;z-index:1;display:block;margin:4px 0 12px;color:#fff;font-size:clamp(34px,5vw,52px);line-height:1.15;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.balance-hero-foot{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#c9ceb1;font-size:13px}
+.balance-hero-foot b{color:#d6f36a}
+.quick-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 20px}
+.quick-action{min-width:0;display:flex;align-items:center;gap:11px;padding:13px 15px;border:1px solid var(--line);border-radius:17px;background:var(--panel);color:var(--ink);font-weight:600;text-align:left;box-shadow:var(--sh);transition:transform .2s,background .2s,border-color .2s}
+.quick-action:hover{transform:translateY(-2px);border-color:#c8d68b;background:#fbfced}
+.quick-action .ic{width:21px;height:21px;color:var(--pri-d)}
+.quick-action .qa-icon{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:13px;background:var(--soft)}
+.analytics-head{align-items:center}
+.analytics-total{min-height:210px;border:1px solid #303522;border-radius:24px;background:radial-gradient(120% 170% at 100% 0%,#3a4224 0%,transparent 55%),#171b0c;box-shadow:0 16px 38px rgba(23,27,12,.14)}
+.analytics-total-copy>span:first-child{color:#d4d7c3}.analytics-total-copy strong{color:#fff}.analytics-total-copy b{color:#d6f36a}
+.analytics-spark{opacity:.34}.analytics-spark i{background:linear-gradient(to top,rgba(214,243,106,.25),#d6f36a)}
+.analytics-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.analytics-kpi{min-width:0;display:flex;justify-content:space-between;align-items:flex-start;padding:19px 21px;border:1px solid var(--line);border-radius:20px;background:var(--panel);box-shadow:var(--sh)}
+.analytics-kpi strong{display:block;margin-top:5px;font-size:23px;font-variant-numeric:tabular-nums}
+.kpi-symbol{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--soft);color:var(--pri-d);font-size:21px}
+.cashflow-panel{padding:18px 20px}.cashflow-head h2{font-size:18px}.cashflow-net{color:var(--ink)}
+.analytics-period{background:#e9ebdf}
+.analytics-period button{color:#686c5d}
+.analytics-period button.on{background:#171b0c;color:#d6f36a;box-shadow:none}
+.chart .bar{background-color:#59613b}.chart .bar.e{background-color:#ca654e}
+.fill{background:#d6f36a}.track{background:#e8eadf}
+.notice{background:#f0f3df;color:#454b2e;box-shadow:none}
+.field label{color:var(--ink)}
+.search,select,.field input,.field select,.field textarea{border-color:var(--line-strong);background:var(--panel);border-radius:12px}
+.search:focus,select:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:#9aaa51;box-shadow:0 0 0 4px rgba(214,243,106,.28)}
+.tw{padding:0 14px 14px}
+th{background:#f0f1e9!important;color:#6e715e!important;border-bottom:1px solid var(--line)!important}
+tbody tr:nth-child(even){background:#fafbf7}tbody tr:hover{background:#f1f4e3}
+.badge{border-radius:999px}.paid{color:#45512a;background:#edf2d8}.pending{color:#806718;background:#fbf3d5}.rejected{color:#a34535;background:#fae8e2}
+dialog{border-color:var(--line);border-radius:24px;background:var(--panel);backdrop-filter:none;-webkit-backdrop-filter:none}
+dialog::backdrop{background:rgba(23,27,12,.48)}
+#auth{background:radial-gradient(65% 60% at 50% 0%,#e7edc8,transparent 70%),#f5f6f0}
+#auth .panel{border-radius:24px;box-shadow:0 18px 55px rgba(23,27,12,.12)}
+#auth .ph{background:#171b0c;color:#fff;border:0}#auth .ph h2{color:#fff}#auth .ph p{color:#c9ceb1}
+#auth .auth-brand .mark{background:#d6f36a;color:#171b0c}
+.toast{background:#171b0c;color:#fff}
+.fn{color:var(--muted)}
+@media(min-width:721px){
+ .app{display:grid;grid-template-columns:258px minmax(0,1fr)}
+ #side{position:sticky;top:0;width:auto;height:100vh;min-height:100vh;margin:0}
+ .topbar{display:flex}
+}
+@media(min-width:721px) and (max-width:1100px){
+ .app{grid-template-columns:210px minmax(0,1fr)}
+ #side{padding-left:10px;padding-right:10px}
+ #side>.who{width:auto}
+ #side .who-actions{grid-template-columns:1fr}
+ #side .who-meta{max-width:110px}
+ .topbar{padding:0 22px}
+ .mc{padding:24px 22px 40px}
+ .group-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+ body{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+ .app{display:block}
+ #side{position:fixed;z-index:20;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));top:auto;width:auto;height:auto;min-height:0;margin:0;padding:7px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:rgba(23,27,12,.97);box-shadow:0 16px 44px rgba(23,27,12,.25);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+ #side>.brand,.cap,#side>.who,.menu,.nav-hl{display:none}
+ #side>.side-nav{display:block;flex:0 1 auto;min-height:0;overflow:visible;padding:0}
+ #nav{display:flex;gap:4px;padding:0;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+ #nav::-webkit-scrollbar{display:none}
+ #nav button{flex:0 0 auto;min-width:56px;width:auto;min-height:54px;gap:2px;padding:6px 9px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;line-height:1.15;white-space:nowrap;color:#e5e7d7}
+ #nav button.active{background:#d6f36a;color:#171b0c}
+ #nav .ic{width:19px;height:19px}
+ .topbar{position:sticky;top:0;z-index:10;height:58px;margin:0;padding:0 16px;border-radius:0 0 18px 18px}
+ .right{display:block;font-size:11px}
+ .mc{padding:19px 14px 28px}
+ .welcome{display:block}.welcome .btn{margin-top:12px;width:100%}
+ .analytics-head{display:grid;gap:12px}.analytics-head h1{font-size:26px}
+ .analytics-controls{width:100%;display:grid;grid-template-columns:1fr auto}
+ .analytics-controls .analytics-period{min-width:0;display:flex;justify-content:space-around}
+ .analytics-period button{flex:1;padding:7px 8px;font-size:12px}
+ .analytics-controls>.btn{width:auto;padding-inline:13px}
+ .analytics-total{min-height:175px;padding:19px;border-radius:21px}
+ .analytics-total-copy strong{font-size:clamp(32px,9vw,46px)}
+ .analytics-kpis{grid-template-columns:1fr 1fr;gap:9px}
+ .analytics-kpi{padding:15px 13px;border-radius:17px}.analytics-kpi strong{font-size:18px}
+ .dashboard-intro{align-items:flex-start}.dashboard-intro .profile-chip{padding:4px;border:0;background:transparent}.dashboard-intro .profile-chip span{display:none}
+ .balance-hero{padding:20px;border-radius:21px}.balance-hero-foot{align-items:flex-start;flex-direction:column;gap:4px}
+ .quick-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.quick-action{padding:11px 10px;font-size:13px}.quick-action .qa-icon{width:34px;height:34px}
+ .group-overview-grid,.gcs{grid-template-columns:1fr}
+ .group-overview-card{padding:15px}
+ .ph,.pb{padding:15px}.tw{padding:0 8px 8px}
+ .toast{left:12px;right:12px;bottom:calc(100px + env(safe-area-inset-bottom,0px));text-align:center}
+ .lc{height:165px}.dn{width:148px;height:148px}
+ .analytics-period{overflow-x:auto}
+}
+@media(max-width:390px){
+ #nav button{min-width:52px;padding-left:6px;padding-right:6px}
+ .analytics-kpis{grid-template-columns:1fr}
+ .analytics-controls{grid-template-columns:1fr}
+ .analytics-controls>.btn{width:100%}
+}
 </style>
 </head>
 <body>
@@ -561,7 +727,7 @@ tbody tr:hover{background:linear-gradient(100deg,var(--soft),var(--head))}
 </aside>
 <main>
 <header class="topbar"><div style="display:flex;align-items:center;gap:12px"><button class="menu" id="menu">เมนู</button><div><div class="crumb" id="crumb"></div><div class="tt" id="tt"></div></div></div><div class="right" id="today"></div></header>
-<div class="mc"><div id="v"></div><div class="fn">สำหรับผู้ที่ยังไม่ได้เข้าสู่ระบบ หน้าจอนี้ใช้ข้อมูลตัวอย่าง · เมื่อลงชื่อเข้าใช้จะแสดงข้อมูลกลุ่มที่บัญชีของคุณมีสิทธิ์เข้าถึง</div></div>
+<div class="mc"><div id="v"></div><div class="fn">ข้อมูลจะแสดงตามกลุ่มที่บัญชีของคุณมีสิทธิ์เข้าถึง หลังจากลงชื่อเข้าใช้</div></div>
 </main>
 </div>
 <div id="auth" hidden><div class="panel"><div class="brand auth-brand" aria-label="GroupFund ระบบบริหารเงินกองกลาง"><span class="mark" aria-hidden="true">G</span><span class="brand-copy"><span class="bn">GroupFund</span><span class="bs">บริหารเงินกองกลาง</span></span></div><div class="ph"><div><h2 id="atitle"></h2><p id="asub"></p></div></div><div class="pb"><form id="aform" novalidate></form><p class="err" id="aerr" role="alert"></p><div id="alinks"></div></div></div></div>
@@ -739,88 +905,17 @@ const $=s=>document.querySelector(s),E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'
 const money=n=>'฿ '+(n/100).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
 const dt=d=>new Date(d+'T00:00:00').toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
 const today=new Date().toISOString().slice(0,10),ym=today.slice(0,7),BY='ผู้ดูแลการเงิน';
-let animate=true,role='admin',me,af='all',cv='3d',lastDat=[],S3=null,curRoom=1,uid=100,page='dash',tt,qm='',gm='all',ql='',tl='all',pf='all';
+let animate=true,role='member',me,af='all',cv='3d',lastDat=[],S3=null,curRoom=1,uid=100,page='dash',tt,qm='',gm='all',ql='',tl='all',pf='all';
 let dashPeriod='month',dashFlow='net';
 let G=[];
 const gn=i=>(G.find(g=>g.id==i)||{name:'—'}).name,M=[],L=[],R=[],PE=[],AU=[],JR=[];
 const groupRole=gid=>(PE.find(p=>p.code==me&&p.g==gid&&p.status=='active')||{}).role;
 const canManageGroup=gid=>['owner','admin'].includes(groupRole(gid));
 const ROLE_LABEL={owner:'เจ้าของกลุ่ม',admin:'ผู้ดูแล',treasurer:'เหรัญญิก',member:'สมาชิก'};
-const LT={open:'ยอดยกมา',income:'รายรับ',expense:'รายจ่าย'},BD={paid:['ชำระแล้ว','paid'],pending:['รอตรวจสอบ','pending'],rejected:['ปฏิเสธหลักฐาน','rejected'],unpaid:['ยังไม่ชำระ','neutral'],overdue:['เกินกำหนด','rejected']};
-const badge=s=>`<span class="badge ${BD[s][1]}">${BD[s][0]}</span>`;
-const addL=(date,g,type,detail,amt,ref)=>L.push({id:++uid,date,g,type,detail,amt,ref,by:BY});
-const rq=i=>R.find(x=>x.id==i),stx=m=>m.s=='unpaid'&&rq(m.r).due<today?'overdue':m.s,logA=(who,act,detail)=>AU.push({id:++uid,ts:new Date().toISOString(),who,act,detail});
-function mkP(name,g){let p=PE.find(x=>x.name==name&&x.g==g);if(!p){p={code:'GF-'+(1001+PE.length),name,g};PE.push(p)}return p}
-function addM(name,g,amt,s,sub,how,reason,r){const p=mkP(name,g),q=r?rq(r):R.find(x=>x.g==g),m={id:++uid,code:p.code,name,g,amt,s,sub,how,reason,r:q.id,h:s=='unpaid'?[]:[{date:sub,how,s,reason}]};M.push(m);if(s=='paid')addL(sub,g,'income',q.title+': '+name,amt,m.id);return m}
-const A=()=>L.filter(x=>!x.rev&&!x.rv),sum=(t,f)=>A().filter(x=>x.type==t&&(!f||f(x))).reduce((s,x)=>s+x.amt,0);
-const bal=g=>{const f=g?x=>x.g==g:null;return sum('open',f)+sum('income',f)-sum('expense',f)};
-[['2026-05-01',1,'open','ยอดยกมา',900000],['2026-05-01',2,'open','ยอดยกมา',400000],['2026-05-01',3,'open','ยอดยกมา',250000],['2026-05-02',1,'income','เงินกองกลางประจำเดือน',150000],['2026-06-03',1,'expense','ค่าจัดกิจกรรมต้อนรับ',80000],['2026-06-10',2,'income','เงินสมทบทริป งวดที่ 1',200000],['2026-07-05',3,'income','เงินกองกลางประจำเดือน',100000],['2026-07-18',3,'expense','ค่าวัสดุส่วนกลาง',45000],['2026-08-04',1,'income','เงินกองกลางประจำเดือน',150000],['2026-08-20',1,'expense','ค่าอุปกรณ์กิจกรรม',60000],['2026-09-06',2,'income','เงินสมทบทริป งวดที่ 2',200000],['2026-09-15',3,'expense','ค่าซ่อมบำรุงส่วนกลาง',90000],['2026-10-02',1,'income','เงินกองกลางประจำเดือน',120000],['2026-10-18',3,'expense','ค่าอุปกรณ์ทำความสะอาด',60000]].forEach(r=>addL(...r));
-R.push({id:++uid,g:1,title:'ค่ากองกลางประจำเดือน ต.ค.',amt:30000,due:'2026-10-15'},{id:++uid,g:2,title:'เงินสมทบทริป งวดที่ 3',amt:50000,due:'2026-11-01'},{id:++uid,g:3,title:'ค่าส่วนกลางหอพัก',amt:20000,due:'2026-10-31'});
-addM('อามีนา มะ',1,30000,'pending','2026-10-23','โอน');addM('มูฮัมหมัด อาลี',2,50000,'pending','2026-10-23','โอน');addM('นูรฟาติน อิสมาแอ',3,20000,'pending','2026-10-22','โอน');addM('อับดุลเลาะห์ สาและ',1,30000,'paid','2026-10-22','โอน');addM('ซัลมา เจะมะ',2,50000,'rejected','2026-10-21','โอน','ยอดโอนไม่ตรงกับยอดที่ต้องชำระ');addM('ฟารีดา ดอเลาะ',1,30000,'unpaid');addM('ซูไฮนี ยูโซะ',1,30000,'paid','2026-10-20','เงินสด');addM('อัสมา เจ๊ะเล็ง',3,20000,'paid','2026-10-19','โอน');
-
-me=M[5].code;JR.push({id:++uid,g:1,name:'ยูซุฟ ดือราแม',ts:'2026-10-23T08:15:00'});[['2026-10-19T09:30:00','อนุมัติการชำระ','อัสมา เจ๊ะเล็ง / ค่าส่วนกลางหอพัก ฿ 200.00'],['2026-10-20T14:05:00','บันทึกเงินสด','ซูไฮนี ยูโซะ / ค่ากองกลางประจำเดือน ต.ค. ฿ 300.00'],['2026-10-21T11:20:00','ปฏิเสธหลักฐาน','ซัลมา เจะมะ / เงินสมทบทริป งวดที่ 3 เหตุผล: ยอดโอนไม่ตรงกับยอดที่ต้องชำระ'],['2026-10-22T16:40:00','อนุมัติการชำระ','อับดุลเลาะห์ สาและ / ค่ากองกลางประจำเดือน ต.ค. ฿ 300.00']].forEach(a=>AU.push({id:++uid,ts:a[0],who:BY,act:a[1],detail:a[2]}));
-const NAVM=[['mydues','ยอดของฉัน'],['myhist','ประวัติการชำระ']],curNav=()=>{const base=role=='admin'?NAV:role=='treasurer'?NAV.filter(x=>!['audit'].includes(x[0])):NAVM;return base.concat(PLAT?[['platform','ผู้ดูแลระบบ']]:[],[['join','เข้าร่วมกลุ่ม'],['settings','ตั้งค่า']])};
-const NAV=[['dash','ภาพรวม'],['groups','กลุ่มของฉัน'],['req','รายการเรียกเก็บ'],['mem','สมาชิกและยอดชำระ'],['pay','ตรวจสอบการชำระ'],['led','รายรับ–รายจ่าย'],['rep','รายงาน'],['audit','ประวัติการดำเนินการ']];
-const head=(t,p,b)=>`<div class="welcome"><div><h1>${t}</h1><p>${p}</p></div>${b||''}</div>`;
-const stat=(k,v,n)=>`<div class="stat"><div class="sk">${k}</div><div class="sv">${v}</div><div class="sn">${n}</div></div>`;
-const byDate=a=>a.slice().sort((x,y)=>y.date.localeCompare(x.date)||y.id-x.id);
-const ltr=(x,a)=>`<tr><td>${dt(x.date)}</td><td>${E(x.detail)}${x.rev?' <span class="badge neutral">กลับรายการแล้ว</span>':''}${x.rv?' <span class="badge neutral">รายการกลับบัญชี</span>':''}<span class="sub">${E(gn(x.g))} / ${x.by}</span></td><td>${LT[x.type]}</td><td class="num" style="color:var(--${x.type=='expense'?'bad':'ok'})">${x.type=='expense'?'−':'+'}${money(x.amt).slice(2)}</td>${a?`<td>${x.type!='open'&&!x.rev&&!x.rv&&!x.ref?`<button class="btn btn-danger btn-sm" data-a="rv" data-i="${x.id}">กลับรายการ</button>`:''}</td>`:''}</tr>`;
-
-function dashRange(period=dashPeriod){
- const now=new Date(today+'T12:00:00'),y=now.getFullYear(),m=now.getMonth();
- let s,e,ps,pe;
- if(period=='quarter'){const q=Math.floor(m/3)*3;s=new Date(y,q,1);e=now;ps=new Date(y,q-3,1);pe=new Date(y,q,0)}
- else if(period=='year'){s=new Date(y,0,1);e=now;ps=new Date(y-1,0,1);pe=new Date(y-1,11,31)}
- else{s=new Date(y,m,1);e=now;ps=new Date(y,m-1,1);pe=new Date(y,m,0)}
- const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
- return{start:iso(s),end:iso(e),previousStart:iso(ps),previousEnd:iso(pe),label:period=='quarter'?'ไตรมาสนี้':period=='year'?'ปีนี้':'เดือนนี้'};
-}
-function cashFlowSeries(mode=dashFlow){
- const y=+today.slice(0,4),mo=+today.slice(5,7)-1;
- return [...Array(7)].map((_,i)=>{
-  const d=new Date(y,mo-(6-i),1),key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-  const inc=sum('income',x=>x.date.startsWith(key)),exp=sum('expense',x=>x.date.startsWith(key));
-  return{label:d.toLocaleDateString('th-TH',{month:'short'}),value:mode=='in'?inc:mode=='out'?exp:inc-exp};
- });
-}
-function cashFlowChart(){
- const data=cashFlowSeries(),max=Math.max(1,...data.map(x=>Math.abs(x.value))),n=data.length;
- const pts=data.map((x,i)=>[5+i*90/(n-1),40-Math.max(-1,Math.min(1,x.value/max))*28]);
- const poly=pts.map(p=>p.join(',')).join(' ');
- return '<div class="cash-chart"><svg viewBox="0 0 100 80" preserveAspectRatio="none" role="img" aria-label="กราฟกระแสเงินสด">'+
- '<line x1="4" y1="12" x2="96" y2="12"/><line x1="4" y1="40" x2="96" y2="40"/><line x1="4" y1="68" x2="96" y2="68"/>'+
- '<polyline points="'+poly+'"/>'+pts.map((p,i)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.35"><title>'+E(data[i].label)+' '+money(data[i].value)+'</title></circle>').join('')+
- '</svg><div class="cash-months">'+data.map(x=>'<span>'+E(x.label)+'</span>').join('')+'</div></div>';
-}
-function exportDashCSV(){
- const range=dashRange(),rows=A().filter(x=>x.date>=range.start&&x.date<=range.end);
- const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
- const csv=['วันที่,กลุ่ม,ประเภท,รายละเอียด,จำนวนเงิน (บาท)',...rows.map(x=>[x.date,gn(x.g),LT[x.type]||x.type,x.detail,(x.amt/100).toFixed(2)].map(q).join(','))].join('\r\n');
- const url=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');
- a.href=url;a.download='groupfund-'+dashPeriod+'-'+today+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('ส่งออก CSV แล้ว');
-}
-function dashGroupCards(range){
- const cards=G.map(g=>{
-  const inRange=x=>x.g==g.id&&x.date>=range.start&&x.date<=range.end;
-  const income=sum('income',inRange),expense=sum('expense',inRange),items=M.filter(m=>m.g==g.id),paid=items.filter(m=>m.s=='paid').length;
-  const progress=items.length?Math.round(paid/items.length*100):0,description=g.desc&&g.desc!='-'?g.desc:'บัญชีกลุ่ม';
-  return `<article class="group-overview-card"><div class="group-overview-top"><span class="group-overview-mark" aria-hidden="true">${E((g.name||'ก').slice(0,1))}</span><div><h3>${E(g.name)}</h3><p>${E(description)}</p></div></div><div class="group-overview-balance"><span>ยอดเงินคงเหลือ</span><strong>${money(bal(g.id))}</strong></div><div class="group-overview-flow"><div><span>รายรับ ${range.label}</span><b class="pos">${money(income)}</b></div><div><span>รายจ่าย ${range.label}</span><b class="neg">${money(expense)}</b></div></div><div class="group-overview-progress"><span>ชำระแล้ว ${paid} จาก ${items.length} รายการ</span><b>${progress}%</b></div><div class="track" role="progressbar" aria-label="สถานะการชำระของ ${E(g.name)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><div class="fill" style="width:${progress}%"></div></div></article>`;
- }).join('');
- return `<section class="group-overview" aria-labelledby="groupOverviewTitle"><div class="group-overview-head"><div><h2 id="groupOverviewTitle">สรุปแยกตามกลุ่ม</h2><p>ยอดคงเหลือ รายรับ รายจ่าย และสถานะชำระ · ${range.label}</p></div><button class="link" data-a="go" data-p="groups">ดูกลุ่มทั้งหมด</button></div><div class="group-overview-grid">${cards||'<div class="group-overview-empty">ยังไม่มีกลุ่มที่ดูแล</div>'}</div></section>`;
-}
-function vDash(){
- const range=dashRange(),inc=sum('income',x=>x.date>=range.start&&x.date<=range.end),exp=sum('expense',x=>x.date>=range.start&&x.date<=range.end);
- const prevIn=sum('income',x=>x.date>=range.previousStart&&x.date<=range.previousEnd),prevOut=sum('expense',x=>x.date>=range.previousStart&&x.date<=range.previousEnd);
- const count=A().filter(x=>x.type=='income'&&x.date>=range.start&&x.date<=range.end).length,net=inc-exp;
- const pct=(v,p)=>p?((v-p)/p*100):null,formatPct=v=>v==null?'ยังไม่มีข้อมูลช่วงก่อน':(v>=0?'↑ +':'↓ ')+Math.abs(v).toFixed(1)+'% เทียบช่วงก่อน';
- const periods=[['month','เดือน'],['quarter','ไตรมาส'],['year','ปี']];
- const statusCount=M.filter(m=>m.s=='pending').length,statusSum=M.filter(m=>m.s=='pending').reduce((s,m)=>s+m.amt,0);
- const months=cashFlowSeries('in'),max= Math.max(1,...months.map(x=>x.value));
- return `<div class="analytics-head"><div><h1>วิเคราะห์การเงิน</h1><p>ติดตามรายรับ รายจ่าย และกระแสเงินสด · อัปเดต ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}</p></div><div class="analytics-controls"><div class="analytics-period" role="group" aria-label="ช่วงเวลา">${periods.map(([k,l])=>`<button data-a="dashperiod" data-v="${k}" class="${dashPeriod==k?'on':''}">${l}</button>`).join('')}</div><button class="btn btn-outline" data-a="dashexport">ส่งออก CSV</button></div></div>
-<div class="analytics-total"><div class="analytics-total-copy"><span>รายรับรวม</span><strong>${money(inc)}</strong><span>จาก ${count} รายการรายรับที่ยืนยันแล้ว</span><b>${formatPct(pct(inc,prevIn))}</b></div><div class="analytics-spark" aria-hidden="true">${months.map(x=>`<i style="height:${Math.max(7,x.value/max*100)}%"></i>`).join('')}</div><span class="analytics-trend-icon" aria-hidden="true">↗</span></div>
-<div class="analytics-kpis"><div class="analytics-kpi income-kpi"><div><span>รายรับ</span><st…4759 tokens truncated…อดเงินจริงก่อนอนุมัติ':checkStatus=='mismatch'?'ยอดในสลิปไม่ตรงกับรายการ ผู้ดูแลจะตรวจสอบ':checkStatus=='duplicate'?'พบสลิปซ้ำ ผู้ดูแลจะตรวจสอบ':checkStatus=='manual_review'?'ส่งหลักฐานแล้ว ไฟล์นี้ต้องให้ผู้ดูแลตรวจเอง':checkStatus=='not_configured'?'ส่งหลักฐานแล้ว แต่ยังไม่ได้ตั้งค่าบริการตรวจอัตโนมัติ': 'ส่งหลักฐานแล้ว ผู้ดูแลจะตรวจเอง')})()})}
+const LT={open:'ยอดยกมา',income:'รายรับ',expense:'รายจ่าย'},BD={paid:['ชำระแล้ว','paid'],pending:['รอตร…7493 tokens truncated…tentType:s.type});if(up.error){toast(aTh(up.error.message));return}
+  const ins=await SB.from('payments').insert({group_id:m.g,collection_item_id:m.id,user_id:AUSER.id,amount:m.amt,payment_method:'transfer',transfer_date:d,slip_path:path,status:'pending'}).select('id').single();if(ins.error){await SB.storage.from('payment-slips').remove([path]);toast(aTh(ins.error.message));return}
+  logA(m.name,'ส่งหลักฐานการชำระ',rq(m.r).title+' '+money(m.amt));const check=await SB.functions.invoke('verify-payment-slip',{body:{payment_id:ins.data.id}});await loadFin();render();const checkStatus=check.data&&check.data.status;toast(check.error?'ส่งหลักฐานแล้ว แต่ตรวจอัตโนมัติไม่ได้ ผู้ดูแลจะตรวจเอง':checkStatus=='verified'?'ผ่านตรวจเบื้องต้นแล้ว ผู้ดูแลยังต้องยืนยันยอดเงินจริงก่อนอนุมัติ':checkStatus=='mismatch'?'ยอดในสลิปไม่ตรงกับรายการ ผู้ดูแลจะตรวจสอบ':checkStatus=='duplicate'?'พบสลิปซ้ำ ผู้ดูแลจะตรวจสอบ':checkStatus=='manual_review'?'ส่งหลักฐานแล้ว ไฟล์นี้ต้องให้ผู้ดูแลตรวจเอง':checkStatus=='not_configured'?'ส่งหลักฐานแล้ว แต่ยังไม่ได้ตั้งค่าบริการตรวจอัตโนมัติ': 'ส่งหลักฐานแล้ว ผู้ดูแลจะตรวจเอง')})()})}
 const whoHtml=()=>AUSER?`<div class="who-identity"><div class="who-profile">${AUSER.avatarUrl?`<img class="who-avatar" src="${E(AUSER.avatarUrl)}" alt="รูปโปรไฟล์">`:`<div class="who-avatar">${E((AUSER.name||'ส').slice(0,1))}</div>`}<div class="who-meta"><b>${E(AUSER.name)}</b><span>${E(AUSER.email)}</span></div></div><div class="who-role"><span class="who-role-label">บทบาทสูงสุด</span><b class="who-role-value">${({admin:'ผู้ดูแล',treasurer:'เหรัญญิก',member:'สมาชิก'})[role]||'สมาชิก'}</b></div></div><div class="who-actions"><button class="btn btn-outline btn-sm" data-a="go" data-p="profile">แก้ไขโปรไฟล์</button><button class="btn btn-outline btn-sm" id="logout">ออกจากระบบ</button></div>`:'';
-const whoHtmlOld=()=>`<div class="seg" role="group" aria-label="สลับบทบาท"><button data-role="admin" class="${role=='admin'?'on':''}">ผู้ดูแลการเงิน</button><button data-role="member" class="${role=='member'?'on':''}">สมาชิก</button></div>`+(role=='member'?`<select id="asm" aria-label="ดูในฐานะสมาชิก" style="width:100%;margin-top:8px">${PE.map(p=>`<option value="${p.code}"${p.code==me?' selected':''}>${E(p.name)}</option>`).join('')}</select>`:'')+`<span style="display:block;margin-top:8px">บัญชีตัวอย่าง สลับบทบาทเพื่อดูตัวอย่าง</span>`+(AUSER?`<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)"><b>${E(AUSER.name)}</b><span>${E(AUSER.email)}</span><button class="btn btn-outline btn-sm" id="logout" style="margin-top:8px;width:100%">ออกจากระบบ</button></div>`:'');
 const IC={join:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>',platform:'<path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',roles:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 11l2 2 4-4"/>',dash:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',groups:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',req:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/>',mem:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>',pay:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',led:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',rep:'<path d="M3 3v18h18"/><path d="M7 16V9"/><path d="M12 16V5"/><path d="M17 16v-4"/>',audit:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',mydues:'<path d="M3 7a2 2 0 0 1 2-2h13v4"/><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="16.5" cy="13.5" r="1"/>',myhist:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/>'};
 const ico=p=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[p]}</svg>`;
 let navFresh=true;
