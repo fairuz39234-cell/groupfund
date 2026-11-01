@@ -27,6 +27,14 @@ aside{background:var(--panel);border-right:1px solid var(--line);padding:24px 0;
 .pn[hidden]{display:none}
 .who{margin-top:auto;padding:16px 20px 0;border-top:1px solid var(--line);font-size:13px}
 .who b{display:block}.who span{color:var(--muted);font-size:12px}
+.who-profile{display:flex;align-items:center;gap:10px;margin-bottom:10px;min-width:0}
+.who-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--soft);display:grid;place-items:center;color:var(--pri);font-weight:700;flex:none}
+.who-meta{min-width:0;overflow:hidden}.who-meta b,.who-meta span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.profile-photo{width:104px;height:104px;border-radius:50%;object-fit:cover;background:var(--soft);border:1px solid var(--line)}
+.profile-photo-empty{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--pri);font-size:34px;font-weight:700}
+.profile-layout{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.profile-help{font-size:12px;color:var(--muted);margin-top:6px}
 main{min-width:0}
 .topbar{height:64px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:16px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
 .crumb{color:var(--muted);font-size:13px}.tt{font-size:17px;font-weight:700;line-height:1.3}
@@ -402,6 +410,16 @@ async function joinByToken(){
  if(r.error){toast(aTh(r.error.message));return}
  toast('ส่งคำขอเข้าร่วมแล้ว รอผู้ดูแลอนุมัติ');
 }
+async function loadMyProfile(){
+ if(!SB||!AUSER)return;
+ const r=await SB.from('profiles').select('full_name,avatar_url').eq('id',AUSER.id).maybeSingle();
+ if(r.error){console.warn('load profile',r.error.message);return}
+ if(!r.data)return;
+ AUSER.name=r.data.full_name||AUSER.name;
+ AUSER.avatarPath=r.data.avatar_url||'';
+ AUSER.avatarUrl='';
+ if(AUSER.avatarPath){const u=await SB.storage.from('avatars').createSignedUrl(AUSER.avatarPath,3600);if(!u.error)AUSER.avatarUrl=u.data.signedUrl}
+}
 async function loadGroups(){G=[];if(!SB||!AUSER)return;
  const r=await SB.from('groups').select('id,name,description,group_type').order('created_at');
  if(r.error){toast(aTh(r.error.message));return}
@@ -410,7 +428,7 @@ function authApply(){const a=document.getElementById('auth');if(!a)return;
  a.hidden=!!AUSER&&!arecovery;
  if(!a.hidden&&!document.getElementById('aform').children.length)aShow(arecovery?'rs':'in');
  if(!AUSER){G=[];clearFin();PLAT=false;PG=[]}
- if(AUSER&&SB&&!arecovery)loadGroups().then(()=>{joinByToken();if(window.__appReady)render()});
+ if(AUSER&&SB&&!arecovery)loadMyProfile().then(()=>loadGroups()).then(()=>{joinByToken();if(window.__appReady)render()});
  else if(window.__appReady&&typeof render=='function')render()}
 document.addEventListener('change',e=>{const s=e.target;
  if(s.id=='rg'){rgid=s.value;render();return}
@@ -439,7 +457,7 @@ if(SB){
  SB.auth.onAuthStateChange((ev,s)=>{
   if(ev=='PASSWORD_RECOVERY'){arecovery=true;aShow('rs')}
   const u=s&&s.user;
-  AUSER=u?{id:u.id,email:u.email,name:(u.user_metadata&&u.user_metadata.full_name)||u.email}:null;
+  AUSER=u?{id:u.id,email:u.email,name:(u.user_metadata&&u.user_metadata.full_name)||u.email,avatarPath:'',avatarUrl:''}:null;
   if(!u)arecovery=false;
   setTimeout(authApply,0)});
 }else{setTimeout(authApply,0)}
@@ -516,7 +534,7 @@ function mySub(id){const m=M.find(x=>x.id==id);if(!m||m.code!=me)return;dlg('ส
  (async()=>{const up=await SB.storage.from('payment-slips').upload(path,s,{contentType:s.type});if(up.error){toast(aTh(up.error.message));return}
   const ins=await SB.from('payments').insert({group_id:m.g,collection_item_id:m.id,user_id:AUSER.id,amount:m.amt,payment_method:'transfer',transfer_date:d,slip_path:path,status:'pending'}).select('id').single();if(ins.error){await SB.storage.from('payment-slips').remove([path]);toast(aTh(ins.error.message));return}
   logA(m.name,'ส่งหลักฐานการชำระ',rq(m.r).title+' '+money(m.amt));await loadFin();render();toast('ส่งหลักฐานแล้ว รอผู้ดูแลตรวจสอบ')})()})}
-const whoHtml=()=>AUSER?`<div><b>${E(AUSER.name)}</b><span>${E(AUSER.email)}</span><span>บทบาทสูงสุด: ${({admin:'ผู้ดูแล',treasurer:'เหรัญญิก',member:'สมาชิก'})[role]||''}</span></div>`:'';
+const whoHtml=()=>AUSER?`<div class="who-profile">${AUSER.avatarUrl?`<img class="who-avatar" src="${E(AUSER.avatarUrl)}" alt="รูปโปรไฟล์">`:`<div class="who-avatar">${E((AUSER.name||'ส').slice(0,1))}</div>`}<div class="who-meta"><b>${E(AUSER.name)}</b><span>${E(AUSER.email)}</span></div></div><span>บทบาทสูงสุด: ${({admin:'ผู้ดูแล',treasurer:'เหรัญญิก',member:'สมาชิก'})[role]||''}</span><div class="who-actions"><button class="btn btn-outline btn-sm" data-a="go" data-p="profile">แก้ไขโปรไฟล์</button><button class="btn btn-outline btn-sm" id="logout">ออกจากระบบ</button></div>`:'';
 const whoHtmlOld=()=>`<div class="seg" role="group" aria-label="สลับบทบาท"><button data-role="admin" class="${role=='admin'?'on':''}">ผู้ดูแลการเงิน</button><button data-role="member" class="${role=='member'?'on':''}">สมาชิก</button></div>`+(role=='member'?`<select id="asm" aria-label="ดูในฐานะสมาชิก" style="width:100%;margin-top:8px">${PE.map(p=>`<option value="${p.code}"${p.code==me?' selected':''}>${E(p.name)}</option>`).join('')}</select>`:'')+`<span style="display:block;margin-top:8px">บัญชีตัวอย่าง สลับบทบาทเพื่อดูตัวอย่าง</span>`+(AUSER?`<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)"><b>${E(AUSER.name)}</b><span>${E(AUSER.email)}</span><button class="btn btn-outline btn-sm" id="logout" style="margin-top:8px;width:100%">ออกจากระบบ</button></div>`:'');
 const IC={join:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>',platform:'<path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',roles:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 11l2 2 4-4"/>',dash:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',groups:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',req:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/>',mem:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>',pay:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',led:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',rep:'<path d="M3 3v18h18"/><path d="M7 16V9"/><path d="M12 16V5"/><path d="M17 16v-4"/>',audit:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',mydues:'<path d="M3 7a2 2 0 0 1 2-2h13v4"/><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="16.5" cy="13.5" r="1"/>',myhist:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/>'};
 const ico=p=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[p]}</svg>`;
@@ -590,6 +608,11 @@ function vPlatform(){
  `<div class="panel tp"><div class="tw"><table><thead><tr><th>กลุ่ม</th><th>ประเภท</th><th class="num">สมาชิก</th><th>สถานะ</th><th>การดำเนินการ</th></tr></thead><tbody>${PG.length?PG.map(g=>`<tr><td><b>${E(g.name)}</b></td><td>${TY[g.group_type]||''}</td><td class="num">${g.member_count}</td><td>${g.status=='suspended'?'<span class="badge rejected">ระงับ</span>':'<span class="badge paid">ใช้งาน</span>'}</td><td><button class="btn btn-outline btn-sm" data-a="pgstatus" data-i="${g.id}" data-s="${g.status=='suspended'?'active':'suspended'}">${g.status=='suspended'?'เปิดกลุ่ม':'ระงับกลุ่ม'}</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">ยังไม่มีกลุ่ม</td></tr>'}</tbody></table></div></div>`}
 function deletePanel(gid){
  return `<div class="panel tp"><div class="ph"><div><h2>ลบกลุ่ม</h2><p>ลบได้เฉพาะกลุ่มที่ยังไม่มีประวัติการเงินที่อนุมัติแล้ว การลบย้อนกลับไม่ได้</p></div></div><div class="pb"><div class="acts"><button class="btn btn-danger" data-a="delgroup" data-i="${gid}">ลบกลุ่มนี้</button></div></div></div>`;
+}
+function vProfile(){
+ const photo=AUSER&&AUSER.avatarUrl?`<img class="profile-photo" id="profilePreview" src="${E(AUSER.avatarUrl)}" alt="รูปโปรไฟล์">`:`<div class="profile-photo-empty" id="profilePreview">${E((AUSER&&AUSER.name||'ส').slice(0,1))}</div>`;
+ return head('โปรไฟล์ของฉัน','จัดการชื่อที่แสดงและรูปโปรไฟล์ของบัญชี')+
+ `<div class="panel tp"><div class="ph"><div><h2>ข้อมูลส่วนตัว</h2><p>ข้อมูลนี้จะแสดงใน GroupFund</p></div></div><div class="pb"><form id="profileForm"><div class="profile-layout"><div>${photo}</div><div class="field" style="flex:1;min-width:220px"><label for="profilePhoto">รูปโปรไฟล์</label><input id="profilePhoto" name="photo" type="file" accept="image/jpeg,image/png,image/webp"><div class="profile-help">รองรับ JPG, PNG, WebP ขนาดไม่เกิน 3 MB</div></div></div><div class="field" style="margin-top:20px"><label for="profileName">ชื่อที่แสดง</label><input id="profileName" name="full_name" maxlength="100" required value="${E(AUSER&&AUSER.name||'')}"></div><div class="acts"><button class="btn btn-primary" type="submit">บันทึกโปรไฟล์</button></div></form></div></div>`;
 }
 function vJoin(){
  return head('เข้าร่วมกลุ่ม','วางลิงก์เชิญหรือกรอกรหัสเชิญที่ได้รับจากผู้ดูแลกลุ่ม')+`<div class="panel tp"><div class="pb"><div class="field"><label for="jc">ลิงก์เชิญหรือรหัสเชิญ</label><input id="jc" maxlength="300" autocomplete="off" placeholder="วางลิงก์เชิญ หรือกรอกรหัส 8 ตัวอักษร"></div><div class="acts"><button class="btn btn-primary" data-a="joincode">ส่งคำขอเข้าร่วม</button></div></div></div>`;
@@ -716,6 +739,43 @@ $('#v').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.
  else if(a=='rv'){const x=L.find(y=>y.id==i),t=x.type=='expense'?'income':'expense';
   if(t=='expense'&&x.amt>bal(x.g))return toast('ยอดคงเหลือของกลุ่มไม่พอสำหรับการกลับรายการนี้');
   conf('กลับรายการ “'+E(x.detail)+'” จำนวน '+money(x.amt)+'? ระบบจะเพิ่มรายการกลับบัญชีและเก็บรายการเดิมไว้เป็นหลักฐาน','กลับรายการ',()=>{x.rev=true;L.push({id:++uid,date:today,g:x.g,type:t,detail:'กลับรายการ: '+x.detail,amt:x.amt,rv:x.id,by:BY});logA(BY,'กลับรายการ',x.detail+' '+money(x.amt));toast('กลับรายการแล้ว');render()})}};
+$('#v').addEventListener('change',e=>{
+ if(e.target.id=='profilePhoto'){
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>3*1024*1024){toast('กรุณาเลือกรูป JPG, PNG หรือ WebP ขนาดไม่เกิน 3 MB');e.target.value='';return}
+  const old=$('#profilePreview'),url=URL.createObjectURL(file);
+  if(old){if(old.tagName=='IMG')old.src=url;else{const img=document.createElement('img');img.id='profilePreview';img.className='profile-photo';img.alt='ตัวอย่างรูปโปรไฟล์';img.src=url;old.replaceWith(img)}}
+ }
+});
+$('#v').addEventListener('submit',async e=>{
+ if(e.target.id!='profileForm')return;
+ e.preventDefault();
+ if(!SB||!AUSER)return toast('กรุณาเข้าสู่ระบบก่อน');
+ const form=e.target,btn=form.querySelector('button[type=submit]'),name=(new FormData(form).get('full_name')||'').trim(),file=$('#profilePhoto').files[0];
+ if(!name)return toast('กรุณากรอกชื่อที่แสดง');
+ if(name.length>100)return toast('ชื่อยาวเกิน 100 ตัวอักษร');
+ btn.disabled=true;btn.textContent='กำลังบันทึก...';
+ let newPath=AUSER.avatarPath||'';
+ try{
+  if(file){
+   const ext=file.type=='image/png'?'png':file.type=='image/webp'?'webp':'jpg';
+   newPath=AUSER.id+'/'+Date.now()+'.'+ext;
+   const up=await SB.storage.from('avatars').upload(newPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(up.error)throw up.error;
+  }
+  const saved=await SB.from('profiles').update({full_name:name,avatar_url:newPath||null,updated_at:new Date().toISOString()}).eq('id',AUSER.id).select('id').maybeSingle();
+  if(saved.error||!saved.data){
+   if(file&&newPath)await SB.storage.from('avatars').remove([newPath]);
+   throw saved.error||new Error('ไม่พบข้อมูลโปรไฟล์ของบัญชีนี้');
+  }
+  const oldPath=AUSER.avatarPath||'';
+  AUSER.name=name;AUSER.avatarPath=newPath;AUSER.avatarUrl='';
+  if(newPath){const signed=await SB.storage.from('avatars').createSignedUrl(newPath,3600);if(!signed.error)AUSER.avatarUrl=signed.data.signedUrl}
+  if(file&&oldPath&&oldPath!=newPath)await SB.storage.from('avatars').remove([oldPath]);
+  toast('บันทึกโปรไฟล์เรียบร้อยแล้ว');render();
+ }catch(err){toast(aTh(err.message||err))}
+ finally{btn.disabled=false;btn.textContent='บันทึกโปรไฟล์'}
+});
 $('#v').addEventListener('input',e=>{const t=e.target,k=t.id;if(k=='qm'){qm=t.value;fillM()}else if(k=='gm'){gm=t.value;fillM()}else if(k=='ql'){ql=t.value;fillL()}else if(k=='tl'){tl=t.value;fillL()}else if(k=='pf'){pf=t.value;fillP()}else if(k=='af'){af=t.value;fillA()}labelTables()});
 
 buildNav();
@@ -728,10 +788,10 @@ $('#who').onchange=e=>{if(e.target.id=='asm'){me=e.target.value;animate=true;ren
 function countUp(el){const t=el.textContent,m=t.match(/[\d,]+(?:\.\d+)?/);if(!m)return;const q=m[0],v=parseFloat(q.replace(/,/g,'')),d=(q.split('.')[1]||'').length,pre=t.slice(0,m.index),post=t.slice(m.index+q.length),t0=performance.now();
  const f=n=>pre+n.toLocaleString('th-TH',{minimumFractionDigits:d,maximumFractionDigits:d})+post;
  const step=now=>{const p=Math.min(1,(now-t0)/900),e=1-Math.pow(1-p,3);el.textContent=f(v*e);if(p<1)requestAnimationFrame(step)};el.textContent=f(0);requestAnimationFrame(step)}
-function render(){if(page=='room'&&(role=='member'||!G.some(g=>g.id==curRoom)))page='groups';if(!curNav().some(x=>x[0]==page)&&page!='room')page=curNav()[0][0];$('#who').innerHTML=whoHtml();const n=M.filter(m=>m.s=='pending').length,t=page=='room'?gn(curRoom):curNav().find(x=>x[0]==page)[1];
+function render(){if(page=='room'&&(role=='member'||!G.some(g=>g.id==curRoom)))page='groups';if(!curNav().some(x=>x[0]==page)&&page!='room'&&page!='profile')page=curNav()[0][0];$('#who').innerHTML=whoHtml();const n=M.filter(m=>m.s=='pending').length,t=page=='room'?gn(curRoom):page=='profile'?'โปรไฟล์':curNav().find(x=>x[0]==page)[1];
  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.p==(page=='room'?'groups':page)));
  const pn=$('#pn');if(pn){pn.textContent=n;pn.hidden=!n}$('#crumb').textContent='ระบบบริหารเงินกองกลาง / '+t;$('#tt').textContent=t;
- $('#v').innerHTML={join:vJoin,platform:vPlatform,settings:vSettings,roles:vRoles,dash:vDash,groups:vGroups,mem:vMem,pay:vPay,led:vLed,rep:vRep,mydues:vMy,myhist:vHist,req:vReq,audit:vAudit,room:vRoom}[page]();
+ $('#v').innerHTML={join:vJoin,profile:vProfile,platform:vPlatform,settings:vSettings,roles:vRoles,dash:vDash,groups:vGroups,mem:vMem,pay:vPay,led:vLed,rep:vRep,mydues:vMy,myhist:vHist,req:vReq,audit:vAudit,room:vRoom}[page]();
  const f={mem:fillM,pay:fillP,led:fillL,audit:fillA}[page];if(f)f();$('#side').classList.remove('open');
  const V=$('#v');V.classList.toggle('anim',animate);
  if(animate){V.querySelectorAll('.welcome,.stat,.gc,.panel,.notice').forEach((el,i)=>el.style.setProperty('--i',Math.min(i,9)));V.querySelectorAll('.cc').forEach((c,i)=>c.style.setProperty('--d',i*70+'ms'));if(!RM())V.querySelectorAll('.sv,.ga').forEach(countUp)}
