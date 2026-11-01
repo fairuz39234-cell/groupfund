@@ -571,7 +571,7 @@ function init3D(){
 function moveHl(first){const a=document.querySelector('#nav button.active'),h=document.querySelector('#nav .nav-hl');if(!a||!h)return;if(first)h.style.transition='none';h.style.height=a.offsetHeight+'px';h.style.transform='translateY('+a.offsetTop+'px)';h.style.opacity='1';if(first){void h.offsetWidth;h.style.transition=''}}
 window.addEventListener('resize',()=>moveHl(true));if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>moveHl(true));
 document.addEventListener('pointerdown',e=>{const t=e.target.closest('.btn,.stat,.gc,.nav button,.chip,.c3bar button,.seg button,.link');if(!t)return;t.classList.remove('pulse');void t.offsetWidth;t.classList.add('pulse');setTimeout(()=>t.classList.remove('pulse'),650)});
-const BASE=location.origin+location.pathname;
+const BASE='https://groupfund-app-ivory.vercel.app/';
 const genCode=()=>{const a='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<6;i++)c+=a[Math.floor(Math.random()*a.length)];return c};
 const inviteLink=g=>BASE[0]=='h'?BASE+'#join-'+g.inv:'รหัสเชิญ: '+g.inv;
 function copyTxt(t,msg){const done=()=>toast(msg),fb=()=>{const x=document.createElement('textarea');x.value=t;x.style.cssText='position:fixed;opacity:0';document.body.appendChild(x);x.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}x.remove();ok?done():toast('คัดลอกอัตโนมัติไม่ได้ กรุณาเลือกข้อความแล้วคัดลอกเอง')};try{navigator.clipboard.writeText(t).then(done,fb)}catch(e){fb()}}
