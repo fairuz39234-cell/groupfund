@@ -619,7 +619,7 @@ function vAppSettings(){
 function vProfile(){
  const photo=AUSER&&AUSER.avatarUrl?`<img class="profile-photo" id="profilePreview" src="${E(AUSER.avatarUrl)}" alt="รูปโปรไฟล์">`:`<div class="profile-photo-empty" id="profilePreview">${E((AUSER&&AUSER.name||'ส').slice(0,1))}</div>`;
  return head('โปรไฟล์ของฉัน','จัดการชื่อที่แสดงและรูปโปรไฟล์ของบัญชี')+
- `<div class="panel tp"><div class="ph"><div><h2>ข้อมูลส่วนตัว</h2><p>ข้อมูลนี้จะแสดงใน GroupFund</p></div></div><div class="pb"><form id="profileForm"><div class="profile-layout"><div>${photo}</div><div class="field" style="flex:1;min-width:220px"><label for="profilePhoto">รูปโปรไฟล์</label><input id="profilePhoto" name="photo" type="file" accept="image/jpeg,image/png,image/webp"><div class="profile-help">รองรับ JPG, PNG, WebP ขนาดไม่เกิน 3 MB</div></div></div><div class="field" style="margin-top:20px"><label for="profileName">ชื่อที่แสดง</label><input id="profileName" name="full_name" maxlength="100" required value="${E(AUSER&&AUSER.name||'')}"></div><div class="acts"><button class="btn btn-primary" type="submit">บันทึกโปรไฟล์</button></div></form></div></div>`;
+ `<div class="panel tp"><div class="ph"><div><h2>ข้อมูลส่วนตัว</h2><p>ข้อมูลนี้จะแสดงใน GroupFund</p></div></div><div class="pb"><form id="profileForm"><div class="profile-layout"><div><button type="button" id="profilePhotoTrigger" aria-label="เปลี่ยนรูปโปรไฟล์" title="กดเพื่อเปลี่ยนรูป" style="border:0;background:transparent;padding:0;cursor:pointer;display:block">${photo}<span class="profile-help" style="display:block;text-align:center;margin-top:6px">กดที่รูปเพื่อเปลี่ยน</span></button></div><div class="field" style="flex:1;min-width:220px"><label for="profilePhoto">เลือกรูปโปรไฟล์</label><input id="profilePhoto" name="photo" type="file" accept="image/jpeg,image/png,image/webp" style="display:none"><div class="profile-help">รองรับ JPG, PNG, WebP ขนาดไม่เกิน 3 MB ระบบจะบันทึกรูปให้อัตโนมัติ</div></div></div><div class="field" style="margin-top:20px"><label for="profileName">ชื่อที่แสดง</label><input id="profileName" name="full_name" maxlength="100" required value="${E(AUSER&&AUSER.name||'')}"></div><div class="acts"><button class="btn btn-primary" type="submit">บันทึกชื่อ</button></div></form></div></div>`;
 }
 function vJoin(){
  return head('เข้าร่วมกลุ่ม','วางลิงก์เชิญหรือกรอกรหัสเชิญที่ได้รับจากผู้ดูแลกลุ่ม')+`<div class="panel tp"><div class="pb"><div class="field"><label for="jc">ลิงก์เชิญหรือรหัสเชิญ</label><input id="jc" maxlength="300" autocomplete="off" placeholder="วางลิงก์เชิญ หรือกรอกรหัส 8 ตัวอักษร"></div><div class="acts"><button class="btn btn-primary" data-a="joincode">ส่งคำขอเข้าร่วม</button></div></div></div>`;
@@ -746,12 +746,36 @@ $('#v').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.
  else if(a=='rv'){const x=L.find(y=>y.id==i),t=x.type=='expense'?'income':'expense';
   if(t=='expense'&&x.amt>bal(x.g))return toast('ยอดคงเหลือของกลุ่มไม่พอสำหรับการกลับรายการนี้');
   conf('กลับรายการ “'+E(x.detail)+'” จำนวน '+money(x.amt)+'? ระบบจะเพิ่มรายการกลับบัญชีและเก็บรายการเดิมไว้เป็นหลักฐาน','กลับรายการ',()=>{x.rev=true;L.push({id:++uid,date:today,g:x.g,type:t,detail:'กลับรายการ: '+x.detail,amt:x.amt,rv:x.id,by:BY});logA(BY,'กลับรายการ',x.detail+' '+money(x.amt));toast('กลับรายการแล้ว');render()})}};
-$('#v').addEventListener('change',e=>{
- if(e.target.id=='profilePhoto'){
-  const file=e.target.files&&e.target.files[0];if(!file)return;
-  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>3*1024*1024){toast('กรุณาเลือกรูป JPG, PNG หรือ WebP ขนาดไม่เกิน 3 MB');e.target.value='';return}
-  const old=$('#profilePreview'),url=URL.createObjectURL(file);
-  if(old){if(old.tagName=='IMG')old.src=url;else{const img=document.createElement('img');img.id='profilePreview';img.className='profile-photo';img.alt='ตัวอย่างรูปโปรไฟล์';img.src=url;old.replaceWith(img)}}
+$('#v').addEventListener('click',e=>{
+ if(e.target.closest&&e.target.closest('#profilePhotoTrigger'))$('#profilePhoto').click();
+});
+$('#v').addEventListener('change',async e=>{
+ if(e.target.id!='profilePhoto')return;
+ const input=e.target,file=input.files&&input.files[0];if(!file)return;
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>3*1024*1024){toast('กรุณาเลือกรูป JPG, PNG หรือ WebP ขนาดไม่เกิน 3 MB');input.value='';return}
+ if(!SB||!AUSER){toast('กรุณาเข้าสู่ระบบก่อน');input.value='';return}
+ const trigger=$('#profilePhotoTrigger'),oldPath=AUSER.avatarPath||'';
+ if(trigger){trigger.disabled=true;trigger.style.opacity='.6'}
+ toast('กำลังอัปโหลดรูปโปรไฟล์...');
+ let newPath='';
+ try{
+  const ext=file.type=='image/png'?'png':file.type=='image/webp'?'webp':'jpg';
+  newPath=AUSER.id+'/'+Date.now()+'.'+ext;
+  const up=await SB.storage.from('avatars').upload(newPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+  if(up.error)throw up.error;
+  const saved=await SB.from('profiles').update({avatar_url:newPath,updated_at:new Date().toISOString()}).eq('id',AUSER.id).select('id').maybeSingle();
+  if(saved.error||!saved.data)throw saved.error||new Error('ไม่พบข้อมูลโปรไฟล์ของบัญชีนี้');
+  const signed=await SB.storage.from('avatars').createSignedUrl(newPath,3600);
+  if(signed.error)throw signed.error;
+  AUSER.avatarPath=newPath;AUSER.avatarUrl=signed.data.signedUrl;
+  if(oldPath&&oldPath!=newPath)await SB.storage.from('avatars').remove([oldPath]);
+  toast('เปลี่ยนรูปโปรไฟล์เรียบร้อยแล้ว');render();
+ }catch(err){
+  if(newPath)await SB.storage.from('avatars').remove([newPath]);
+  toast(aTh(err.message||err));
+ }finally{
+  input.value='';
+  const b=$('#profilePhotoTrigger');if(b){b.disabled=false;b.style.opacity='1'}
  }
 });
 $('#v').addEventListener('submit',async e=>{
