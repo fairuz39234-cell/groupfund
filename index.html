@@ -315,6 +315,43 @@ td:first-child .sub{text-align:left}
 #auth form{display:grid;gap:12px}
 #auth .btn{width:100%}
 #alinks{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:12px}
+/* Responsive refinements: tablet portrait, narrow phones, and readable tables */
+@media (min-width:721px) and (max-width:820px){
+ .app{display:block}
+ aside{position:fixed;z-index:15;left:-260px;top:0;bottom:0;width:244px;height:auto;align-self:auto;padding-top:calc(24px + env(safe-area-inset-top,0px));transition:left .2s}
+ aside.open{left:0}
+ .menu{display:block}
+ .topbar{height:60px;padding:0 18px;top:calc(env(safe-area-inset-top,0px) + 8px);margin:8px 10px 0;border-radius:16px}
+ .right{display:none}
+ .mc{padding:20px 18px 34px}
+ .stats,.gcs{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .grid2{grid-template-columns:1fr}
+ .search,select,.field input,.field select{font-size:16px}
+}
+@media(max-width:900px){
+ .tw{max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+ table{display:table!important;width:100%;min-width:640px}
+ thead{display:table-header-group!important;position:static!important;left:auto!important}
+ tbody{display:table-row-group!important}
+ tr{display:table-row!important;width:auto!important}
+ td{display:table-cell!important;width:auto!important;padding:9px 10px!important;border-top:1px solid var(--line)!important;white-space:normal!important;text-align:left!important}
+ td::before{content:none!important}
+ td:first-child{font-weight:400!important;justify-content:initial!important}
+ td.empty{display:table-cell!important;text-align:center!important}
+}
+@media(max-width:420px){
+ .topbar{margin-left:6px;margin-right:6px;padding-left:10px;padding-right:10px}
+ .mc{padding-left:10px;padding-right:10px}
+ .stat{padding:11px 12px}
+ .sv{font-size:clamp(16px,5vw,20px);overflow-wrap:anywhere}
+ .sk,.sn{font-size:11px}
+ .ph,.pb{padding:12px}
+ .toolbar{width:100%}
+ .toolbar>*{min-width:0;max-width:100%}
+ .toolbar .search{flex:1 1 130px}
+ .btn{white-space:normal}
+ .ra{flex-wrap:wrap}
+}
 </style>
 </head>
 <body>
