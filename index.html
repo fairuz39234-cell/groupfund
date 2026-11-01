@@ -372,7 +372,7 @@ async function loadFin(){
   SB.from('transactions').select('id,group_id,transaction_type,amount,description,reference_id,created_at').order('created_at'),
   SB.from('audit_logs').select('id,action,metadata,created_at,profiles(full_name)').order('created_at',{ascending:false}).limit(300),
   SB.from('group_invite_links').select('group_id,token').is('revoked_at',null),
-  SB.from('join_requests').select('id,group_id,user_id,created_at,profiles(full_name)').eq('status','pending').order('created_at'),
+  SB.from('join_requests').select('id,group_id,user_id,created_at,profiles!join_requests_user_id_fkey(full_name)').eq('status','pending').order('created_at'),
   SB.from('group_invite_codes').select('group_id,code,expires_at,max_uses,uses').is('revoked_at',null)]);
  const bad=[mem,req,it,pay,tx,aud,lk,jq,ic].find(x=>x.error);
  if(bad){toast(aTh(bad.error.message));return}
@@ -714,7 +714,7 @@ function newL(){dlg('บันทึกรายการบัญชี','ร�
 function okM(m){if(!m.pid)return;SB.rpc('approve_payment',{pid:m.pid}).then(r=>{if(r.error)toast(aTh(r.error.message));else loadFin().then(render)})}
 
 $('#v').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,i=b.dataset.i;
- if(role=='member'&&!['mysub','go','joincode','newg'].includes(a))return;if(a=='refreshjoin'){b.disabled=true;SB.from('join_requests').select('id,group_id,user_id,created_at,profiles(full_name)').eq('status','pending').order('created_at').then(r=>{if(r.error){toast('โหลดคำขอเข้าร่วมไม่ได้: '+aTh(r.error.message));return}JR.length=0;(r.data||[]).forEach(x=>JR.push({id:x.id,g:x.group_id,name:(x.profiles&&x.profiles.full_name)||'สมาชิก',ts:x.created_at,uid:x.user_id}));render();toast(JR.length?'อัปเดตคำขอแล้ว '+JR.length+' รายการ':'ไม่พบคำขอที่บัญชีนี้มีสิทธิ์ดู')}).catch(err=>toast('โหลดคำขอเข้าร่วมไม่ได้: '+aTh(err.message||err))).finally(()=>{b.disabled=false})}else if(a=='newg')newG();else if(a=='newm')newM();else if(a=='newl')newL();else if(a=='mysub')mySub(i);else if(a=='newreq')newReq();else if(a=='cv')setCv(b.dataset.v);
+ if(role=='member'&&!['mysub','go','joincode','newg'].includes(a))return;if(a=='refreshjoin'){b.disabled=true;SB.from('join_requests').select('id,group_id,user_id,created_at,profiles!join_requests_user_id_fkey(full_name)').eq('status','pending').order('created_at').then(r=>{if(r.error){toast('โหลดคำขอเข้าร่วมไม่ได้: '+aTh(r.error.message));return}JR.length=0;(r.data||[]).forEach(x=>JR.push({id:x.id,g:x.group_id,name:(x.profiles&&x.profiles.full_name)||'สมาชิก',ts:x.created_at,uid:x.user_id}));render();toast(JR.length?'อัปเดตคำขอแล้ว '+JR.length+' รายการ':'ไม่พบคำขอที่บัญชีนี้มีสิทธิ์ดู')}).catch(err=>toast('โหลดคำขอเข้าร่วมไม่ได้: '+aTh(err.message||err))).finally(()=>{b.disabled=false})}else if(a=='newg')newG();else if(a=='newm')newM();else if(a=='newl')newL();else if(a=='mysub')mySub(i);else if(a=='newreq')newReq();else if(a=='cv')setCv(b.dataset.v);
  else if(a=='room'){curRoom=i;page='room';animate=true;scrollTo(0,0);render()}
  else if(a=='newreqg')newReq(i);
  else if(a=='copylink'||a=='copycode'){const g=G.find(x=>x.id==i),u=inviteLink(g);if(a=='copylink'&&!u){toast('กรุณาสร้างลิงก์เชิญก่อน');return}if(a=='copycode'&&!g.code){toast('ยังไม่มีรหัสเชิญ กรุณาสร้างรหัสก่อน');return}copyTxt(a=='copylink'?u:g.code,a=='copylink'?'คัดลอกลิงก์แล้ว':'คัดลอกรหัสเชิญแล้ว')}
