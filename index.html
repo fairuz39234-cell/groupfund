@@ -428,11 +428,39 @@ async function loadGroups(){G=[];if(!SB||!AUSER)return;
  const r=await SB.from('groups').select('id,name,description,group_type').order('created_at');
  if(r.error){toast(aTh(r.error.message));return}
  G=(r.data||[]).map(g=>({id:g.id,name:g.name,desc:g.description||'-',type:g.group_type||'other',inv:'—'}));await loadFin();await loadPlat();}
+let joinReqChannel=null,joinReqRefreshTimer=null,joinReqPollTimer=null,joinReqRefreshing=false;
+function stopJoinRequestRealtime(){
+ if(joinReqChannel&&SB)SB.removeChannel(joinReqChannel);
+ joinReqChannel=null;clearTimeout(joinReqRefreshTimer);clearInterval(joinReqPollTimer);joinReqPollTimer=null;
+}
+async function refreshPendingJoinRequests(notifyGroup=null){
+ if(!SB||!AUSER||joinReqRefreshing)return;
+ joinReqRefreshing=true;
+ try{
+  const r=await SB.from('join_requests').select('id,group_id,user_id,created_at,profiles!join_requests_user_id_fkey(full_name)').eq('status','pending').order('created_at');
+  if(r.error){console.warn('refresh join requests',r.error.message);return}
+  JR.length=0;(r.data||[]).forEach(x=>JR.push({id:x.id,g:x.group_id,name:(x.profiles&&x.profiles.full_name)||'สมาชิก',ts:x.created_at,uid:x.user_id}));
+  if(notifyGroup&&canManageGroup(notifyGroup))toast('มีคำขอเข้าร่วมใหม่ในห้อง “'+gn(notifyGroup)+'”');
+  if(window.__appReady)render();
+ }catch(err){console.warn('refresh join requests',err)}
+ finally{joinReqRefreshing=false}
+}
+function startJoinRequestRealtime(){
+ stopJoinRequestRealtime();
+ if(!SB||!AUSER)return;
+ joinReqChannel=SB.channel('join-requests-'+AUSER.id)
+  .on('postgres_changes',{event:'*',schema:'public',table:'join_requests'},payload=>{
+   const row=payload.new||{},notify=payload.eventType==='INSERT'&&row.status==='pending'&&canManageGroup(row.group_id)?row.group_id:null;
+   clearTimeout(joinReqRefreshTimer);joinReqRefreshTimer=setTimeout(()=>refreshPendingJoinRequests(notify),150);
+  })
+  .subscribe(status=>{if(status==='SUBSCRIBED')refreshPendingJoinRequests()});
+ joinReqPollTimer=setInterval(()=>refreshPendingJoinRequests(),30000);
+}
 function authApply(){const a=document.getElementById('auth');if(!a)return;
  a.hidden=!!AUSER&&!arecovery;
  if(!a.hidden&&!document.getElementById('aform').children.length)aShow(arecovery?'rs':'in');
- if(!AUSER){G=[];clearFin();PLAT=false;PG=[]}
- if(AUSER&&SB&&!arecovery)loadMyProfile().then(()=>loadGroups()).then(()=>{joinByToken();if(window.__appReady)render()});
+ if(!AUSER){G=[];clearFin();PLAT=false;PG=[]}else stopJoinRequestRealtime()
+ if(AUSER&&SB&&!arecovery)loadMyProfile().then(()=>loadGroups()).then(()=>{startJoinRequestRealtime();joinByToken();if(window.__appReady)render()});
  else if(window.__appReady&&typeof render=='function')render()}
 document.addEventListener('change',e=>{const s=e.target;
  if(s.id=='rg'){rgid=s.value;render();return}
