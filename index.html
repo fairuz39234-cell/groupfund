@@ -453,6 +453,29 @@ dialog[open].closing::backdrop{animation:fadeout .2s ease forwards}
 .cash-months span{text-align:center}
 .cashflow-foot{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:12px;color:var(--muted)}
 .dashboard-lower{display:grid;grid-template-columns:1fr 1.25fr;gap:16px}
+.group-overview{margin:20px 0 22px}
+.group-overview-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.group-overview-head h2{font-size:19px;margin:0}
+.group-overview-head p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.group-overview-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.group-overview-card{min-width:0;padding:17px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--panel);box-shadow:var(--sh)}
+.group-overview-top{display:flex;align-items:center;gap:11px;min-width:0}
+.group-overview-mark{display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:13px;background:var(--soft);color:var(--pri);font-size:17px;font-weight:700}
+.group-overview-top>div{min-width:0}
+.group-overview-top h3{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}
+.group-overview-top p{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:1px 0 0;color:var(--muted);font-size:12px}
+.group-overview-balance{display:grid;gap:2px;margin:14px 0 10px;padding:12px 14px;border-radius:12px;background:linear-gradient(120deg,var(--soft),var(--head))}
+.group-overview-balance span,.group-overview-flow span{color:var(--muted);font-size:12px}
+.group-overview-balance strong{font-size:23px;line-height:1.3;font-variant-numeric:tabular-nums}
+.group-overview-flow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.group-overview-flow>div{min-width:0;padding:9px 10px;border-radius:10px;background:var(--head)}
+.group-overview-flow span{display:block}
+.group-overview-flow b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-variant-numeric:tabular-nums}
+.group-overview-progress{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 5px;font-size:12px}
+.group-overview-progress span:first-child{color:var(--muted)}
+.group-overview-card .track{height:6px}
+.group-overview-empty{grid-column:1/-1;padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line-strong);border-radius:var(--r-card);background:var(--panel)}
+@media(max-width:1100px){.group-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:900px){
  .analytics-head{display:grid}
  .analytics-kpis,.dashboard-lower{grid-template-columns:1fr}
@@ -474,6 +497,7 @@ dialog[open].closing::backdrop{animation:fadeout .2s ease forwards}
  .cashflow-foot{display:grid}
  .dashboard-lower{grid-template-columns:1fr}
 }
+@media(max-width:720px){.group-overview{margin:16px 0 20px}.group-overview-grid{grid-template-columns:1fr}.group-overview-card{padding:15px}.group-overview-head{align-items:flex-start}}
 
 /* Inline profile controls in the desktop navigation bar */
 @media(min-width:721px){
@@ -772,6 +796,15 @@ function exportDashCSV(){
  const url=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');
  a.href=url;a.download='groupfund-'+dashPeriod+'-'+today+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('ส่งออก CSV แล้ว');
 }
+function dashGroupCards(range){
+ const cards=G.map(g=>{
+  const inRange=x=>x.g==g.id&&x.date>=range.start&&x.date<=range.end;
+  const income=sum('income',inRange),expense=sum('expense',inRange),items=M.filter(m=>m.g==g.id),paid=items.filter(m=>m.s=='paid').length;
+  const progress=items.length?Math.round(paid/items.length*100):0,description=g.desc&&g.desc!='-'?g.desc:'บัญชีกลุ่ม';
+  return `<article class="group-overview-card"><div class="group-overview-top"><span class="group-overview-mark" aria-hidden="true">${E((g.name||'ก').slice(0,1))}</span><div><h3>${E(g.name)}</h3><p>${E(description)}</p></div></div><div class="group-overview-balance"><span>ยอดเงินคงเหลือ</span><strong>${money(bal(g.id))}</strong></div><div class="group-overview-flow"><div><span>รายรับ ${range.label}</span><b class="pos">${money(income)}</b></div><div><span>รายจ่าย ${range.label}</span><b class="neg">${money(expense)}</b></div></div><div class="group-overview-progress"><span>ชำระแล้ว ${paid} จาก ${items.length} รายการ</span><b>${progress}%</b></div><div class="track" role="progressbar" aria-label="สถานะการชำระของ ${E(g.name)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><div class="fill" style="width:${progress}%"></div></div></article>`;
+ }).join('');
+ return `<section class="group-overview" aria-labelledby="groupOverviewTitle"><div class="group-overview-head"><div><h2 id="groupOverviewTitle">สรุปแยกตามกลุ่ม</h2><p>ยอดคงเหลือ รายรับ รายจ่าย และสถานะชำระ · ${range.label}</p></div><button class="link" data-a="go" data-p="groups">ดูกลุ่มทั้งหมด</button></div><div class="group-overview-grid">${cards||'<div class="group-overview-empty">ยังไม่มีกลุ่มที่ดูแล</div>'}</div></section>`;
+}
 function vDash(){
  const range=dashRange(),inc=sum('income',x=>x.date>=range.start&&x.date<=range.end),exp=sum('expense',x=>x.date>=range.start&&x.date<=range.end);
  const prevIn=sum('income',x=>x.date>=range.previousStart&&x.date<=range.previousEnd),prevOut=sum('expense',x=>x.date>=range.previousStart&&x.date<=range.previousEnd);
@@ -783,6 +816,7 @@ function vDash(){
  return `<div class="analytics-head"><div><h1>วิเคราะห์การเงิน</h1><p>ติดตามรายรับ รายจ่าย และกระแสเงินสด · อัปเดต ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}</p></div><div class="analytics-controls"><div class="analytics-period" role="group" aria-label="ช่วงเวลา">${periods.map(([k,l])=>`<button data-a="dashperiod" data-v="${k}" class="${dashPeriod==k?'on':''}">${l}</button>`).join('')}</div><button class="btn btn-outline" data-a="dashexport">ส่งออก CSV</button></div></div>
 <div class="analytics-total"><div class="analytics-total-copy"><span>รายรับรวม</span><strong>${money(inc)}</strong><span>จาก ${count} รายการรายรับที่ยืนยันแล้ว</span><b>${formatPct(pct(inc,prevIn))}</b></div><div class="analytics-spark" aria-hidden="true">${months.map(x=>`<i style="height:${Math.max(7,x.value/max*100)}%"></i>`).join('')}</div><span class="analytics-trend-icon" aria-hidden="true">↗</span></div>
 <div class="analytics-kpis"><div class="analytics-kpi income-kpi"><div><span>รายรับ</span><strong>${money(inc)}</strong><small>${formatPct(pct(inc,prevIn))}</small></div><span class="kpi-symbol">＋</span></div><div class="analytics-kpi expense-kpi"><div><span>รายจ่าย</span><strong>${money(exp)}</strong><small>${formatPct(pct(exp,prevOut))}</small></div><span class="kpi-symbol">−</span></div></div>
+${dashGroupCards(range)}
 <div class="panel cashflow-panel"><div class="cashflow-head"><div><h2>กระแสเงินสด</h2><strong class="cashflow-net ${net<0?'negative':'positive'}">${money(net)}</strong><span class="sn">สุทธิ ${range.label}</span></div><div class="cashflow-actions"><div class="analytics-period small" role="group" aria-label="รูปแบบกระแสเงินสด">${[['in','เข้า'],['out','ออก'],['net','สุทธิ']].map(([k,l])=>`<button data-a="cashflow" data-v="${k}" class="${dashFlow==k?'on':''}">${l}</button>`).join('')}</div></div></div>${cashFlowChart()}<div class="cashflow-foot"><span>รายรับ ${money(inc)} · รายจ่าย ${money(exp)}</span><span>รอตรวจสอบ ${statusCount} รายการ · ${money(statusSum)}</span></div></div>
 <div class="dashboard-lower"><div class="panel"><div class="ph"><div><h2>สถานะการเก็บเงิน</h2><p>สัดส่วนรายการที่ชำระแล้วในแต่ละกลุ่ม</p></div><button class="link" data-a="go" data-p="groups">ดูทั้งหมด</button></div><div class="pb">${G.map(g=>{const ms=M.filter(m=>m.g==g.id),n=ms.filter(m=>m.s=='paid').length,p=ms.length?Math.round(n/ms.length*100):0;return `<div class="pi"><div class="pl"><b>${E(g.name)}</b><span>${p}%</span></div><div class="track"><div class="fill" style="width:${p}%"></div></div><div class="pm"><span>${n} จาก ${ms.length} รายการ</span><span>${money(ms.filter(m=>m.s=='paid').reduce((s,m)=>s+m.amt,0))}</span></div></div>`}).join('')}</div></div>
 <div class="panel"><div class="ph"><div><h2>รายการบัญชีล่าสุด</h2></div><button class="link" data-a="go" data-p="led">ดูทั้งหมด</button></div><div class="tw"><table><thead><tr><th>วันที่</th><th>รายละเอียด</th><th>ประเภท</th><th class="num">จำนวนเงิน</th></tr></thead><tbody>${byDate(L).slice(0,5).map(x=>ltr(x)).join('')}</tbody></table></div></div></div>`;
