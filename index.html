@@ -365,14 +365,17 @@ td:first-child .sub{text-align:left}
 .who-role-value{display:inline-flex;align-items:center;border-radius:999px;padding:2px 9px;background:var(--soft);color:var(--pri);font-size:11px;font-weight:700;white-space:nowrap}
 .who-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:9px}
 .who-actions .btn{min-width:0;min-height:38px;padding:5px 7px;line-height:1.2;text-align:center;justify-content:center}
+/* Keep the profile at the top of the sidebar in place of the app logo */
+#side{gap:14px}
+#side>.who{flex:0 0 auto;margin-top:0;padding:0 14px;border:0}
+.side-nav{flex:1;min-height:0;overflow-y:auto;overscroll-behavior-y:contain}
 </style>
 </head>
 <body>
 <div class="app">
 <aside id="side">
-<div class="brand"><div class="mark">G</div><div><div class="bn">GroupFund</div><div class="bs">ระบบบริหารเงินกองกลาง</div></div></div>
-<div><div class="cap">เมนู</div><nav class="nav" id="nav"></nav></div>
 <div class="who" id="who"></div>
+<div class="side-nav"><div class="cap">เมนู</div><nav class="nav" id="nav"></nav></div>
 </aside>
 <main>
 <header class="topbar"><div style="display:flex;align-items:center;gap:12px"><button class="menu" id="menu">เมนู</button><div><div class="crumb" id="crumb"></div><div class="tt" id="tt"></div></div></div><div class="right" id="today"></div></header>
