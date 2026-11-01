@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
   }
 
   const authorization = req.headers.get("Authorization") || "";
-  const token = authorization.match(/^Bearer\\s+(.+)$/i)?.[1];
+  const token = authorization.match(/^Bearer\s+(.+)$/i)?.[1];
   if (!token) return reply({ error: "UNAUTHENTICATED" }, 401);
 
   const authResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
